@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#315efb">
+  <meta name="description" content="Coach personnel TEF IRN B2 — plan, jeux, vocabulaire, grammaire, erreurs, oral et examens blancs.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <title>TEF B2 Coach</title>
+</head>
+<body>
+<div class="app">
+  <header class="topbar"><div class="topbar-inner">
+    <div class="brand"><div class="brand-badge">FR</div><div><span>TEF B2 Coach</span><small>Naturalisation • objectif B2</small></div></div>
+    <div class="top-actions"><span class="pill" id="momentumPill">🔥 0 min cette semaine</span><button class="btn small secondary" id="quick5">J’ai 5 minutes</button></div>
+  </div></header>
+  <div class="layout">
+    <aside class="sidebar"><nav class="nav" id="sideNav">
+      <button data-view="today" class="active"><span class="ico">🏠</span>Aujourd’hui</button>
+      <button data-view="plan"><span class="ico">🗓️</span>Plan & Gantt</button>
+      <button data-view="practice"><span class="ico">🎯</span>Pratique</button>
+      <button data-view="flashcards"><span class="ico">🃏</span>Flashcards</button>
+      <button data-view="grammar"><span class="ico">📚</span>Grammaire</button>
+      <button data-view="errors"><span class="ico">🧯</span>Mes erreurs</button>
+      <button data-view="scan"><span class="ico">📷</span>Scanner le cours</button>
+      <button data-view="tutor"><span class="ico">💬</span>Mon tuteur</button>
+      <button data-view="mock"><span class="ico">🧪</span>Examens</button>
+      <button data-view="official"><span class="ico">🏛️</span>TEF officiel</button>
+    </nav></aside>
+
+    <main class="main">
+      <section class="view active" id="view-today">
+        <div class="hero"><div><div class="kicker">Ton tableau de bord</div><h1>Bonjour, Amichai 👋</h1><p>On travaille surtout la production : phrases fiables, articles/prépositions, lexique précis et argumentation. La compréhension reste en entretien.</p></div><button class="btn" id="surpriseBtn">🎲 Surprise-moi</button></div>
+        <div class="grid grid-2">
+          <div class="card accent-card">
+            <div class="today-head"><div><div class="kicker">Session du jour</div><div class="big">15–20 minutes</div><div class="muted">Courte, ciblée, sans cours géant.</div></div><button class="btn secondary" id="startToday">Commencer</button></div>
+            <div class="tasks" id="todayTasks"></div>
+          </div>
+          <div class="card"><h3>Niveau estimé</h3><p>Estimation d’entraînement — pas un score TEF officiel.</p><div class="skills" id="skillList"></div></div>
+        </div>
+        <div class="grid grid-2" style="margin-top:16px">
+          <div class="card"><h3>Quêtes de la semaine</h3><p>Des objectifs concrets plutôt qu’un streak punitif.</p><div id="questList"></div></div>
+          <div class="card"><h3>Ce qui te coûte le plus de points</h3><div class="tasks" id="priorityList"></div></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-plan">
+        <div class="hero"><div><div class="kicker">Plan personnalisé</div><h1>Gantt vers B2</h1><p>Le plan se recalcule selon ta date d’examen et tes performances. Sans date, on utilise un cycle de 8 semaines.</p></div></div>
+        <div class="card">
+          <div class="gantt-controls"><div class="field"><label>Date cible TEF</label><input type="date" id="examDate"></div><button class="btn" id="saveExamDate">Recalculer</button><button class="btn ghost" id="resetPlan">Cycle 8 semaines</button></div>
+          <div class="gantt" id="gantt"></div>
+        </div>
+        <div class="grid grid-3" style="margin-top:16px" id="phaseCards"></div>
+      </section>
+
+      <section class="view" id="view-practice">
+        <div class="hero"><div><div class="kicker">Pratique active</div><h1>Jeux & entraînement</h1><p>Les jeux recyclent tes erreurs et ton vocabulaire. Les exercices longs gardent le format TEF.</p></div></div>
+        <div class="section-tabs" id="practiceTabs"><button class="active" data-tab="games">Jeux rapides</button><button data-tab="reading">Lecture</button><button data-tab="listening">Écoute</button><button data-tab="writing">Écriture</button><button data-tab="speaking">Oral</button></div>
+        <div id="practiceContent"></div>
+      </section>
+
+      <section class="view" id="view-flashcards">
+        <div class="hero"><div><div class="kicker">Spaced repetition</div><h1>Flashcards personnelles</h1><p>Les cartes difficiles reviennent plus souvent. Les mots maîtrisés s’espacent.</p></div><div class="button-row"><button class="btn ghost" id="shuffleCards">Mélanger</button><button class="btn secondary" id="weakCards">Mots faibles</button></div></div>
+        <div class="flash-wrap"><div class="flashcard" id="flashcard" tabindex="0"><div class="front"></div><div class="back"></div></div><div class="flash-actions"><button class="btn danger" data-rate="again">× Encore</button><button class="btn ghost" data-rate="hard">Difficile</button><button class="btn" data-rate="good">✓ Je sais</button></div><p class="muted" style="text-align:center" id="flashMeta"></p></div>
+      </section>
+
+      <section class="view" id="view-grammar">
+        <div class="hero"><div><div class="kicker">Référence à la demande</div><h1>Grammaire B2</h1><p>Explication rapide, détail complet, exemples et mini-exercice. Les priorités viennent de tes erreurs.</p></div></div>
+        <div class="section-tabs"><button class="active" data-grammar-filter="all">Tout</button><button data-grammar-filter="weak">Mes faiblesses</button><button data-grammar-filter="learning">En cours</button><button data-grammar-filter="untested">À tester</button></div>
+        <div class="grammar-list" id="grammarList"></div>
+      </section>
+
+      <section class="view" id="view-errors">
+        <div class="hero"><div><div class="kicker">Journal automatique</div><h1>Mes erreurs récurrentes</h1><p>Chaque erreur doit finir par devenir un exercice. Ici, ton diagnostic initial est déjà enregistré.</p></div><button class="btn secondary" id="practiceErrors">Réviser maintenant</button></div>
+        <div class="card" style="overflow:auto"><table class="error-table"><thead><tr><th>Type</th><th>Tu as écrit / dit</th><th>Forme à automatiser</th><th>Vu</th><th>Révision</th></tr></thead><tbody id="errorRows"></tbody></table></div>
+      </section>
+
+      <section class="view" id="view-scan">
+        <div class="hero"><div><div class="kicker">Cours → entraînement</div><h1>Scanner mes notes de français</h1><p>Importe une photo : l’app peut tenter une transcription locale, repérer tes erreurs connues et transformer les mots utiles en cartes.</p></div></div>
+        <div class="grid grid-2">
+          <div class="card"><div class="scan-drop"><div style="font-size:36px">📷</div><strong>Photo de ton cahier ou d’une fiche</strong><p>Pour l’écriture manuscrite, l’OCR peut se tromper : vérifie la transcription avant l’analyse.</p><input type="file" accept="image/*" id="scanInput"><img id="scanPreview" class="preview" hidden><div class="ocr-status" id="ocrStatus"></div></div><div class="button-row" style="margin-top:12px"><button class="btn secondary" id="runOcr">Transcrire la page</button><button class="btn ghost" id="analyzeNotes">Analyser le texte</button></div></div>
+          <div class="card"><h3>Transcription</h3><textarea class="writing-area" id="scanText" placeholder="Le texte OCR apparaîtra ici. Tu peux aussi le corriger ou le coller manuellement."></textarea><div class="button-row"><button class="btn" id="extractVocab">Ajouter les mots utiles</button></div><div class="note-analysis" id="noteAnalysis"></div></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-tutor">
+        <div class="hero"><div><div class="kicker">Agent personnel</div><h1>Mon tuteur TEF</h1><p>Le mode local connaît déjà ton profil, tes erreurs et ton plan. Un endpoint IA peut être branché sans exposer de clé dans le navigateur.</p></div></div>
+        <div class="tutor-layout">
+          <div class="card chat"><div class="messages" id="messages"></div><form class="chat-form" id="chatForm"><button type="button" class="voice-btn" id="dictateBtn" title="Dicter">🎙️</button><input id="chatInput" autocomplete="off" placeholder="Ex. Fais-moi réviser mes erreurs de cette semaine"><button class="btn">Envoyer</button></form></div>
+          <div class="card"><h3>Contexte de l’agent</h3><p>Le coach local peut déjà :</p><div class="tasks"><div class="task"><span>✓</span><div>lire tes erreurs</div></div><div class="task"><span>✓</span><div>choisir un exercice</div></div><div class="task"><span>✓</span><div>expliquer une règle</div></div><div class="task"><span>✓</span><div>suivre tes révisions</div></div></div><hr style="border:0;border-top:1px solid var(--line);margin:16px 0"><div class="field"><label>Endpoint IA optionnel</label><input id="apiEndpoint" placeholder="https://…/api/tutor"></div><button class="btn secondary" id="saveEndpoint" style="margin-top:10px">Enregistrer</button><p class="muted" style="font-size:12px">Ne mets jamais une clé OpenAI dans cette page. L’endpoint serveur garde les secrets.</p></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-mock">
+        <div class="hero"><div><div class="kicker">Conditions réelles</div><h1>Examens blancs</h1><p>Pas d’aide pendant une simulation. On garde les corrections pour la fin.</p></div></div>
+        <div class="grid grid-3">
+          <div class="card"><h3>Mini-mock</h3><p>Lecture + écoute + petite production. 15–20 min pour mesurer la tendance.</p><button class="btn" id="miniMock">Démarrer</button></div>
+          <div class="card"><h3>Écrit TEF</h3><p>10 min / 40 mots + 20 min / 100 mots, avec chronomètre.</p><button class="btn secondary" data-open-writing>Entraîner l’écrit</button></div>
+          <div class="card"><h3>Oral TEF</h3><p>Deux simulations de 5 minutes. La transcription dépend du navigateur.</p><button class="btn secondary" data-open-speaking>Entraîner l’oral</button></div>
+        </div>
+        <div class="card" style="margin-top:16px"><h3>Historique</h3><div id="mockHistory"><p class="muted">Aucun mock enregistré pour l’instant.</p></div></div>
+      </section>
+
+      <section class="view" id="view-official">
+        <div class="hero"><div><div class="kicker">Source de vérité</div><h1>TEF officiel</h1><p>Les règles d’examen et le matériel officiel restent séparés de nos contenus d’entraînement.</p></div></div>
+        <div class="grid grid-2"><div class="card"><h3>Règles suivies</h3><p id="officialRequirement"></p><p class="muted">Dernière vérification enregistrée : <strong id="officialChecked"></strong></p><div id="officialLinks"></div></div><div class="card"><h3>Audio officiel</h3><p>Nous ne copions pas les fichiers audio CCI dans l’app sans autorisation. Cette section renvoie vers les ressources officielles ou les intègre uniquement lorsque les conditions le permettent.</p><a class="btn secondary" style="display:inline-block;text-decoration:none" href="https://www.lefrancaisdesaffaires.fr/candidat/test-evaluation-francais/tef-irn/preparation/" target="_blank" rel="noopener">Ouvrir la préparation CCI</a><p class="muted" style="margin-top:14px">Nos écoutes internes sont clairement étiquetées « entraînement TEF-style ».</p></div></div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="bottom-nav" id="bottomNav"><button class="active" data-view="today"><span class="bico">🏠</span>Aujourd’hui</button><button data-view="practice"><span class="bico">🎯</span>Pratique</button><button data-view="flashcards"><span class="bico">🃏</span>Cartes</button><button data-view="tutor"><span class="bico">💬</span>Tuteur</button><button data-view="plan"><span class="bico">🗓️</span>Plan</button></nav>
+</div>
+<div class="modal" id="modal"><div class="modal-box"><div class="modal-head"><h2 id="modalTitle"></h2><button class="close" id="closeModal">×</button></div><div id="modalBody"></div></div></div>
+<div class="toast" id="toast"></div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
