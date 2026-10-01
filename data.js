@@ -1,7 +1,7 @@
 window.TEF_DATA = {
   official: {
     checked: '1 octobre 2026',
-    requirement: 'Objectif personnel : B2 dans les 4 compétences. Le TEF IRN attribue un score de 0 à 499 par compétence.',
+    requirement: 'Objectif personnel : viser 400/499 ou plus dans chacune des quatre compétences. Règle globale officielle B2 : au moins 400 dans trois épreuves et au moins 367 dans la quatrième.',
     links: [
       {label:'TEF IRN — présentation officielle', url:'https://www.lefrancaisdesaffaires.fr/candidat/test-evaluation-francais/tef-irn/presentation/'},
       {label:'TEF IRN — déroulement et règles', url:'https://www.lefrancaisdesaffaires.fr/candidat/test-evaluation-francais/tef-irn/passation/'},
