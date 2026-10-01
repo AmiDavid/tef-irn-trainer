@@ -14,3 +14,17 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.app{min-height:
 .voice-transcript>div{padding:9px 10px;border-radius:10px;background:#f6f7fb}
 .voice-result{background:#fff!important;padding:0!important}
 @media(max-width:680px){.voice-panel{left:12px;right:12px;bottom:78px;width:auto;max-height:68vh}}
+
+.vocab-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.vocab-stat{background:white;border:1px solid var(--line);border-radius:14px;padding:13px;display:flex;align-items:baseline;gap:8px}
+.vocab-stat strong{font-size:24px}.vocab-stat span{font-size:12px;color:var(--muted);font-weight:700}
+.vocab-stat.good{border-left:5px solid #138a61}.vocab-stat.ok{border-left:5px solid #d79a1e}.vocab-stat.bad{border-left:5px solid #c54a4a}.vocab-stat.new{border-left:5px solid #9aa1ad}
+.vocab-toolbar{display:grid;gap:12px;margin-bottom:14px}.vocab-search input{width:min(420px,100%)}
+.vocab-filter-row{display:flex;flex-wrap:wrap;gap:7px}.vocab-filter{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 11px;font-size:12px;font-weight:750;color:var(--muted)}
+.vocab-filter.active{background:var(--text);border-color:var(--text);color:#fff}.vocab-filter.status-good:not(.active){color:#138a61;background:#eef9f4}.vocab-filter.status-ok:not(.active){color:#a76a00;background:#fff7e8}.vocab-filter.status-bad:not(.active){color:#b83f3f;background:#fff0f0}.vocab-filter.status-new:not(.active){color:#687080;background:#f2f4f7}
+.vocab-list{display:grid;gap:9px}.vocab-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px}
+.vocab-title-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.vocab-title-row strong{font-size:17px}.vocab-translation{margin:4px 0;color:#424a59}.vocab-main small{color:var(--muted)}
+.vocab-side{display:grid;justify-items:end;gap:8px}.mastery{font-size:11px;font-weight:850;border-radius:999px;padding:6px 9px;white-space:nowrap}.mastery-good{background:#e8f7ef;color:#0b7852}.mastery-ok{background:#fff4dd;color:#9a6200}.mastery-bad{background:#fdeaea;color:#b53636}.mastery-new{background:#eef0f4;color:#687080}
+.mastery-actions{display:flex;gap:4px}.mastery-actions button{border:1px solid var(--line);background:#fff;border-radius:9px;width:34px;height:32px;padding:0}
+.flash-choices .choice{text-align:left}
+@media(max-width:680px){.vocab-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.vocab-item{grid-template-columns:1fr}.vocab-side{justify-items:start}.vocab-search input{width:100%}}
