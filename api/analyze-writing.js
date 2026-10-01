@@ -4,5 +4,6 @@ export default async function handler(req,res){cors(req,res);if(req.method==="OP
  const instructions=`Assess French writing for TEF IRN with a B2 target. Return ONLY valid JSON with keys: estimated_cefr, b2_sufficient (boolean), task_fulfilment, organisation, grammar, vocabulary, spelling, register, major_errors (array of {original,correction,rule,category}), corrected_version, b2_model, key_learnings (array max 5). Be strict but useful. The B2 model must remain realistically reproducible, not C1/C2.`;
  const input=`Task: ${b.task||""}\nConstraints: ${JSON.stringify(b.constraints||{})}\nLearner text:\n${b.text||""}\nKnown recurring errors:\n${JSON.stringify((b.errors||[]).slice(0,25))}`;
  const j=await openaiResponse({user,instructions,input}), raw=outputText(j), parsed=parseJSON(raw);
- json(res,200,parsed||{raw});
+ const checked=parsed?await qaJSON({user,payload:parsed,purpose:"TEF IRN writing assessment"}):null;
+ json(res,200,checked||{raw});
 }catch(e){json(res,e.status||500,{error:e.message})}}
