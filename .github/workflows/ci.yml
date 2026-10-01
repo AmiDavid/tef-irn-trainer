@@ -31,3 +31,5 @@ jobs:
         run: node qa/content-qa.txt
       - name: Run static QA
         run: node qa/static-qa.txt
+      - name: Install UI QA dependency
+        run: npm install --ignore-scripts
