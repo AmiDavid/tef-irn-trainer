@@ -77,7 +77,7 @@ window.TEF_DATA = {
       drill:{prompt:'Complète : Je vous écris pour que vous ___ ma demande.', choices:['prenez','prendre','preniez'], answer:2}
     },
     {
-      id:'g4', title:'Négation : ne…pas', status:'learning', short:'À l’oral, ne disparaît souvent ; à l’écrit soigné, garde-le.',
+      id:'g4', title:'Négation : ne…pas', status:'learning', short:'À l’oral courant, « ne » est souvent omis ; à l’écrit soigné, garde-le.',
       details:'En français standard écrit : sujet + ne/n’ + verbe + pas. Il n’est pas assez bien desservi. Je ne comprends pas. À l’oral familier, on entend souvent “je sais pas”, mais évite cette forme dans la production écrite du TEF.',
       examples:['Je ne suis pas disponible.','Le quartier n’est pas bien desservi.','Nous n’avons pas assez de temps.'],
       drill:{prompt:'Version écrite correcte : “Le quartier est pas pratique.”', choices:['Le quartier ne pas est pratique.','Le quartier n’est pas pratique.','Le quartier n’est pratique pas.'], answer:1}
@@ -102,14 +102,14 @@ window.TEF_DATA = {
     },
     {
       id:'g8', title:'Connecteurs B2', status:'learning', short:'Relie les idées avec précision, sans empiler les connecteurs.',
-      details:'Cependant et pourtant marquent une opposition, en revanche met en contraste, en effet apporte une explication, par conséquent introduit une conséquence, d’ailleurs ajoute un argument. Au B2, le but est surtout de choisir le bon lien logique.',
+      details:'Cependant introduit une opposition ou une nuance ; pourtant marque une contradiction ou une concession ; en revanche met deux éléments en contraste ; en effet apporte une explication ou une justification ; par conséquent introduit une conséquence ; d’ailleurs ajoute un argument ou une précision. Au B2, le but est surtout de choisir le lien logique qui correspond exactement au rapport entre les idées.',
       examples:['C’est pratique. Cependant, c’est cher.','Il n’y a pas de métro ; par conséquent, beaucoup prennent la voiture.','Le projet est utile. D’ailleurs, il réduit le bruit.'],
       drill:{prompt:'Il n’y a pas de métro ; ___, beaucoup prennent la voiture.', choices:['par conséquent','cependant','tandis que'], answer:0}
     },
     {
       id:'g9', title:'Pronoms relatifs : qui, que, dont, où', status:'untested', short:'Choisis le pronom selon sa fonction dans la proposition.',
-      details:'qui = sujet ; que = complément direct ; dont remplace de + nom/verbe ; où = lieu ou moment. Ex. C’est l’examen auquel je me prépare demande une autre structure avec à + lequel.',
-      examples:['Le livre qui est ici','Le livre que je lis','Le sujet dont je parle','La ville où j’habite'],
+      details:'qui = sujet ; que = complément d’objet direct ; dont remplace un complément introduit par de ; où = lieu ou moment. Avec un complément introduit par à, on emploie notamment lequel, laquelle, lesquels ou lesquelles après la préposition : C’est l’examen auquel je me prépare.',
+      examples:['Le livre qui est ici','Le livre que je lis','Le sujet dont je parle','La ville où j’habite','L’examen auquel je me prépare'],
       drill:{prompt:'Le sujet ___ je parle est important.', choices:['que','dont','qui'], answer:1}
     },
     {
