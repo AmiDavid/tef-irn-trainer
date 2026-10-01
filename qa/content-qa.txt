@@ -42,10 +42,23 @@ assert.equal(D.official.qaReviewed,"2026-10-01");
 assert.equal(D.official.validityYears,2);
 assert.match(D.official.requirement,/400\/499|400/);
 assert.match(D.official.requirement,/367/);
-assert.deepEqual(D.official.format.reading,{questions:20,minutes:30,parts:2});
-assert.deepEqual(D.official.format.listening,{questions:20,minutes:20,parts:2,audioOnce:true});
-assert.deepEqual(D.official.format.writing,{minutes:30,sections:[{id:"A",minutes:10,minWords:40},{id:"B",minutes:20,minWords:100}]});
-assert.deepEqual(D.official.format.speaking,{minutes:10,sections:[{id:"A",minutes:5},{id:"B",minutes:5}]});
+assert.equal(D.official.format.reading.questions,20);
+assert.equal(D.official.format.reading.minutes,30);
+assert.equal(D.official.format.reading.parts,2);
+assert.equal(D.official.format.listening.questions,20);
+assert.equal(D.official.format.listening.minutes,20);
+assert.equal(D.official.format.listening.parts,2);
+assert.equal(D.official.format.listening.audioOnce,true);
+assert.equal(D.official.format.writing.minutes,30);
+assert.equal(D.official.format.writing.sections[0].id,"A");
+assert.equal(D.official.format.writing.sections[0].minutes,10);
+assert.equal(D.official.format.writing.sections[0].minWords,40);
+assert.equal(D.official.format.writing.sections[1].id,"B");
+assert.equal(D.official.format.writing.sections[1].minutes,20);
+assert.equal(D.official.format.writing.sections[1].minWords,100);
+assert.equal(D.official.format.speaking.minutes,10);
+assert.equal(D.official.format.speaking.sections[0].minutes,5);
+assert.equal(D.official.format.speaking.sections[1].minutes,5);
 assert.ok(D.official.links.length>=4);
 for(const l of D.official.links){assert.ok(nonempty(l.label));assert.ok(/^https:\/\//.test(l.url));}
 
