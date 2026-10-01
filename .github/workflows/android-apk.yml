@@ -11,7 +11,30 @@ permissions:
   contents: read
 
 jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Syntax
+        run: |
+          node --check app.js
+          node --check connected.js
+      - name: Content QA
+        run: node qa/content-qa.txt
+      - name: Static QA
+        run: node qa/static-qa.txt
+      - name: Install UI QA dependency
+        run: npm install --ignore-scripts
+      - name: Install Chromium for QA
+        run: npx playwright install chromium
+      - name: Android-sized UI QA
+        run: node qa/ui-qa.txt
+
   build:
+    needs: qa
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
