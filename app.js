@@ -1,14 +1,15 @@
 (()=>{'use strict';const D=TEF_DATA,$=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)],K='tef-b2-v1';let S={minutes:0,view:'today',examDate:'',done:{},ratings:{},flash:0,quests:{q1:0,q2:0,q3:0,q4:1},mocks:[],custom:[],endpoint:'',scanText:''};try{Object.assign(S,JSON.parse(localStorage.getItem(K)||'{}'))}catch{}const save=()=>{S.updatedAt=new Date().toISOString();localStorage.setItem(K,JSON.stringify(S));window.dispatchEvent(new CustomEvent('tef:state',{detail:S}))},toast=t=>{let e=$('#toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1600)},addMin=n=>{S.minutes+=n;save();$('#momentumPill').textContent=`🔥 ${S.minutes} min cette semaine`};function show(v){$$('.view').forEach(x=>x.classList.toggle('active',x.id===`view-${v}`));$$('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));S.view=v;save();if(v==='plan')plan();if(v==='flashcards')card()}$$('[data-view]').forEach(b=>b.onclick=()=>show(b.dataset.view));
-$('#mobileMoreBtn')?.addEventListener('click',()=>modal('Plus',`
-  <div class="more-grid">
-    <button class="choice" data-more-view="plan">🗓️ Plan & Gantt</button>
-    <button class="choice" data-more-view="grammar">📚 Grammaire</button>
-    <button class="choice" data-more-view="errors">🧯 Mes erreurs</button>
-    <button class="choice" data-more-view="scan">📷 Scanner le cours</button>
-    <button class="choice" data-more-view="mock">🧪 Examens</button>
-    <button class="choice" data-more-view="official">🏛️ TEF officiel</button>
-  </div>`);
-  setTimeout(()=>$$('[data-more-view]').forEach(b=>b.onclick=()=>{const v=b.dataset.moreView;close();show(v)}),0);
+$('#mobileMoreBtn')?.addEventListener('click',()=>{
+  modal('Plus',`
+    <div class="more-grid">
+      <button class="choice" data-more-view="plan">🗓️ Plan & Gantt</button>
+      <button class="choice" data-more-view="grammar">📚 Grammaire</button>
+      <button class="choice" data-more-view="errors">🧯 Mes erreurs</button>
+      <button class="choice" data-more-view="scan">📷 Scanner le cours</button>
+      <button class="choice" data-more-view="mock">🧪 Examens</button>
+      <button class="choice" data-more-view="official">🏛️ TEF officiel</button>
+    </div>`);
+  setTimeout(()=>$('[data-more-view]').forEach(b=>b.onclick=()=>{const v=b.dataset.moreView;close();show(v)}),0);
 });
 function modal(t,h){$('#modalTitle').textContent=t;$('#modalBody').innerHTML=h;$('#modal').classList.add('open')}const close=()=>$('#modal').classList.remove('open');$('#closeModal').onclick=close;$('#modal').onclick=e=>{if(e.target.id==='modal')close()};
 const daily=[['cards','🃏','5 flashcards faibles','4 min',()=>show('flashcards')],['article','⚡','Article Attack','de/des + accord • 4 min',()=>game('article')],['oral','🗣️','Argumentation express','5 min',()=>speakTask('B')],['errors','🧯','Réparer mes erreurs','3 min',()=>game('error')]];function today(){$('#momentumPill').textContent=`🔥 ${S.minutes||0} min cette semaine`;$('#todayTasks').innerHTML=daily.map(x=>`<div class="task ${S.done[x[0]]?'done':''}"><div class="task-icon">${x[1]}</div><div class="task-main"><strong>${x[2]}</strong><span>${x[3]}</span></div><button class="check" data-daily="${x[0]}">${S.done[x[0]]?'✓':'→'}</button></div>`).join('');$$('[data-daily]').forEach(b=>b.onclick=()=>daily.find(x=>x[0]===b.dataset.daily)[4]());$('#skillList').innerHTML=D.profile.skills.map(s=>`<div><div class="skill-head"><strong>${s.name}</strong><span class="level ${s.status==='strength'?'':'warn'}">${s.level}</span></div><div class="bar"><i style="width:${s.readiness}%"></i></div></div>`).join('');$('#priorityList').innerHTML=D.profile.priorities.slice(0,5).map((p,i)=>`<div class="task"><div class="task-icon">${i+1}</div><div class="task-main"><strong>${p}</strong><span>${i<3?'Priorité haute':'À consolider'}</span></div></div>`).join('');$('#questList').innerHTML=D.quests.map(q=>{let p=S.quests[q.id]??q.progress;return `<div class="quest"><div class="quest-top"><span>${q.title}</span><strong>${Math.min(p,q.target)}/${q.target}</strong></div><div class="mini-bar"><i style="width:${Math.min(100,p/q.target*100)}%"></i></div></div>`}).join('')}$('#startToday').onclick=()=>daily[0][4]();$('#surpriseBtn').onclick=()=>daily[Math.floor(Math.random()*daily.length)][4]();$('#quick5').onclick=()=>modal('J’ai 5 minutes','<p>Choisis un mini-exercice.</p><div class="button-row"><button class="btn" id="q1">🧯 Erreurs</button><button class="btn secondary" id="q2">🃏 Cartes</button><button class="btn ghost" id="q3">🎧 Écoute</button></div>');document.addEventListener('click',e=>{if(e.target.id==='q1'){close();game('error')}if(e.target.id==='q2'){close();show('flashcards')}if(e.target.id==='q3'){close();listen()}});
