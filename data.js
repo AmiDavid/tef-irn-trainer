@@ -108,22 +108,22 @@ window.TEF_DATA = {
     },
     {
       id:'g9', title:'Pronoms relatifs : qui, que, dont, où', status:'untested', short:'Choisis le pronom selon sa fonction dans la proposition.',
-      details:'qui = sujet ; que = complément d’objet direct ; dont remplace un complément introduit par de ; où = lieu ou moment. Avec un complément introduit par à, on emploie notamment lequel, laquelle, lesquels ou lesquelles après la préposition : C’est l’examen auquel je me prépare.',
+      details:'« qui » est sujet ; « que » est complément d’objet direct ; « dont » remplace un complément introduit par « de » ; « où » renvoie à un lieu ou à un moment. Avec « à », on peut employer « auquel / à laquelle / auxquels / auxquelles » pour une chose, ou « à qui » pour une personne : C’est l’examen auquel je me prépare.',
       examples:['Le livre qui est ici','Le livre que je lis','Le sujet dont je parle','La ville où j’habite','L’examen auquel je me prépare'],
       drill:{prompt:'Le sujet ___ je parle est important.', choices:['que','dont','qui'], answer:1}
     },
     {
-      id:'g10', title:'Y et en', status:'untested', short:'y remplace souvent à + lieu/chose ; en remplace de + chose/quantité.',
+      id:'g10', title:'Y et en', status:'untested', short:'« y » remplace souvent un lieu ou « à + chose » ; « en » remplace souvent « de + chose » ou une quantité.',
       details:'« y » remplace souvent un complément de lieu ou un complément introduit par « à » lorsqu’il s’agit d’une chose : J’y vais ; j’y pense. « en » remplace souvent un complément introduit par « de » ou une quantité : J’en parle ; j’en voudrais deux. Pour des personnes, on emploie généralement un pronom adapté à la construction du verbe.',
       examples:['J’y vais demain.','J’en ai besoin.','J’en voudrais deux.'],
       drill:{prompt:'J’ai parlé de ce problème. → J’___ ai parlé.', choices:['y','en','lui'], answer:1}
     }
   ],
   games: [
-    {id:'article', title:'Article Attack', icon:'⚡', blurb:'Répare tes erreurs de de/des, genre et accord.', minutes:3},
-    {id:'connector', title:'Connector Challenge', icon:'🔗', blurb:'Choisis le lien logique qui exprime vraiment ton idée.', minutes:4},
-    {id:'error', title:'Find My Error', icon:'🧯', blurb:'Tes propres erreurs reviennent sous une nouvelle forme.', minutes:4},
-    {id:'speed', title:'Speed Vocab', icon:'⏱️', blurb:'10 mots à reconnaître rapidement.', minutes:3}
+    {id:'article', title:'Défi des articles', icon:'⚡', blurb:'Répare tes erreurs de de/des, genre et accord.', minutes:3},
+    {id:'connector', title:'Défi des connecteurs', icon:'🔗', blurb:'Choisis le lien logique qui exprime vraiment ton idée.', minutes:4},
+    {id:'error', title:'Trouve mon erreur', icon:'🧯', blurb:'Tes propres erreurs reviennent sous une nouvelle forme.', minutes:4},
+    {id:'speed', title:'Vocabulaire express', icon:'⏱️', blurb:'10 mots à reconnaître rapidement.', minutes:3}
   ],
   listening: [
     {
