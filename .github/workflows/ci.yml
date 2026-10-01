@@ -27,3 +27,7 @@ jobs:
           test -f styles.css
           test -f data.js
           test -f manifest.webmanifest
+      - name: Run content QA
+        run: node qa/content-qa.txt
+      - name: Run static QA
+        run: node qa/static-qa.txt
