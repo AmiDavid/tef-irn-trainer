@@ -28,7 +28,7 @@ jobs:
           test -f data.js
           test -f manifest.webmanifest
       - name: Run content QA
-        run: node qa/content-qa.txt
+        run: node --input-type=commonjs < qa/content-qa.txt
       - name: Run static QA
         run: node qa/static-qa.txt
       - name: Install UI QA dependency
