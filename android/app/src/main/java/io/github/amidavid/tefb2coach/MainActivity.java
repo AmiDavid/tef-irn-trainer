@@ -12,7 +12,11 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;\nimport android.widget.FrameLayout;\n\nimport androidx.core.view.ViewCompat;\nimport androidx.core.view.WindowInsetsCompat;
+import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import androidx.activity.ComponentActivity;
 import androidx.core.app.ActivityCompat;
@@ -50,7 +54,8 @@ public class MainActivity extends ComponentActivity {
         s.setDatabaseEnabled(true);
         s.setMediaPlaybackRequiresUserGesture(false);
         s.setAllowFileAccess(true);
-        s.setAllowContentAccess(true);\n        s.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        s.setAllowContentAccess(true);
+        s.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         webView.setWebViewClient(new WebViewClient());
 
@@ -82,7 +87,10 @@ public class MainActivity extends ComponentActivity {
 
         requestNeededPermissions();
 
-        if (savedInstanceState == null) {\n            webView.clearCache(true);\n            webView.loadUrl(APP_URL);\n        }
+        if (savedInstanceState == null) {
+            webView.clearCache(true);
+            webView.loadUrl(APP_URL);
+        }
         else webView.restoreState(savedInstanceState);
     }
 
