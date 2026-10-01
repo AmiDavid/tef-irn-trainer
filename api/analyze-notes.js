@@ -1,4 +1,4 @@
-import {json,body,verifyUser,openaiResponse,outputText,parseJSON,cors} from "./_lib.js";
+import {json,body,verifyUser,openaiResponse,outputText,parseJSON,qaJSON,cors} from "./_lib.js";
 export default async function handler(req,res){cors(req,res);if(req.method==="OPTIONS")return res.status(204).end();if(req.method!=="POST")return json(res,405,{error:"POST only"});try{
  const user=await verifyUser(req), b=await body(req);
  const instructions=`Analyze a photographed French-class notebook page. Return ONLY valid JSON with: transcription, uncertain_segments (array), corrections (array of {original,correction,explanation,category}), vocabulary (array of {french,meaning_en,example}), grammar_concepts (array of {name,explanation}), useful_expressions (array), summary. Preserve the student's intended French when correcting handwriting; flag uncertain reading instead of inventing text. Focus on B1-B2/TEF relevance.`;
