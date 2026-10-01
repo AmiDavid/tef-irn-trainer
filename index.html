@@ -62,8 +62,34 @@
       </section>
 
       <section class="view" id="view-flashcards">
-        <div class="hero"><div><div class="kicker">Spaced repetition</div><h1>Flashcards personnelles</h1><p>Les cartes difficiles reviennent plus souvent. Les mots maîtrisés s’espacent.</p></div><div class="button-row"><button class="btn ghost" id="shuffleCards">Mélanger</button><button class="btn secondary" id="weakCards">Mots faibles</button></div></div>
-        <div class="flash-wrap"><div class="flashcard" id="flashcard" tabindex="0"><div class="front"></div><div class="back"></div></div><div class="flash-actions"><button class="btn danger" data-rate="again">× Encore</button><button class="btn ghost" data-rate="hard">Difficile</button><button class="btn" data-rate="good">✓ Je sais</button></div><p class="muted" style="text-align:center" id="flashMeta"></p></div>
+        <div class="hero"><div><div class="kicker">Spaced repetition</div><h1>Vocabulaire & expressions</h1><p>Entraîne-toi activement, puis retrouve tout ce que nous avons déjà vu avec ton niveau de maîtrise.</p></div></div>
+        <div class="section-tabs" id="vocabTabs">
+          <button class="active" data-vocab-tab="practice">🧠 S’entraîner</button>
+          <button data-vocab-tab="list">📚 Ma liste</button>
+        </div>
+        <div id="vocabPractice">
+          <div class="button-row" style="margin-bottom:14px"><button class="btn ghost" id="shuffleCards">Mélanger</button><button class="btn secondary" id="weakCards">Mots faibles</button></div>
+          <div class="flash-wrap"><div class="flashcard" id="flashcard" tabindex="0"><div class="front"></div><div class="back"></div></div><div class="flash-actions"><button class="btn danger" data-rate="again">× Encore</button><button class="btn ghost" data-rate="hard">Difficile</button><button class="btn" data-rate="good">✓ Je sais</button></div><p class="muted" style="text-align:center" id="flashMeta"></p></div>
+        </div>
+        <div id="vocabListPanel" hidden>
+          <div class="vocab-summary" id="vocabSummary"></div>
+          <div class="card vocab-toolbar">
+            <div class="field vocab-search"><label>Rechercher</label><input id="vocabSearch" type="search" placeholder="Mot, expression, traduction…"></div>
+            <div class="vocab-filter-row" id="vocabStatusFilters">
+              <button class="vocab-filter active" data-vstatus="all">Tout</button>
+              <button class="vocab-filter status-good" data-vstatus="good">Bien connu</button>
+              <button class="vocab-filter status-ok" data-vstatus="ok">En cours</button>
+              <button class="vocab-filter status-bad" data-vstatus="bad">À apprendre</button>
+              <button class="vocab-filter status-new" data-vstatus="new">Pas testé</button>
+            </div>
+            <div class="vocab-filter-row" id="vocabTypeFilters">
+              <button class="vocab-filter active" data-vtype="all">Mots + expressions</button>
+              <button class="vocab-filter" data-vtype="word">Mots</button>
+              <button class="vocab-filter" data-vtype="expression">Expressions</button>
+            </div>
+          </div>
+          <div class="vocab-list" id="vocabList"></div>
+        </div>
       </section>
 
       <section class="view" id="view-grammar">
