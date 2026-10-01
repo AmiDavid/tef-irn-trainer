@@ -8,67 +8,110 @@ vm.runInContext(fs.readFileSync("data.js","utf8"), sandbox);
 const D = sandbox.window.TEF_DATA;
 
 const nonempty = v => typeof v === "string" && v.trim().length > 0;
-const unique = arr => new Set(arr.map(x => String(x).trim().toLowerCase())).size === arr.length;
+const unique = arr => new Set(arr.map(x => String(x).trim().toLocaleLowerCase("fr"))).size === arr.length;
+const safe = (text, label) => {
+  const s=String(text||"");
+  const bad=[
+    /C’est l’examen auquel je me prépare demande/i,
+    /\bbeaucoup des commerces\b/i,
+    /\bde les habitants\b/i,
+    /pour que vous prendre/i,
+    /une nouvelle travaille/i,
+    /prendre son retrait/i,
+    /une course de cuisine/i,
+    /un magazine du quartier/i,
+    /\bun nouvelle travail\b/i,
+    /\bundefined\b/i,
+    /\bnull\b/i,
+    /TODO/i
+  ];
+  for(const re of bad) assert.ok(!re.test(s),label+" contains suspicious learner-error text: "+s);
+};
 
-assert.ok(D);
+assert.ok(D,"TEF_DATA missing");
 assert.equal(D.profile.skills.length,4);
 assert.ok(unique(D.profile.skills.map(x=>x.id)));
+for(const s of D.profile.skills){
+  assert.ok(nonempty(s.name));
+  assert.ok(s.readiness>=0 && s.readiness<=100,"bad readiness "+s.id);
+}
+
+/* Official TEF IRN constants verified against Le français des affaires on 2026-10-01. */
+assert.equal(D.official.checked,"1 octobre 2026");
+assert.equal(D.official.qaReviewed,"2026-10-01");
+assert.equal(D.official.validityYears,2);
+assert.match(D.official.requirement,/400\/499|400/);
+assert.match(D.official.requirement,/367/);
+assert.deepEqual(D.official.format.reading,{questions:20,minutes:30,parts:2});
+assert.deepEqual(D.official.format.listening,{questions:20,minutes:20,parts:2,audioOnce:true});
+assert.deepEqual(D.official.format.writing,{minutes:30,sections:[{id:"A",minutes:10,minWords:40},{id:"B",minutes:20,minWords:100}]});
+assert.deepEqual(D.official.format.speaking,{minutes:10,sections:[{id:"A",minutes:5},{id:"B",minutes:5}]});
+assert.ok(D.official.links.length>=4);
+for(const l of D.official.links){assert.ok(nonempty(l.label));assert.ok(/^https:\/\//.test(l.url));}
+
+assert.ok(unique(D.errors.map(x=>x.id)));
+for(const e of D.errors){
+  assert.ok(nonempty(e.wrong));assert.ok(nonempty(e.correct));assert.ok(nonempty(e.note));
+  assert.notEqual(e.wrong.trim(),e.correct.trim());
+}
 
 assert.ok(unique(D.vocab.map(x=>x.id)));
 assert.ok(unique(D.vocab.map(x=>x.front)));
-for (const v of D.vocab) {
-  assert.ok(nonempty(v.front));
-  assert.ok(nonempty(v.back));
-  assert.ok(nonempty(v.example));
-  assert.ok(nonempty(v.tag));
+for(const v of D.vocab){
+  for(const k of ["front","back","example","tag"]) assert.ok(nonempty(v[k]),`vocab ${v.id} missing ${k}`);
+  safe(v.front,`vocab ${v.id} front`);safe(v.example,`vocab ${v.id} example`);
+  assert.match(v.example,/^[A-ZÀÂÇÉÈÊËÎÏÔÛÙÜŸŒÆJÇL’]/,`example should begin normally: ${v.id}`);
+  assert.match(v.example,/[.!?]$/,`example must end in punctuation: ${v.id}`);
 }
 
 assert.ok(unique(D.grammar.map(x=>x.id)));
-for (const g of D.grammar) {
-  assert.ok(nonempty(g.title));
-  assert.ok(nonempty(g.short));
-  assert.ok(nonempty(g.details));
-  assert.ok(Array.isArray(g.examples) && g.examples.length >= 2);
-  assert.ok(Array.isArray(g.drill.choices) && g.drill.choices.length >= 3);
-  assert.ok(unique(g.drill.choices));
-  assert.ok(Number.isInteger(g.drill.answer));
-  assert.ok(g.drill.answer >= 0 && g.drill.answer < g.drill.choices.length);
+const allowedStatuses=new Set(["weak","learning","untested","reliable","mastered"]);
+for(const g of D.grammar){
+  assert.ok(nonempty(g.title));assert.ok(nonempty(g.short));assert.ok(nonempty(g.details));
+  assert.ok(allowedStatuses.has(g.status),"bad grammar status "+g.id);
+  assert.ok(Array.isArray(g.examples)&&g.examples.length>=2,"not enough examples "+g.id);
+  assert.ok(g.drill&&nonempty(g.drill.prompt)&&Array.isArray(g.drill.choices)&&g.drill.choices.length>=3,"bad drill "+g.id);
+  assert.ok(unique(g.drill.choices),"duplicate drill choices "+g.id);
+  assert.ok(Number.isInteger(g.drill.answer)&&g.drill.answer>=0&&g.drill.answer<g.drill.choices.length,"bad answer index "+g.id);
+  [g.short,g.details,...g.examples,g.drill.prompt,g.drill.choices[g.drill.answer]].forEach((x,i)=>safe(x,`grammar ${g.id} text ${i}`));
 }
-assert.equal(D.grammar.find(x=>x.id==="g3").drill.choices[2],"preniez");
-assert.equal(D.grammar.find(x=>x.id==="g7").drill.choices[1],"avais");
-assert.equal(D.grammar.find(x=>x.id==="g9").drill.choices[1],"dont");
-assert.ok(D.grammar.find(x=>x.id==="g9").details.includes("auquel je me prépare"));
+assert.equal(D.grammar.find(x=>x.id==="g3").drill.choices[D.grammar.find(x=>x.id==="g3").drill.answer],"preniez");
+assert.equal(D.grammar.find(x=>x.id==="g7").drill.choices[D.grammar.find(x=>x.id==="g7").drill.answer],"avais");
+const g9=D.grammar.find(x=>x.id==="g9");
+assert.equal(g9.drill.choices[g9.drill.answer],"dont");
+assert.ok(g9.details.includes("complément introduit par « de »"));
+assert.ok(g9.details.includes("auquel je me prépare"));
+const g10=D.grammar.find(x=>x.id==="g10");
+assert.ok(g10.details.includes("J’y pense"));
+assert.ok(g10.details.includes("J’en parle"));
 
-for (const items of [D.reading,D.listening]) {
-  for (const q of items) {
-    assert.equal(q.choices.length,4);
-    assert.ok(unique(q.choices));
-    assert.ok(Number.isInteger(q.answer) && q.answer >= 0 && q.answer < 4);
+for(const [kind,items] of [["reading",D.reading],["listening",D.listening]]){
+  assert.ok(unique(items.map(x=>x.id)),kind+" IDs duplicate");
+  for(const q of items){
+    assert.ok(nonempty(q.text));assert.ok(nonempty(q.question));
+    assert.equal(q.choices.length,4,kind+" "+q.id+" must have exactly four choices");
+    assert.ok(unique(q.choices),kind+" "+q.id+" choices duplicate");
+    assert.ok(Number.isInteger(q.answer)&&q.answer>=0&&q.answer<4,"bad answer "+kind+" "+q.id);
+    safe(q.text,kind+" "+q.id+" text");safe(q.question,kind+" "+q.id+" question");safe(q.choices[q.answer],kind+" "+q.id+" correct answer");
   }
 }
 
-const wa=D.writingPrompts.find(x=>x.type==="A");
-const wb=D.writingPrompts.find(x=>x.type==="B");
+const wa=D.writingPrompts.find(x=>x.type==="A"), wb=D.writingPrompts.find(x=>x.type==="B");
 assert.deepEqual([wa.minutes,wa.minWords],[10,40]);
 assert.deepEqual([wb.minutes,wb.minWords],[20,100]);
-for (const s of D.speakingPrompts) assert.equal(s.minutes,5);
+assert.equal(D.speakingPrompts.length,2);
+for(const s of D.speakingPrompts) assert.equal(s.minutes,5);
 
-const teachingText = [
+const teachingText=[
   ...D.vocab.flatMap(v=>[v.front,v.example]),
-  ...D.grammar.flatMap(g=>[g.short,g.details,...g.examples])
-].join(" ").toLowerCase();
-for (const bad of [
-  "beaucoup des commerces",
-  "de les habitants",
-  "pour que vous prendre",
-  "une nouvelle travaille",
-  "prendre son retrait",
-  "une course de cuisine",
-  "un magazine du quartier"
-]) assert.ok(!teachingText.includes(bad), "learner error leaked into teaching content: "+bad);
+  ...D.grammar.flatMap(g=>[g.short,g.details,...g.examples,g.drill.prompt,g.drill.choices[g.drill.answer]]),
+  ...D.reading.flatMap(q=>[q.text,q.question,q.choices[q.answer]]),
+  ...D.listening.flatMap(q=>[q.text,q.question,q.choices[q.answer]])
+].join(" ");
+safe(teachingText,"teaching bank");
 
 assert.ok(D.vocab.some(v=>v.front==="un cours d’essai"));
 assert.ok(D.vocab.some(v=>v.front==="prendre sa retraite"));
 assert.ok(D.vocab.some(v=>v.front==="les transports en commun"));
 
-console.log("CONTENT QA OK");
+console.log(`CONTENT QA OK — ${D.vocab.length} vocab, ${D.grammar.length} grammar, ${D.reading.length} reading, ${D.listening.length} listening items.`);
