@@ -5,5 +5,6 @@ export default async function handler(req,res){cors(req,res);if(req.method==="OP
  const content=[{type:"input_text",text:`Optional user transcription: ${b.text||"(none)"}\nKnown errors: ${JSON.stringify((b.errors||[]).slice(0,20))}`}];
  if(b.image)content.push({type:"input_image",image_url:b.image});
  const j=await openaiResponse({user,instructions,input:[{role:"user",content}]}), raw=outputText(j), parsed=parseJSON(raw);
- json(res,200,parsed||{raw});
+ const checked=parsed?await qaJSON({user,payload:parsed,purpose:"French class-note transcription, correction and vocabulary extraction"}):null;
+ json(res,200,checked||{raw});
 }catch(e){json(res,e.status||500,{error:e.message})}}
