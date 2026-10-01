@@ -49,7 +49,7 @@ function card(){
     S.ratings[v.id]=ok?Math.max(2,S.ratings[v.id]||0):0;
     $('#flashFeedback',c).innerHTML=`<div class="feedback" style="margin-top:12px"><strong>${ok?'✓ Correct':'✕ À revoir'}</strong><br>${v.front} = ${v.back}<br><small>${v.example||''}</small></div>`;
     $('.flash-actions').style.visibility='visible';
-    save();
+    save();if(vocabTab==='list')renderVocabList();
   });
 }
 $('[data-rate]').forEach(b=>b.onclick=()=>{
@@ -57,13 +57,88 @@ $('[data-rate]').forEach(b=>b.onclick=()=>{
   S.ratings[v.id]=b.dataset.rate==='good'?3:b.dataset.rate==='hard'?1:0;
   S.flash=(S.flash+1)%deck.length;
   S.quests.q1=Object.values(S.ratings).filter(x=>x>=2).length;
-  save();card()
+  save();card();if(vocabTab==='list')renderVocabList()
 });
 $('#shuffleCards').onclick=()=>{build();deck=shuffled(deck);S.flash=0;card()};
 $('#weakCards').onclick=()=>{build(true);S.flash=0;card();toast(`${deck.length} cartes faibles`)};
+let vocabTab='practice',vocabStatusFilter='all',vocabTypeFilter='all';
+function mastery(v){
+  const has=Object.prototype.hasOwnProperty.call(S.ratings||{},v.id);
+  if(!has)return {key:'new',label:'Pas testé',score:null};
+  const r=S.ratings[v.id];
+  if(r>=3)return {key:'good',label:'Bien connu',score:r};
+  if(r>=1)return {key:'ok',label:'En cours',score:r};
+  return {key:'bad',label:'À apprendre',score:r};
+}
+function vocabKind(v){return String(v.front||'').trim().split(/\s+/).length>1?'expression':'word'}
+function renderVocabSummary(){
+  const all=vocab(),counts={good:0,ok:0,bad:0,new:0};
+  all.forEach(v=>counts[mastery(v).key]++);
+  const root=$('#vocabSummary');if(!root)return;
+  root.innerHTML=`
+    <div class="vocab-stat good"><strong>${counts.good}</strong><span>Bien connus</span></div>
+    <div class="vocab-stat ok"><strong>${counts.ok}</strong><span>En cours</span></div>
+    <div class="vocab-stat bad"><strong>${counts.bad}</strong><span>À apprendre</span></div>
+    <div class="vocab-stat new"><strong>${counts.new}</strong><span>Pas testés</span></div>`;
+}
+function renderVocabList(){
+  const root=$('#vocabList');if(!root)return;
+  renderVocabSummary();
+  const q=($('#vocabSearch')?.value||'').trim().toLowerCase();
+  const items=vocab().filter(v=>{
+    const m=mastery(v),kind=vocabKind(v);
+    if(vocabStatusFilter!=='all'&&m.key!==vocabStatusFilter)return false;
+    if(vocabTypeFilter!=='all'&&kind!==vocabTypeFilter)return false;
+    if(q&&!([v.front,v.back,v.example,v.tag].join(' ').toLowerCase().includes(q)))return false;
+    return true;
+  });
+  root.innerHTML=items.length?items.map(v=>{
+    const m=mastery(v),kind=vocabKind(v);
+    return `<div class="vocab-item">
+      <div class="vocab-main">
+        <div class="vocab-title-row"><strong>${v.front}</strong><span class="chip">${kind==='expression'?'Expression':'Mot'} · ${v.tag||'général'}</span></div>
+        <div class="vocab-translation">${v.back||''}</div>
+        <small>${v.example||''}</small>
+      </div>
+      <div class="vocab-side">
+        <span class="mastery mastery-${m.key}">${m.label}</span>
+        <div class="mastery-actions" aria-label="Modifier la maîtrise">
+          <button title="À apprendre" data-vmark="0" data-vid="${v.id}">🔴</button>
+          <button title="En cours" data-vmark="1" data-vid="${v.id}">🟡</button>
+          <button title="Bien connu" data-vmark="3" data-vid="${v.id}">🟢</button>
+        </div>
+      </div>
+    </div>`;
+  }).join(''):'<div class="card"><p class="muted">Aucun mot ne correspond à ce filtre.</p></div>';
+  $('[data-vmark]',root).forEach(b=>b.onclick=()=>{
+    S.ratings[b.dataset.vid]=+b.dataset.vmark;
+    S.quests.q1=Object.values(S.ratings).filter(x=>x>=2).length;
+    save();renderVocabList();today();
+  });
+}
+function setVocabTab(tab){
+  vocabTab=tab;
+  $('[data-vocab-tab]').forEach(b=>b.classList.toggle('active',b.dataset.vocabTab===tab));
+  $('#vocabPractice').hidden=tab!=='practice';
+  $('#vocabListPanel').hidden=tab!=='list';
+  if(tab==='list')renderVocabList();else card();
+}
+$('[data-vocab-tab]').forEach(b=>b.onclick=()=>setVocabTab(b.dataset.vocabTab));
+$('[data-vstatus]').forEach(b=>b.onclick=()=>{
+  vocabStatusFilter=b.dataset.vstatus;
+  $('[data-vstatus]').forEach(x=>x.classList.toggle('active',x===b));
+  renderVocabList();
+});
+$('[data-vtype]').forEach(b=>b.onclick=()=>{
+  vocabTypeFilter=b.dataset.vtype;
+  $('[data-vtype]').forEach(x=>x.classList.toggle('active',x===b));
+  renderVocabList();
+});
+$('#vocabSearch')?.addEventListener('input',renderVocabList);
+
 function grammar(){$('#grammarList').innerHTML=D.grammar.map(g=>`<div class="grammar-item" data-g="${g.id}"><div class="grammar-head"><div><strong>${g.title}</strong><div class="muted">${g.short}</div></div><span class="status ${g.status}">${g.status}</span></div><div class="grammar-details"><p>${g.details}</p><div class="examples">${g.examples.map(x=>`<span class="chip">${x}</span>`).join('')}</div><div class="feedback"><strong>Mini-exercice</strong><br>${g.drill.prompt}<div class="choice-list">${g.drill.choices.map((x,i)=>`<button class="choice" data-gc="${i}">${x}</button>`).join('')}</div><div class="gfb"></div></div></div></div>`).join('');$$('.grammar-item').forEach(it=>{it.querySelector('.grammar-head').onclick=()=>it.classList.toggle('open');$$('[data-gc]',it).forEach(b=>b.onclick=e=>{e.stopPropagation();let g=D.grammar.find(x=>x.id===it.dataset.g),ok=+b.dataset.gc===g.drill.answer;b.classList.add(ok?'correct':'wrong');it.querySelector('.gfb').textContent=ok?'✓ Correct':'À revoir : '+g.short})})}$$('[data-grammar-filter]').forEach(b=>b.onclick=()=>{$$('[data-grammar-filter]').forEach(x=>x.classList.remove('active'));b.classList.add('active');$$('.grammar-item').forEach(it=>{let g=D.grammar.find(x=>x.id===it.dataset.g);it.style.display=b.dataset.grammarFilter==='all'||g.status===b.dataset.grammarFilter?'':'none'})});function mergeAIErrors(existing=[],incoming=[]){let all=[...(existing||[])];for(const x of incoming||[]){let wrong=x.original||x.wrong||'',correct=x.correction||x.correct||'';if(!wrong||!correct)continue;let hit=all.find(e=>e.wrong.toLowerCase()===wrong.toLowerCase()&&e.correct.toLowerCase()===correct.toLowerCase());if(hit){hit.seen=(hit.seen||1)+1;hit.note=x.rule||x.explanation||hit.note}else all.push({id:'ai-'+Date.now()+'-'+all.length,category:x.category||'Production',wrong,correct,note:x.rule||x.explanation||'Détecté par le tuteur IA',severity:'high',seen:1,next:'today'})}return all.slice(-60)}
 function errors(){let all=[...D.errors,...(S.aiErrors||[])];$('#errorRows').innerHTML=all.map(e=>`<tr><td>${e.category}</td><td class="wrong">${e.wrong}</td><td><span class="right">${e.correct}</span><div class="muted">${e.note}</div></td><td>${e.seen||1}×</td><td>${e.next==='today'?'Aujourd’hui':(e.next||'Bientôt')}</td></tr>`).join('')}$('#practiceErrors').onclick=()=>game('error');
 let img=null;$('#scanInput').onchange=e=>{img=e.target.files?.[0];if(!img)return;$('#scanPreview').src=URL.createObjectURL(img);$('#scanPreview').hidden=false;$('#ocrStatus').textContent='Image chargée.'};$('#runOcr').onclick=async()=>{if(!img)return toast('Ajoute une image');if(!window.TEF_CONNECTED?.ready){$('#ocrStatus').textContent='Mode local : colle ou corrige la transcription manuellement.';return}$('#ocrStatus').textContent='Lecture de la page et analyse de l’écriture…';try{let a=await window.TEF_CONNECTED.analyzeNotes(img,$('#scanText').value,D.errors);if(a.transcription)$('#scanText').value=a.transcription;let corr=(a.corrections||[]).map(x=>`<div class="finding"><strong>${x.original}</strong> → ${x.correction}<br><small>${x.explanation||''}</small></div>`).join(''),gram=(a.grammar_concepts||[]).map(x=>`<div class="finding ok"><strong>${x.name}</strong><br><small>${x.explanation||''}</small></div>`).join('');$('#noteAnalysis').innerHTML=corr+gram+(a.uncertain_segments?.length?`<div class="finding">Lecture incertaine : ${a.uncertain_segments.join(' · ')}</div>`:'');S.lastScan=a;if(a.corrections?.length)S.aiErrors=mergeAIErrors(S.aiErrors,a.corrections);save();errors();$('#ocrStatus').textContent='Analyse terminée. Vérifie la transcription avant d’ajouter le vocabulaire.'}catch(e){$('#ocrStatus').textContent='Erreur : '+e.message}};$('#analyzeNotes').onclick=async()=>{if(window.TEF_CONNECTED?.ready){try{let a=await window.TEF_CONNECTED.analyzeNotes(null,$('#scanText').value,D.errors);$('#noteAnalysis').innerHTML=(a.corrections||[]).map(x=>`<div class="finding"><strong>${x.original}</strong> → ${x.correction}<br><small>${x.explanation||''}</small></div>`).join('')||'<div class="finding ok">Aucune correction majeure.</div>';S.lastScan=a;save();return}catch(e){}}let f=known($('#scanText').value);$('#noteAnalysis').innerHTML=f.length?f.map(x=>`<div class="finding">À vérifier : ${x}</div>`).join(''):'<div class="finding ok">Aucune erreur connue détectée.</div>'};$('#extractVocab').onclick=()=>{let structured=S.lastScan?.vocabulary||[],n=0;if(structured.length){structured.slice(0,12).forEach(v=>{let x=v.french||'';if(x&&!vocab().some(k=>k.front.toLowerCase()===x.toLowerCase())){S.custom.push({id:'c'+Date.now()+n,front:x,back:v.meaning_en||'À définir',example:v.example||'Ajouté depuis tes notes.',tag:'scan'});n++}})}else{let w=[...new Set(($('#scanText').value.toLowerCase().match(/[a-zàâçéèêëîïôûùüÿœæ'-]{6,}/g)||[]))].slice(0,8);w.forEach(x=>{if(!vocab().some(v=>v.front===x)){S.custom.push({id:'c'+Date.now()+n,front:x,back:'À définir avec le tuteur',example:'Ajouté depuis tes notes.',tag:'scan'});n++}})}save();build();toast(`${n} mots ajoutés`)};
 function msg(t,w='bot'){let d=document.createElement('div');d.className='msg '+w;d.textContent=t;$('#messages').appendChild(d);d.scrollIntoView({behavior:'smooth'})}function local(q){q=q.toLowerCase();if(q.includes('erreur'))return `Priorités : ${D.errors.slice(0,3).map(e=>e.correct).join(' ; ')}.`;if(q.includes('plan')||q.includes('aujourd'))return 'Aujourd’hui : 5 cartes, de/des, puis 5 minutes d’argumentation.';if(q.includes('grammaire')||q.includes('beaucoup'))return 'Après beaucoup, peu, assez et trop, utilise généralement de : beaucoup de commerces.';if(q.includes('vocab'))return 'Révise : tenir compte de, un compromis, être desservi par, en revanche, par conséquent.';return 'Mode local actif. Un endpoint IA sécurisé permettra la correction libre, la voix et l’analyse complète.'}async function remote(q){let endpoint=window.TEF_CONNECTED?.ready?'/api/tutor':S.endpoint;if(!endpoint)return null;try{let r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json',...(window.TEF_CONNECTED?.headers?.()||{})},body:JSON.stringify({message:q,profile:D.profile,errors:D.errors,vocab:vocab(),state:S})});if(!r.ok)throw new Error('Tutor unavailable');let j=await r.json();return j.reply||j.message}catch{return null}}$('#chatForm').onsubmit=async e=>{e.preventDefault();let q=$('#chatInput').value.trim();if(!q)return;$('#chatInput').value='';msg(q,'user');msg(await remote(q)||local(q))};$('#saveEndpoint').onclick=()=>{S.endpoint=$('#apiEndpoint').value.trim();save();toast('Endpoint enregistré')};$('#dictateBtn').onclick=async()=>{if(!window.TEF_CONNECTED?.ready)return toast('Connecte le compte pour la conversation vocale.');try{await window.TEF_CONNECTED.startVoice({mode:'tutor',prompt:'Conversation libre de français B2. Corrige les erreurs importantes après la fin de chaque idée.'})}catch(e){toast(e.message)}};
 $('#miniMock').onclick=()=>{show('practice');tab='reading';practice();toast('Mini-mock v1 : commence par lecture puis écoute')};function mocks(){$('#mockHistory').innerHTML=S.mocks.length?S.mocks.map(m=>`<div class="quest"><div class="quest-top"><span>${new Date(m.date).toLocaleDateString('fr-FR')}</span><strong>${m.score}/${m.total}</strong></div></div>`).join(''):'<p class="muted">Aucun mock enregistré pour l’instant.</p>'}function official(){$('#officialRequirement').textContent=D.official.requirement;$('#officialChecked').textContent=D.official.checked;$('#officialLinks').innerHTML=D.official.links.map(l=>`<a class="official-link" href="${l.url}" target="_blank" rel="noopener">${l.label} ↗</a>`).join('')}
-function init(){today();plan();practice();grammar();errors();official();mocks();build();card();$('#apiEndpoint').value=S.endpoint||'';$('#scanText').value=S.scanText||'';msg('Bonjour ! Ton diagnostic est déjà chargé. Demande-moi ton plan ou une révision de tes erreurs.');show(S.view||'today');if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{})}init()})();
+function init(){today();plan();practice();grammar();errors();official();mocks();build();card();renderVocabList();$('#apiEndpoint').value=S.endpoint||'';$('#scanText').value=S.scanText||'';msg('Bonjour ! Ton diagnostic est déjà chargé. Demande-moi ton plan ou une révision de tes erreurs.');show(S.view||'today');if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{})}init()})();
