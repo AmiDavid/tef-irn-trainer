@@ -2,6 +2,14 @@ window.TEF_DATA = {
   official: {
     checked: '1 octobre 2026',
     requirement: 'Objectif personnel : viser 400/499 ou plus dans chacune des quatre compétences. Règle globale officielle B2 : au moins 400 dans trois épreuves et au moins 367 dans la quatrième.',
+    validityYears: 2,
+    format: {
+      reading: {questions:20, minutes:30, parts:2},
+      listening: {questions:20, minutes:20, parts:2, audioOnce:true},
+      writing: {minutes:30, sections:[{id:'A',minutes:10,minWords:40},{id:'B',minutes:20,minWords:100}]},
+      speaking: {minutes:10, sections:[{id:'A',minutes:5},{id:'B',minutes:5}]}
+    },
+    qaReviewed: '2026-10-01',
     links: [
       {label:'TEF IRN — présentation officielle', url:'https://www.lefrancaisdesaffaires.fr/candidat/test-evaluation-francais/tef-irn/presentation/'},
       {label:'TEF IRN — déroulement et règles', url:'https://www.lefrancaisdesaffaires.fr/candidat/test-evaluation-francais/tef-irn/passation/'},
