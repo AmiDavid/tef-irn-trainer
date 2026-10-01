@@ -1,0 +1,91 @@
+const { chromium } = require("playwright");
+const { spawn } = require("node:child_process");
+const assert = require("node:assert").strict;
+
+const server=spawn("python3",["-m","http.server","4173","--bind","127.0.0.1"],{stdio:"ignore"});
+const base="http://127.0.0.1:4173/?native=qa";
+
+async function waitServer(){
+  for(let i=0;i<50;i++){
+    try{const r=await fetch(base);if(r.ok)return}catch{}
+    await new Promise(r=>setTimeout(r,100));
+  }
+  throw new Error("test server did not start");
+}
+async function visible(page,selector){
+  const el=page.locator(selector);
+  await el.waitFor({state:"visible"});
+  return el;
+}
+
+(async()=>{
+  await waitServer();
+  const browser=await chromium.launch({headless:true});
+  try{
+    for(const vp of [{width:360,height:800},{width:412,height:915},{width:480,height:960}]){
+      const page=await browser.newPage({viewport:vp});
+      const errors=[];
+      page.on("pageerror",e=>errors.push(e.message));
+      await page.goto(base,{waitUntil:"networkidle"});
+      const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+      assert.ok(overflow<=1,"horizontal overflow at "+vp.width+": "+overflow);
+      const brand=await page.locator(".brand").boundingBox();
+      const actions=await page.locator(".top-actions").boundingBox();
+      assert.ok(brand && actions);
+      assert.ok(brand.x+brand.width<=actions.x+1,"header collision at "+vp.width);
+      assert.deepEqual(errors,[],"page errors at "+vp.width+": "+errors.join(" | "));
+      await page.close();
+    }
+
+    const page=await browser.newPage({viewport:{width:412,height:915}});
+    const pageErrors=[];
+    page.on("pageerror",e=>pageErrors.push(e.message));
+    await page.goto(base,{waitUntil:"networkidle"});
+
+    await page.locator('#bottomNav [data-view="flashcards"]').click();
+    assert.equal((await page.locator("h1").filter({hasText:"Vocabulaire & expressions"}).count()),1);
+    assert.equal(await page.locator("[data-flash-answer]").count(),4);
+    assert.equal((await page.locator("#flashFeedback").textContent()).trim(),"");
+    await page.locator("[data-flash-answer]").first().click();
+    assert.ok((await page.locator("#flashFeedback").textContent()).trim().length>0);
+
+    await page.locator('[data-vocab-tab="list"]').click();
+    assert.equal(await page.locator(".vocab-summary .vocab-stat").count(),4);
+    assert.ok(await page.locator(".vocab-item").count()>=15);
+    assert.ok((await page.locator('[data-vstatus="good"]').textContent()).includes("Bien connu"));
+    assert.ok((await page.locator('[data-vstatus="bad"]').textContent()).includes("À apprendre"));
+
+    const targets=[
+      ["plan","Plan & Gantt"],
+      ["grammar","Grammaire B2"],
+      ["errors","Mes erreurs récurrentes"],
+      ["scan","Scanner mes notes de français"],
+      ["mock","Examens blancs"],
+      ["official","TEF officiel"]
+    ];
+    for(const [id,label] of targets){
+      await page.locator("#mobileMoreBtn").click();
+      await visible(page,'[data-more-view="'+id+'"]');
+      await page.locator('[data-more-view="'+id+'"]').click();
+      assert.ok((await page.locator("#view-"+id+" h1").textContent()).includes(label));
+    }
+
+    await page.locator("#mobileMoreBtn").click();
+    await page.locator('[data-more-view="grammar"]').click();
+    const grammarCount=await page.locator(".grammar-item").count();
+    assert.ok(grammarCount>=10);
+    for(let i=0;i<grammarCount;i++){
+      const item=page.locator(".grammar-item").nth(i);
+      await item.locator(".grammar-head").click();
+      assert.ok(await item.locator(".grammar-details").isVisible());
+      assert.ok(await item.locator("[data-gc]").count()>=3);
+    }
+
+    assert.deepEqual(pageErrors,[],"runtime errors: "+pageErrors.join(" | "));
+    await page.close();
+    console.log("UI QA OK");
+  } finally {
+    await browser.close();
+    server.kill("SIGTERM");
+  }
+})().catch(err=>{server.kill("SIGTERM");console.error(err);process.exit(1)});
