@@ -5,6 +5,14 @@ on:
   push:
     paths:
       - "android/**"
+      - "index.html"
+      - "styles.css"
+      - "data.js"
+      - "app.js"
+      - "connected.js"
+      - "sw.js"
+      - "qa/**"
+      - "package.json"
       - ".github/workflows/android-apk.yml"
 
 permissions:
