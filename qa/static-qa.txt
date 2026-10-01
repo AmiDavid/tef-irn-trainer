@@ -1,29 +1,46 @@
 const fs = require("node:fs");
 const assert = require("node:assert").strict;
 
-const read = p => fs.readFileSync(p,"utf8");
-const html=read("index.html");
-const css=read("styles.css");
-const app=read("app.js");
+const read=p=>fs.readFileSync(p,"utf8");
+const required=["index.html","styles.css","data.js","app.js","connected.js","manifest.webmanifest","sw.js","android/app/src/main/java/io/github/amidavid/tefb2coach/MainActivity.java","android/app/build.gradle.kts"];
+for(const p of required) assert.ok(fs.existsSync(p),"missing "+p);
+
+const html=read("index.html"), css=read("styles.css"), app=read("app.js"), connected=read("connected.js"), sw=read("sw.js");
 const manifest=JSON.parse(read("manifest.webmanifest"));
 const android=read("android/app/src/main/java/io/github/amidavid/tefb2coach/MainActivity.java");
 const gradle=read("android/app/build.gradle.kts");
 
-for (const f of ["index.html","styles.css","data.js","app.js","connected.js","manifest.webmanifest","sw.js"]) assert.ok(fs.existsSync(f), "missing "+f);
-assert.ok(html.includes("Vocabulaire & expressions"));
-assert.ok(html.includes('data-vocab-tab="list"'));
-assert.ok(html.includes('id="mobileMoreBtn"'));
-assert.ok(html.includes("v1.3 • build 9"));
-assert.ok(html.includes("app.js?v=9"));
-assert.ok(css.includes("@media(max-width:680px)"));
-assert.ok(css.includes(".vocab-summary"));
-assert.ok(app.includes("clearNativeCaches"));
-assert.equal((app.match(/(?<!\$)\$\([^)]*\)\.forEach/g)||[]).length,0);
-assert.ok(android.includes("WindowInsetsCompat.Type.systemBars()"));
-assert.ok(android.includes("?native=android&v=9"));
-assert.ok(gradle.includes('versionName = "1.3"'));
-assert.equal(manifest.display,"standalone");
-assert.ok(manifest.icons.some(x=>x.sizes==="192x192" && x.type==="image/png"));
-assert.ok(manifest.icons.some(x=>x.sizes==="512x512" && x.type==="image/png"));
+assert.ok(html.includes('name="viewport"')&&html.includes("width=device-width"),"mobile viewport missing");
+assert.ok(html.includes("Vocabulaire & expressions"),"new vocab screen missing");
+assert.ok(html.includes('data-vocab-tab="list"'),"vocab list tab missing");
+assert.ok(html.includes('id="mobileMoreBtn"'),"mobile More button missing");
+assert.ok(css.includes("@media(max-width:680px)"),"phone breakpoint missing");
+assert.ok(css.includes("env(safe-area-inset-bottom)"),"safe-area support missing");
+assert.ok(css.includes(".vocab-summary"),"vocab mastery styles missing");
+assert.ok(app.includes("clearNativeCaches"),"native cache reset missing");
+assert.equal((app.match(/(?<!\$)\$\([^)]*\)\.forEach/g)||[]).length,0,"single-element selector incorrectly used with forEach");
+assert.ok(android.includes("WindowInsetsCompat.Type.systemBars()"),"Android system-bar insets missing");
+assert.ok(/versionCode\s*=\s*\d+/.test(gradle));
+assert.ok(/versionName\s*=\s*"\d+\.\d+"/.test(gradle));
 
-console.log("STATIC QA OK");
+const ids=[...html.matchAll(/\sid="([^"]+)"/g)].map(m=>m[1]);
+assert.equal(new Set(ids).size,ids.length,"duplicate static HTML id");
+
+const buildMatch=html.match(/v(\d+\.\d+)\s*•\s*build\s*(\d+)/);
+assert.ok(buildMatch,"visible build version missing");
+const build=buildMatch[2];
+for(const asset of ["styles.css","data.js","app.js","connected.js"]) assert.ok(html.includes(asset+"?v="+build),asset+" version does not match visible build");
+assert.ok(android.includes("v="+build), "Android URL version does not match web build");
+assert.ok(sw.includes("build-"+build)||sw.includes("coach-v"+build), "service worker cache version does not match build");
+
+for(const bad of ["Spaced repetition","TEF-style","Mini-mock","streak punitif","Mocks répétés",">Transcript<"]){
+  assert.ok(!html.includes(bad),"unreviewed/English UI copy in index: "+bad);
+  assert.ok(!app.includes(bad),"unreviewed/English UI copy in app: "+bad);
+  assert.ok(!connected.includes(bad),"unreviewed/English UI copy in connected client: "+bad);
+}
+
+assert.equal(manifest.display,"standalone");
+assert.ok(manifest.icons.some(x=>x.sizes==="192x192"&&x.type==="image/png"),"192 PNG icon missing");
+assert.ok(manifest.icons.some(x=>x.sizes==="512x512"&&x.type==="image/png"),"512 PNG icon missing");
+
+console.log("STATIC QA OK — build "+build);
