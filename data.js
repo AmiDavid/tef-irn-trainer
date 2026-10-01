@@ -1,6 +1,6 @@
 window.TEF_DATA = {
   official: {
-    checked: '30 septembre 2026',
+    checked: '1 octobre 2026',
     requirement: 'Objectif personnel : B2 dans les 4 compétences. Le TEF IRN attribue un score de 0 à 499 par compétence.',
     links: [
       {label:'TEF IRN — présentation officielle', url:'https://www.lefrancaisdesaffaires.fr/candidat/test-evaluation-francais/tef-irn/presentation/'},
