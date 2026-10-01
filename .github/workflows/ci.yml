@@ -33,3 +33,5 @@ jobs:
         run: node qa/static-qa.txt
       - name: Install UI QA dependency
         run: npm install --ignore-scripts
+      - name: Install Chromium for QA
+        run: npx playwright install chromium
