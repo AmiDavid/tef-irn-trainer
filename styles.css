@@ -28,3 +28,21 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.app{min-height:
 .mastery-actions{display:flex;gap:4px}.mastery-actions button{border:1px solid var(--line);background:#fff;border-radius:9px;width:34px;height:32px;padding:0}
 .flash-choices .choice{text-align:left}
 @media(max-width:680px){.vocab-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.vocab-item{grid-template-columns:1fr}.vocab-side{justify-items:start}.vocab-search input{width:100%}}
+
+.mobile-label{display:none}
+@media(max-width:680px){
+  .topbar-inner{padding:8px 10px;gap:8px;min-height:58px}
+  .brand{gap:8px;min-width:0}
+  .brand-badge{width:34px;height:34px;border-radius:10px;font-size:16px;flex:0 0 34px}
+  .brand>div:last-child{min-width:0}
+  .brand span{font-size:16px;white-space:nowrap}
+  .brand small{display:none}
+  .top-actions{gap:5px;min-width:0}
+  #syncBtn{font-size:0;width:38px;height:38px;padding:0;min-height:38px;border-radius:12px}
+  #syncBtn::after{content:"☁️";font-size:16px}
+  #quick5{padding:7px 10px;min-height:38px;font-size:13px}
+  #quick5 .wide-label{display:none}
+  #quick5 .mobile-label{display:inline}
+  .main{padding-top:2px}
+  .bottom-nav{padding-bottom:max(6px,env(safe-area-inset-bottom))}
+}
