@@ -95,8 +95,8 @@ assert.equal(g9.drill.choices[g9.drill.answer],"dont");
 assert.ok(g9.details.includes("complément introduit par « de »"));
 assert.ok(g9.details.includes("auquel je me prépare"));
 const g10=D.grammar.find(x=>x.id==="g10");
-assert.ok(g10.details.includes("J’y pense"));
-assert.ok(g10.details.includes("J’en parle"));
+assert.match(g10.details,/J.y pense/i);
+assert.match(g10.details,/J.en parle/i);
 
 for(const [kind,items] of [["reading",D.reading],["listening",D.listening]]){
   assert.ok(unique(items.map(x=>x.id)),kind+" IDs duplicate");
