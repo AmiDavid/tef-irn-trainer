@@ -78,13 +78,13 @@ window.TEF_DATA = {
     },
     {
       id:'g4', title:'Négation : ne…pas', status:'learning', short:'À l’oral courant, « ne » est souvent omis ; à l’écrit soigné, garde-le.',
-      details:'En français standard écrit : sujet + ne/n’ + verbe + pas. Il n’est pas assez bien desservi. Je ne comprends pas. À l’oral familier, on entend souvent “je sais pas”, mais évite cette forme dans la production écrite du TEF.',
+      details:'En français standard écrit : sujet + ne/n’ + verbe + pas. Il n’est pas assez bien desservi. Je ne comprends pas. À l’oral familier, on entend souvent « je sais pas », mais évite cette forme dans la production écrite du TEF.',
       examples:['Je ne suis pas disponible.','Le quartier n’est pas bien desservi.','Nous n’avons pas assez de temps.'],
       drill:{prompt:'Version écrite correcte : “Le quartier est pas pratique.”', choices:['Le quartier ne pas est pratique.','Le quartier n’est pas pratique.','Le quartier n’est pratique pas.'], answer:1}
     },
     {
       id:'g5', title:'Genre et accord', status:'weak', short:'Déterminant, nom et adjectif doivent s’accorder.',
-      details:'Repère le genre du nom, puis accorde les éléments qui dépendent de lui. semaine est féminin : la semaine dernière. travail est masculin : un nouveau travail. Les erreurs de genre sont particulièrement visibles dans une production courte.',
+      details:'Repère le genre du nom, puis accorde les éléments qui dépendent de lui. « semaine » est féminin : la semaine dernière. « travail » est masculin : un nouveau travail. Les erreurs de genre sont particulièrement visibles dans une production courte.',
       examples:['la semaine dernière','un nouveau travail','une solution équilibrée','des transports publics'],
       drill:{prompt:'Choisis la bonne forme : ___ travail intéressant.', choices:['une nouvelle','un nouveau','un nouvelle'], answer:1}
     },
@@ -96,7 +96,7 @@ window.TEF_DATA = {
     },
     {
       id:'g7', title:'Hypothèse avec si', status:'untested', short:'Si + imparfait → conditionnel présent pour une hypothèse.',
-      details:'Pour une situation hypothétique au présent : si + imparfait, conditionnel présent. Si j’avais plus de temps, je suivrais deux cours. Pour une possibilité réelle : si + présent, futur ou présent.',
+      details:'Pour une situation hypothétique au présent : si + imparfait, conditionnel présent. Si j’avais plus de temps, je suivrais deux cours. Pour une condition réelle ou possible : si + présent, puis présent, futur ou impératif selon le sens.',
       examples:['Si j’avais le temps, je viendrais.','Si je peux, je viendrai.'],
       drill:{prompt:'Si j’___ plus de temps, je suivrais deux cours.', choices:['aurais','avais','ai'], answer:1}
     },
@@ -114,7 +114,7 @@ window.TEF_DATA = {
     },
     {
       id:'g10', title:'Y et en', status:'untested', short:'y remplace souvent à + lieu/chose ; en remplace de + chose/quantité.',
-      details:'J’y vais = je vais à cet endroit. J’en parle = je parle de cela. J’en veux deux = je veux deux de ces objets. Pour des personnes, on emploie souvent un pronom tonique ou lui/leur selon la structure.',
+      details:'« y » remplace souvent un complément de lieu ou un complément introduit par « à » lorsqu’il s’agit d’une chose : J’y vais ; j’y pense. « en » remplace souvent un complément introduit par « de » ou une quantité : J’en parle ; j’en voudrais deux. Pour des personnes, on emploie généralement un pronom adapté à la construction du verbe.',
       examples:['J’y vais demain.','J’en ai besoin.','J’en voudrais deux.'],
       drill:{prompt:'J’ai parlé de ce problème. → J’___ ai parlé.', choices:['y','en','lui'], answer:1}
     }
@@ -145,7 +145,7 @@ window.TEF_DATA = {
       question:'Pourquoi la mairie change-t-elle l’organisation ?', choices:['Pour supprimer la collecte','Pour réduire les retards','Pour faire payer les habitants','Pour diminuer le nombre de bacs'], answer:1
     },
     {
-      id:'r2', text:'De nombreux salariés apprécient les formations en ligne parce qu’elles sont faciles à intégrer à leur emploi du temps. Toutefois, lorsque le contenu exige beaucoup d’échanges ou de pratique, le présentiel reste souvent préféré. Le choix dépend donc moins d’une opposition entre ancien et moderne que des objectifs de la formation.',
+      id:'r2', text:'De nombreux salariés apprécient les formations en ligne parce qu’elles sont faciles à intégrer à leur emploi du temps. Toutefois, lorsque le contenu exige beaucoup d’échanges ou de pratique, le présentiel reste souvent privilégié. Le choix dépend donc moins d’une opposition entre ancien et moderne que des objectifs de la formation.',
       question:'Quelle est la conclusion du texte ?', choices:['Le présentiel est toujours meilleur','Le numérique remplace toutes les formations','Le format doit dépendre du but recherché','Les salariés refusent les formations en ligne'], answer:2
     }
   ],
