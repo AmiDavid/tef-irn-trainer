@@ -23,7 +23,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 public class MainActivity extends ComponentActivity {
-    private static final String APP_URL = "https://amidavid.github.io/tef-irn-trainer/?native=android&v=8";
+    private static final String APP_URL = "https://amidavid.github.io/tef-irn-trainer/?native=android&v=9";
     private static final int FILE_CHOOSER = 2001;
     private static final int PERMISSIONS = 2002;
 
