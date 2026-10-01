@@ -53,4 +53,22 @@ assert.deepEqual([wa.minutes,wa.minWords],[10,40]);
 assert.deepEqual([wb.minutes,wb.minWords],[20,100]);
 for (const s of D.speakingPrompts) assert.equal(s.minutes,5);
 
+const teachingText = [
+  ...D.vocab.flatMap(v=>[v.front,v.example]),
+  ...D.grammar.flatMap(g=>[g.short,g.details,...g.examples])
+].join(" ").toLowerCase();
+for (const bad of [
+  "beaucoup des commerces",
+  "de les habitants",
+  "pour que vous prendre",
+  "une nouvelle travaille",
+  "prendre son retrait",
+  "une course de cuisine",
+  "un magazine du quartier"
+]) assert.ok(!teachingText.includes(bad), "learner error leaked into teaching content: "+bad);
+
+assert.ok(D.vocab.some(v=>v.front==="un cours d’essai"));
+assert.ok(D.vocab.some(v=>v.front==="prendre sa retraite"));
+assert.ok(D.vocab.some(v=>v.front==="les transports en commun"));
+
 console.log("CONTENT QA OK");
