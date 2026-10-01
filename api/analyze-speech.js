@@ -1,4 +1,4 @@
-import {json,body,verifyUser,openaiResponse,outputText,parseJSON,safetyId,cors} from "./_lib.js";
+import {json,body,verifyUser,openaiResponse,outputText,parseJSON,qaJSON,safetyId,cors} from "./_lib.js";
 export default async function handler(req,res){cors(req,res);if(req.method==="OPTIONS")return res.status(204).end();if(req.method!=="POST")return json(res,405,{error:"POST only"});try{
  const user=await verifyUser(req), b=await body(req);if(!b.audio) return json(res,400,{error:"audio required"});
  const m=String(b.audio).match(/^data:([^;]+);base64,(.+)$/);if(!m)return json(res,400,{error:"invalid audio"});
