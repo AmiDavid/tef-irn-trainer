@@ -175,7 +175,7 @@ async function init(){
   $('#scanText').value=S.scanText||'';
   msg('Bonjour ! Ton diagnostic est déjà chargé. Demande-moi ton plan ou une révision de tes erreurs.');
   show(S.view||'today');
-  if('serviceWorker'in navigator&&!new URLSearchParams(location.search).has('native'))navigator.serviceWorker.register('./sw.js?v=9').catch(()=>{});
-  const v=document.querySelector('#buildVersion');if(v)v.textContent='v1.3 • build 9';
+  if('serviceWorker'in navigator&&!new URLSearchParams(location.search).has('native'))navigator.serviceWorker.register('./sw.js?v=10').catch(()=>{});
+  const v=document.querySelector('#buildVersion');if(v)v.textContent='v1.4 • build 10';
 }
 init()})();
