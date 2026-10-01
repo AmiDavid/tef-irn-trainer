@@ -12,14 +12,14 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.webkit.WebViewClient;\nimport android.widget.FrameLayout;\n\nimport androidx.core.view.ViewCompat;\nimport androidx.core.view.WindowInsetsCompat;
 
 import androidx.activity.ComponentActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 public class MainActivity extends ComponentActivity {
-    private static final String APP_URL = "https://amidavid.github.io/tef-irn-trainer/";
+    private static final String APP_URL = "https://amidavid.github.io/tef-irn-trainer/?native=android&v=7";
     private static final int FILE_CHOOSER = 2001;
     private static final int PERMISSIONS = 2002;
 
@@ -30,8 +30,19 @@ public class MainActivity extends ComponentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        FrameLayout root = new FrameLayout(this);
         webView = new WebView(this);
-        setContentView(webView);
+        root.addView(webView, new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+        ));
+        setContentView(root);
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, insets) -> {
+            androidx.core.graphics.Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            view.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+            return insets;
+        });
 
         WebSettings s = webView.getSettings();
         s.setJavaScriptEnabled(true);
@@ -39,7 +50,7 @@ public class MainActivity extends ComponentActivity {
         s.setDatabaseEnabled(true);
         s.setMediaPlaybackRequiresUserGesture(false);
         s.setAllowFileAccess(true);
-        s.setAllowContentAccess(true);
+        s.setAllowContentAccess(true);\n        s.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         webView.setWebViewClient(new WebViewClient());
 
@@ -71,7 +82,7 @@ public class MainActivity extends ComponentActivity {
 
         requestNeededPermissions();
 
-        if (savedInstanceState == null) webView.loadUrl(APP_URL);
+        if (savedInstanceState == null) {\n            webView.clearCache(true);\n            webView.loadUrl(APP_URL);\n        }
         else webView.restoreState(savedInstanceState);
     }
 
