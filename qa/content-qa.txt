@@ -1,0 +1,56 @@
+const fs = require("node:fs");
+const vm = require("node:vm");
+const assert = require("node:assert").strict;
+
+const sandbox = { window: {} };
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync("data.js","utf8"), sandbox);
+const D = sandbox.window.TEF_DATA;
+
+const nonempty = v => typeof v === "string" && v.trim().length > 0;
+const unique = arr => new Set(arr.map(x => String(x).trim().toLowerCase())).size === arr.length;
+
+assert.ok(D);
+assert.equal(D.profile.skills.length,4);
+assert.ok(unique(D.profile.skills.map(x=>x.id)));
+
+assert.ok(unique(D.vocab.map(x=>x.id)));
+assert.ok(unique(D.vocab.map(x=>x.front)));
+for (const v of D.vocab) {
+  assert.ok(nonempty(v.front));
+  assert.ok(nonempty(v.back));
+  assert.ok(nonempty(v.example));
+  assert.ok(nonempty(v.tag));
+}
+
+assert.ok(unique(D.grammar.map(x=>x.id)));
+for (const g of D.grammar) {
+  assert.ok(nonempty(g.title));
+  assert.ok(nonempty(g.short));
+  assert.ok(nonempty(g.details));
+  assert.ok(Array.isArray(g.examples) && g.examples.length >= 2);
+  assert.ok(Array.isArray(g.drill.choices) && g.drill.choices.length >= 3);
+  assert.ok(unique(g.drill.choices));
+  assert.ok(Number.isInteger(g.drill.answer));
+  assert.ok(g.drill.answer >= 0 && g.drill.answer < g.drill.choices.length);
+}
+assert.equal(D.grammar.find(x=>x.id==="g3").drill.choices[2],"preniez");
+assert.equal(D.grammar.find(x=>x.id==="g7").drill.choices[1],"avais");
+assert.equal(D.grammar.find(x=>x.id==="g9").drill.choices[1],"dont");
+assert.ok(D.grammar.find(x=>x.id==="g9").details.includes("auquel je me prépare"));
+
+for (const items of [D.reading,D.listening]) {
+  for (const q of items) {
+    assert.equal(q.choices.length,4);
+    assert.ok(unique(q.choices));
+    assert.ok(Number.isInteger(q.answer) && q.answer >= 0 && q.answer < 4);
+  }
+}
+
+const wa=D.writingPrompts.find(x=>x.type==="A");
+const wb=D.writingPrompts.find(x=>x.type==="B");
+assert.deepEqual([wa.minutes,wa.minWords],[10,40]);
+assert.deepEqual([wb.minutes,wb.minWords],[20,100]);
+for (const s of D.speakingPrompts) assert.equal(s.minutes,5);
+
+console.log("CONTENT QA OK");
