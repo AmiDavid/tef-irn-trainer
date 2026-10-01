@@ -35,3 +35,5 @@ jobs:
         run: npm install --ignore-scripts
       - name: Install Chromium for QA
         run: npx playwright install chromium
+      - name: Run Android-sized UI QA
+        run: node qa/ui-qa.txt
