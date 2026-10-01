@@ -4,5 +4,7 @@ export default async function handler(req,res){cors(req,res);if(req.method==="OP
  const user=await verifyUser(req), b=await body(req);
  const context={profile:b.profile||{},errors:(b.errors||[]).slice(0,30),vocab:(b.vocab||[]).slice(0,80),state:b.state||{}};
  const j=await openaiResponse({user,instructions:RULES,input:`Learner context:\n${JSON.stringify(context)}\n\nLearner message:\n${String(b.message||"")}`});
- const draft=outputText(j); const reply=await qaText({user,text:draft,purpose:"Personal TEF B2 tutoring"});\n json(res,200,{reply});
+ const draft=outputText(j);
+ const reply=await qaText({user,text:draft,purpose:"Personal TEF B2 tutoring"});
+ json(res,200,{reply});
 }catch(e){json(res,e.status||500,{error:e.message})}}
