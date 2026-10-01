@@ -98,7 +98,7 @@ async function startVoice({prompt,mode='exam',onDone}){
     await new Promise(ok=>{recorder.onstop=ok;recorder.stop()});
     stream.getTracks().forEach(t=>t.stop());pc.close();C.voice=null;
     const blob=new Blob(chunks,{type:recorder.mimeType||'audio/webm'}),data=await blobToDataURL(blob);
-    try{const result=await post('/api/analyze-speech',{audio:data,prompt,errors:window.TEF_DATA?.errors||[]});stat.textContent='Terminé';log.innerHTML+=`<div class="voice-result"><strong>Transcript</strong><br>${escapeHTML(result.transcript||userLines.join(' '))}<br><br>${assessmentHTML(result.assessment)}</div>`;onDone?.(result)}
+    try{const result=await post('/api/analyze-speech',{audio:data,prompt,errors:window.TEF_DATA?.errors||[]});stat.textContent='Terminé';log.innerHTML+=`<div class="voice-result"><strong>Transcription</strong><br>${escapeHTML(result.transcript||userLines.join(' '))}<br><br>${assessmentHTML(result.assessment)}</div>`;onDone?.(result)}
     catch(e){stat.textContent='Analyse indisponible : '+e.message}
   };
   panel.querySelector('#voiceStop').onclick=stop;
