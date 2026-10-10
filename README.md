@@ -32,7 +32,9 @@ npm run qa          # content, static and phone-size UI checks
 1. Import this repo in Vercel (no framework, no build). The `api/` folder becomes serverless functions.
 2. Environment variables (see `.env.example`): `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `APP_ORIGIN=https://amidavid.github.io`. Add `OPENAI_API_KEY` only if you want the live voice examiner.
 3. Run `supabase/migrations/001_init.sql` in the Supabase SQL editor; in Supabase Auth → URL configuration, add both `https://amidavid.github.io/tef-irn-trainer/` and your Vercel URL as redirect URLs.
-4. On the phone, open the app → Tuteur → « Serveur IA de l’app » → paste the Vercel URL → sign in with ☁️ Sync. Features marked **IA** then work.
+4. The GitHub Pages app uses `https://tef-irn-trainer.vercel.app` automatically (it can be changed in Tuteur → « Serveur IA de l’app »). Sign in with ☁️ Sync and features marked **IA** work.
+
+Current setup: Vercel project `tef-irn-trainer` (deployed from this public repo), Supabase project shared with Arabic Made Easy (tables `learner_state`, `study_events`).
 
 ## AI tutor connection
 

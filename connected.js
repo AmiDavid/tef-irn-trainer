@@ -3,8 +3,9 @@
 const GUEST=(new URLSearchParams(location.search).get('guest')||'').trim().slice(0,30);
 const STATE_KEY=GUEST?'tef-b2-v1-guest-'+GUEST:'tef-b2-v1';
 const BASE_KEY='tef-api-base';
+const DEFAULT_API='https://tef-irn-trainer.vercel.app';
 /* Backend base URL: empty = same origin (Vercel deployment). On GitHub Pages, set it to the Vercel URL in the Tutor screen. */
-function base(){let b='';try{b=localStorage.getItem(BASE_KEY)||''}catch{}return (b||window.TEF_API_BASE||'').replace(/\/+$/,'')}
+function base(){let b='';try{b=localStorage.getItem(BASE_KEY)||''}catch{}return (b||window.TEF_API_BASE||(/(^|\.)github\.io$/.test(location.hostname)||new URLSearchParams(location.search).has('native')&&location.hostname!=='127.0.0.1'?DEFAULT_API:'')).replace(/\/+$/,'')}
 function url(path){return base()+path}
 const C={ready:false,session:null,supabase:null,config:null,voice:null};
 window.TEF_CONNECTED=C;
