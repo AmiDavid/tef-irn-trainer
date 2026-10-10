@@ -114,7 +114,9 @@ let R=null; // current run
 function overlay(){
   let o=$('#examRunner');
   if(!o){o=document.createElement('div');o.id='examRunner';o.className='exam-runner';document.body.appendChild(o)}
-  o.hidden=false;document.body.classList.add('exam-open');return o;
+  o.hidden=false;document.body.classList.add('exam-open');
+  queueMicrotask(()=>{if(!o.querySelector('.city-bg')&&window.TEF_CITY)o.appendChild(window.TEF_CITY())});
+  return o;
 }
 function closeOverlay(){const o=$('#examRunner');if(o){o.hidden=true;o.innerHTML=''}document.body.classList.remove('exam-open');if('speechSynthesis' in window)speechSynthesis.cancel();clearInterval(R?.tick);R?.stopRec?.();R=null}
 function header(title,sub){
