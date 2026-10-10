@@ -10,7 +10,8 @@
     "qa:content": "node --input-type=commonjs < qa/content-qa.txt",
     "qa:static": "node --input-type=commonjs < qa/static-qa.txt",
     "qa:ui": "node --input-type=commonjs < qa/ui-qa.txt",
-    "qa": "npm run qa:content && npm run qa:static && npm run qa:ui"
+    "qa": "npm run qa:content && npm run qa:static && npm run qa:ui",
+    "test": "node --test \"tests/*.test.cjs\""
   },
   "devDependencies": {
     "playwright": "1.55.0"

@@ -46,3 +46,73 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.app{min-height:
   .main{padding-top:2px}
   .bottom-nav{padding-bottom:max(6px,env(safe-area-inset-bottom))}
 }
+
+/* ===== v2.0 — exam engine, spaced repetition, conjugation ===== */
+.topbar{border-bottom:3px solid transparent;border-image:linear-gradient(90deg,#1d3fbf 0 33.3%,#ffffff 33.3% 66.6%,#d8323c 66.6% 100%) 1}
+.ai-tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.04em;padding:2px 6px;border-radius:6px;background:#fff1e6;color:#b4530f;vertical-align:middle}
+.bar{position:relative}.bar-target{position:absolute;top:0;bottom:0;left:75%;width:2px;background:#d8323c;opacity:.55}
+.skills small{display:block;margin-top:4px;font-size:11.5px}
+.status.reliable,.status.mastered{background:#eef9f4;color:var(--green)}
+.doc-box{white-space:pre-line;background:#fbfcff;border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:12px;padding:14px 16px;line-height:1.55;margin:12px 0}
+.checklist{margin:8px 0 12px;padding-left:20px;color:var(--muted);line-height:1.6}
+.prompt-group{margin:22px 0 10px}.prompt-group:first-child{margin-top:4px}
+.prompt-card p{font-size:14px;color:var(--muted)}.prompt-card.seen{opacity:.75}
+#wc.ok,#rWc.ok{color:var(--green);font-weight:700}
+.examiner-reveal{margin-top:12px;font-size:14px}.examiner-reveal summary{cursor:pointer;color:var(--muted)}
+.choice.selected{border-color:var(--brand);background:var(--soft);font-weight:600}
+.btn.small{padding:8px 12px;font-size:13px}
+
+/* runner overlay */
+body.exam-open{overflow:hidden}
+.exam-runner{position:fixed;inset:0;z-index:60;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.runner{max-width:760px;margin:0 auto;min-height:100%;padding:0 16px calc(28px + env(safe-area-inset-bottom))}
+.runner-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(12px + env(safe-area-inset-top)) 0 12px;background:rgba(245,247,251,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.runner-head strong{font-size:17px}.runner-head .muted{font-size:12.5px}
+.runner-right{display:flex;align-items:center;gap:10px}
+.runner-right .timer{font-size:20px}.timer.low{color:var(--red)}
+.runner-body{padding-top:14px}
+.runner-body h3.q{margin:16px 0 4px;line-height:1.4}
+.runner-nav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px}
+.dots{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:16px}
+.dots i{width:9px;height:9px;border-radius:50%;background:#dfe3ea}.dots i.done{background:#9fb3ff}.dots i.cur{background:var(--brand);transform:scale(1.25)}
+.intro-card{text-align:center;padding:28px 20px}.intro-card .btn{margin-top:10px}
+.audio-box{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
+.exam-area{min-height:42vh}
+.result-card .big{font-size:30px;font-weight:800;margin:6px 0}
+.review{border-top:1px solid var(--line);padding:10px 0}.review summary{cursor:pointer;font-weight:600;line-height:1.4}
+.review .wrong{color:var(--red)}.review .right{color:var(--green);font-weight:700}
+.transcript{margin-top:8px}.transcript summary{cursor:pointer;color:var(--muted)}
+.history-table td,.history-table th{text-align:center;white-space:nowrap}.history-table td:first-child,.history-table th:first-child{text-align:left}
+
+/* flashcards & vocabulary */
+.deck-controls{display:grid;gap:10px;margin-bottom:14px}
+.deck-controls select,.vocab-selects select,.conj-form input{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--panel);color:var(--text);min-width:0;width:100%}
+.vocab-selects{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.vocab-detail{font-size:12.5px;color:var(--brand);margin:3px 0}
+.vocab-count{margin:4px 2px 10px;font-size:13px}
+.conj-btn{margin-top:8px}
+
+/* grammar & conjugation */
+.grammar-section{margin:22px 0 8px;font-size:15px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.mistakes{margin:12px 0;display:grid;gap:8px}
+.mistake{display:grid;gap:2px;background:#fffafa;border:1px solid #f4dede;border-radius:12px;padding:10px 12px}
+.mistake .wrong{color:var(--red);text-decoration:line-through;text-decoration-color:rgba(197,74,74,.5)}
+.mistake .right{color:var(--green);font-weight:700}
+.drill{margin-top:10px}
+.conj-card{margin-bottom:6px}
+.conj-form{display:flex;gap:8px;margin:10px 0}
+.conj-head{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0}.conj-head strong{font-size:20px;margin-right:6px}
+.conj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.conj-table{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--panel)}
+.conj-table h4{margin:0 0 6px;font-size:13px;color:var(--brand)}
+.conj-table ul{list-style:none;margin:0;padding:0;line-height:1.6;font-size:14.5px}
+
+@media(max-width:680px){
+  .runner{padding:0 12px calc(24px + env(safe-area-inset-bottom))}
+  .runner-head strong{font-size:15px}
+  .conj-grid{grid-template-columns:1fr 1fr}
+  .conj-table ul{font-size:13.5px}
+  .vocab-selects{grid-template-columns:1fr}
+  .conj-form{flex-direction:column}
+}
+.conj-table{overflow-wrap:anywhere}

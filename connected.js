@@ -1,6 +1,11 @@
 (()=>{
 'use strict';
-const STATE_KEY='tef-b2-v1';
+const GUEST=(new URLSearchParams(location.search).get('guest')||'').trim().slice(0,30);
+const STATE_KEY=GUEST?'tef-b2-v1-guest-'+GUEST:'tef-b2-v1';
+const BASE_KEY='tef-api-base';
+/* Backend base URL: empty = same origin (Vercel deployment). On GitHub Pages, set it to the Vercel URL in the Tutor screen. */
+function base(){let b='';try{b=localStorage.getItem(BASE_KEY)||''}catch{}return (b||window.TEF_API_BASE||'').replace(/\/+$/,'')}
+function url(path){return base()+path}
 const C={ready:false,session:null,supabase:null,config:null,voice:null};
 window.TEF_CONNECTED=C;
 
@@ -9,8 +14,9 @@ const toast=t=>{const e=document.querySelector('#toast');if(!e)return;e.textCont
 function state(){try{return JSON.parse(localStorage.getItem(STATE_KEY)||'{}')}catch{return {}}}
 function setState(s){localStorage.setItem(STATE_KEY,JSON.stringify(s))}
 function headers(){return C.session?.access_token?{Authorization:'Bearer '+C.session.access_token}:{}}
-C.headers=headers;
-async function post(url,body){const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json',...headers()},body:JSON.stringify(body)});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Request failed');return j}
+C.headers=headers;C.base=base;C.url=url;C.guest=GUEST;
+C.setBase=v=>{v=String(v||'').trim().replace(/\/+$/,'');if(v&&!/^https:\/\//.test(v)){toast('L’adresse doit commencer par https://');return}try{v?localStorage.setItem(BASE_KEY,v):localStorage.removeItem(BASE_KEY)}catch{}toast(v?'Serveur enregistré — reconnexion…':'Serveur retiré');setTimeout(()=>location.reload(),700)};
+async function post(path,body){const r=await fetch(url(path),{method:'POST',headers:{'Content-Type':'application/json',...headers()},body:JSON.stringify(body)});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Request failed');return j}
 C.post=post;
 
 function loadScript(src){return new Promise((ok,bad)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=bad;document.head.appendChild(s)})}
@@ -30,11 +36,11 @@ async function openAccount(){
     x.querySelector('#logout').onclick=async()=>{await C.supabase.auth.signOut();location.reload()};
   }else{
     const x=overlay('Synchroniser mes progrès','<p>Entre ton email. Supabase t’enverra un lien de connexion sécurisé.</p><div class="field"><label>Email</label><input id="syncEmail" type="email" placeholder="toi@example.com"></div><button class="btn" id="sendMagic" style="margin-top:12px">Envoyer le lien</button><div id="syncMsg" class="muted" style="margin-top:10px"></div>');
-    x.querySelector('#sendMagic').onclick=async()=>{const email=x.querySelector('#syncEmail').value.trim();if(!email)return;const {error}=await C.supabase.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin}});x.querySelector('#syncMsg').textContent=error?error.message:'Lien envoyé. Ouvre-le sur cet appareil.'}
+    x.querySelector('#sendMagic').onclick=async()=>{const email=x.querySelector('#syncEmail').value.trim();if(!email)return;const {error}=await C.supabase.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname}});x.querySelector('#syncMsg').textContent=error?error.message:'Lien envoyé. Ouvre-le sur cet appareil.'}
   }
 }
 async function syncState(forcePush=false){
-  if(!C.session||!C.supabase)return;
+  if(!C.session||!C.supabase||GUEST)return;
   const uid=C.session.user.id, local=state();
   const {data,error}=await C.supabase.from('learner_state').select('state,updated_at').eq('user_id',uid).maybeSingle();
   if(error){toast('Sync : '+error.message);return}
@@ -50,7 +56,7 @@ let syncTimer;
 window.addEventListener('tef:state',()=>{clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncState(false),1200)});
 
 C.analyzeWriting=async({text,task,constraints,errors})=>post('/api/analyze-writing',{text,task,constraints,errors});
-async function fileDataURL(file,max=1600){
+async function fileDataURL(file,max=2000){
   const raw=await new Promise((ok,bad)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=bad;r.readAsDataURL(file)});
   const img=await new Promise((ok,bad)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=bad;i.src=raw});
   let w=img.width,h=img.height,scale=Math.min(1,max/Math.max(w,h));w=Math.round(w*scale);h=Math.round(h*scale);
@@ -68,6 +74,7 @@ C.assessmentHTML=assessmentHTML;
 
 async function startVoice({prompt,mode='exam',onDone}){
   if(!C.session)throw new Error('Connecte ton compte d’abord.');
+  if(C.config&&C.config.voice===false)throw new Error('Voix IA non configurée sur le serveur (clé OpenAI Realtime requise).');
   if(C.voice)throw new Error('Une session orale est déjà ouverte.');
   const stream=await navigator.mediaDevices.getUserMedia({audio:true});
   const chunks=[];let recorder;
@@ -111,15 +118,16 @@ function escapeHTML(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;',
 async function init(){
   addSyncButton();
   try{
-    const r=await fetch('/api/config',{cache:'no-store'});if(!r.ok)return;C.config=await r.json();
+    const r=await fetch(url('/api/config'),{cache:'no-store'});if(!r.ok){status(base()?'Serveur IA injoignable : vérifie l’adresse.':'Mode local (aucun serveur IA configuré).');return}C.config=await r.json();updateBadge();
     if(!C.config.supabaseUrl||!C.config.supabaseKey)return;
     await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
     C.supabase=window.supabase.createClient(C.config.supabaseUrl,C.config.supabaseKey);
     const {data}=await C.supabase.auth.getSession();C.session=data.session;C.ready=Boolean(C.session&&C.config.ai);
     C.supabase.auth.onAuthStateChange((_e,s)=>{C.session=s;C.ready=Boolean(s&&C.config.ai);updateBadge();if(s)syncState(false)});
     updateBadge();if(C.session)syncState(false);
-  }catch(e){console.warn('Connected mode unavailable',e)}
+  }catch(e){console.warn('Connected mode unavailable',e);status(base()?'Serveur IA injoignable : vérifie l’adresse et APP_ORIGIN (CORS).':'Mode local (aucun serveur IA configuré).')}
 }
-function updateBadge(){const b=document.querySelector('#syncBtn');if(b)b.textContent=C.session?'☁️ Synced':'☁️ Sync'}
+function status(t){const e=document.querySelector('#aiStatus');if(e)e.textContent=t}
+function updateBadge(){const b=document.querySelector('#syncBtn');if(b)b.textContent=GUEST?'👤 Invité':C.session?'☁️ Synced':'☁️ Sync';status(!C.config?'Mode local.':!C.config.ai?'Serveur joint, mais aucune clé IA configurée.':C.session?`IA connectée${C.config.provider?' ('+C.config.provider+')':''}${C.config.voice?' • voix disponible':''}${GUEST?' • invité : progression non synchronisée':''}.`:'Serveur IA joint : connecte-toi (bouton ☁️ Sync) pour activer l’IA.')}
 init();
 })();

@@ -7,13 +7,13 @@
   <meta name="description" content="Coach personnel TEF IRN B2 — plan, jeux, vocabulaire, grammaire, erreurs, oral et examens blancs.">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css?v=10">
+  <link rel="stylesheet" href="styles.css?v=11">
   <title>TEF B2 Coach</title>
 </head>
 <body>
 <div class="app">
   <header class="topbar"><div class="topbar-inner">
-    <div class="brand"><div class="brand-badge">FR</div><div><span>TEF B2 Coach</span><small>Naturalisation • objectif B2 <span id="buildVersion">v1.4 • build 10</span></small></div></div>
+    <div class="brand"><div class="brand-badge">FR</div><div><span>TEF B2 Coach</span><small>Naturalisation • objectif B2 <span id="buildVersion">v2.0 • build 11</span></small></div></div>
     <div class="top-actions"><span class="pill" id="momentumPill">🔥 0 min cette semaine</span><button class="btn small secondary" id="quick5"><span class="wide-label">J’ai 5 minutes</span><span class="mobile-label">5 min</span></button></div>
   </div></header>
   <div class="layout">
@@ -62,19 +62,20 @@
       </section>
 
       <section class="view" id="view-flashcards">
-        <div class="hero"><div><div class="kicker">Répétition espacée</div><h1>Vocabulaire & expressions</h1><p>Entraîne-toi activement, puis retrouve tout ce que nous avons déjà vu avec ton niveau de maîtrise.</p></div></div>
+        <div class="hero"><div><div class="kicker">Répétition espacée</div><h1>Vocabulaire & expressions</h1><p>Répétition espacée : chaque carte revient au bon moment (1, 3, 7, 14, 30 jours…). Thèmes TEF, genre et pluriel des noms.</p></div></div>
         <div class="section-tabs" id="vocabTabs">
           <button class="active" data-vocab-tab="practice">🧠 S’entraîner</button>
           <button data-vocab-tab="list">📚 Ma liste</button>
         </div>
         <div id="vocabPractice">
-          <div class="button-row" style="margin-bottom:14px"><button class="btn ghost" id="shuffleCards">Mélanger</button><button class="btn secondary" id="weakCards">Mots faibles</button></div>
+          <div class="deck-controls"><select id="deckTheme" aria-label="Thème"></select><div class="vocab-filter-row"><button class="vocab-filter" data-deck-mode="mix">Mélange</button><button class="vocab-filter" data-deck-mode="meaning">Sens</button><button class="vocab-filter" data-deck-mode="gender">Genre & pluriel</button></div><div class="button-row"><button class="btn ghost small" id="shuffleCards">Révision libre</button><button class="btn secondary small" id="weakCards">Mots faibles</button></div></div>
           <div class="flash-wrap"><div class="flashcard" id="flashcard" tabindex="0"><div class="front"></div><div class="back"></div></div><div class="flash-actions"><button class="btn danger" data-rate="again">× Encore</button><button class="btn ghost" data-rate="hard">Difficile</button><button class="btn" data-rate="good">✓ Je sais</button></div><p class="muted" style="text-align:center" id="flashMeta"></p></div>
         </div>
         <div id="vocabListPanel" hidden>
           <div class="vocab-summary" id="vocabSummary"></div>
           <div class="card vocab-toolbar">
-            <div class="field vocab-search"><label>Rechercher</label><input id="vocabSearch" type="search" placeholder="Mot, expression, traduction…"></div>
+            <div class="field vocab-search"><label>Rechercher</label><input id="vocabSearch" type="search" placeholder="Mot, expression, traduction…" autocapitalize="none"></div>
+            <div class="vocab-selects"><select id="vocabTheme" aria-label="Thème"></select><select id="vocabPos" aria-label="Nature"><option value="all">Toutes natures</option><option value="nom">Noms</option><option value="adj">Adjectifs</option><option value="verbe">Verbes (tous)</option><option value="verbe:1">Verbes 1er groupe</option><option value="verbe:2">Verbes 2e groupe</option><option value="verbe:3">Verbes 3e groupe</option><option value="expr">Expressions</option><option value="connecteur">Connecteurs</option></select></div>
             <div class="vocab-filter-row" id="vocabStatusFilters">
               <button class="vocab-filter active" data-vstatus="all">Tout</button>
               <button class="vocab-filter status-good" data-vstatus="good">Bien connu</button>
@@ -115,18 +116,18 @@
         <div class="hero"><div><div class="kicker">Agent personnel</div><h1>Mon tuteur TEF</h1><p>Le mode local connaît déjà ton profil, tes erreurs et ton plan. Un point d’accès IA sécurisé peut être connecté sans exposer de clé dans le navigateur.</p></div></div>
         <div class="tutor-layout">
           <div class="card chat"><div class="messages" id="messages"></div><form class="chat-form" id="chatForm"><button type="button" class="voice-btn" id="dictateBtn" title="Dicter">🎙️</button><input id="chatInput" autocomplete="off" placeholder="Ex. Fais-moi réviser mes erreurs de cette semaine"><button class="btn">Envoyer</button></form></div>
-          <div class="card"><h3>Contexte de l’agent</h3><p>Le coach local peut déjà :</p><div class="tasks"><div class="task"><span>✓</span><div>lire tes erreurs</div></div><div class="task"><span>✓</span><div>choisir un exercice</div></div><div class="task"><span>✓</span><div>expliquer une règle</div></div><div class="task"><span>✓</span><div>suivre tes révisions</div></div></div><hr style="border:0;border-top:1px solid var(--line);margin:16px 0"><div class="field"><label>Endpoint IA optionnel</label><input id="apiEndpoint" placeholder="https://…/api/tutor"></div><button class="btn secondary" id="saveEndpoint" style="margin-top:10px">Enregistrer</button><p class="muted" style="font-size:12px">Ne mets jamais une clé OpenAI dans cette page. L’endpoint serveur garde les secrets.</p></div>
+          <div class="card"><h3>Contexte de l’agent</h3><p>Le coach local peut déjà :</p><div class="tasks"><div class="task"><span>✓</span><div>lire tes erreurs</div></div><div class="task"><span>✓</span><div>choisir un exercice</div></div><div class="task"><span>✓</span><div>expliquer une règle</div></div><div class="task"><span>✓</span><div>suivre tes révisions</div></div></div><hr style="border:0;border-top:1px solid var(--line);margin:16px 0"><div class="field"><label>Serveur IA de l’app (Vercel)</label><input id="apiEndpoint" placeholder="https://ton-projet.vercel.app" autocapitalize="none" autocomplete="off"></div><button class="btn secondary" id="saveEndpoint" style="margin-top:10px">Enregistrer et reconnecter</button><p class="muted" style="font-size:12px" id="aiStatus">Mode local.</p><p class="muted" style="font-size:12px">Ne mets jamais de clé API dans cette page : le serveur garde les secrets. Les fonctions marquées <span class="ai-tag">IA</span> consomment des crédits.</p></div>
         </div>
       </section>
 
       <section class="view" id="view-mock">
-        <div class="hero"><div><div class="kicker">Conditions réelles</div><h1>Examens blancs</h1><p>Pas d’aide pendant une simulation. On garde les corrections pour la fin.</p></div></div>
-        <div class="grid grid-3">
-          <div class="card"><h3>Mini-examen blanc</h3><p>Lecture + écoute + petite production. 15–20 min pour mesurer la tendance.</p><button class="btn" id="miniMock">Démarrer</button></div>
-          <div class="card"><h3>Écrit TEF</h3><p>10 min / 40 mots + 20 min / 100 mots, avec chronomètre.</p><button class="btn secondary" data-open-writing>Entraîner l’écrit</button></div>
-          <div class="card"><h3>Oral TEF</h3><p>Deux simulations de 5 minutes. La transcription dépend du navigateur.</p><button class="btn secondary" data-open-speaking>Entraîner l’oral</button></div>
+        <div class="hero"><div><div class="kicker">Conditions réelles</div><h1>Examens blancs</h1><p>Format officiel du TEF IRN, chronométré, sans aide pendant l’épreuve. Les corrections arrivent à la fin.</p></div></div>
+        <div class="grid grid-2">
+          <div class="card accent-card"><h3>Examen blanc complet</h3><p>Compréhension écrite (20 q • 30 min), compréhension orale (20 q • 20 min, une seule écoute), expression écrite (10 + 20 min), expression orale (2 × 5 min). Environ 1 h 30.</p><button class="btn" data-mock="full">Démarrer l’examen complet</button></div>
+          <div class="card"><h3>Mini-examen</h3><p>6 questions de lecture + 6 d’écoute, mêmes conditions, environ 15 minutes. Idéal pour suivre la tendance chaque semaine.</p><button class="btn secondary" data-mock="mini">Démarrer le mini-examen</button></div>
         </div>
-        <div class="card" style="margin-top:16px"><h3>Historique</h3><div id="mockHistory"><p class="muted">Aucun mock enregistré pour l’instant.</p></div></div>
+        <div class="card" style="margin-top:16px"><h3>Une seule épreuve, en conditions réelles</h3><div class="button-row"><button class="btn ghost" data-mock="reading">📄 Compréhension écrite</button><button class="btn ghost" data-mock="listening">🎧 Compréhension orale</button><button class="btn ghost" data-mock="writing">✍️ Expression écrite</button><button class="btn ghost" data-mock="speaking">🗣️ Expression orale</button></div><p class="muted" style="font-size:13px">Correction de l’écrit, examinateur vocal et niveau estimé à l’oral : avec le serveur IA connecté <span class="ai-tag">IA</span>. Sans lui, l’app chronomètre, transcrit et te donne une auto-vérification.</p></div>
+        <div class="card" style="margin-top:16px"><h3>Historique</h3><div id="mockHistory"><p class="muted">Aucun examen blanc enregistré pour l’instant.</p></div></div>
       </section>
 
       <section class="view" id="view-official">
@@ -136,12 +137,21 @@
     </main>
   </div>
 
-  <nav class="bottom-nav" id="bottomNav"><button class="active" data-view="today"><span class="bico">🏠</span>Aujourd’hui</button><button data-view="practice"><span class="bico">🎯</span>Pratique</button><button data-view="flashcards"><span class="bico">🃏</span>Cartes</button><button data-view="tutor"><span class="bico">💬</span>Tuteur</button><button id="mobileMoreBtn"><span class="bico">☰</span>Plus</button></nav>
+  <nav class="bottom-nav" id="bottomNav"><button class="active" data-view="today"><span class="bico">🏠</span>Aujourd’hui</button><button data-view="practice"><span class="bico">🎯</span>Pratique</button><button data-view="flashcards"><span class="bico">🃏</span>Cartes</button><button data-view="mock"><span class="bico">🧪</span>Examen</button><button id="mobileMoreBtn"><span class="bico">☰</span>Plus</button></nav>
 </div>
 <div class="modal" id="modal"><div class="modal-box"><div class="modal-head"><h2 id="modalTitle"></h2><button class="close" id="closeModal">×</button></div><div id="modalBody"></div></div></div>
 <div class="toast" id="toast"></div>
-<script src="data.js?v=10"></script>
-<script src="app.js?v=10"></script>
-<script src="connected.js?v=10"></script>
+<script src="data.js?v=11"></script>
+<script src="content/reading.js?v=11"></script>
+<script src="content/listening.js?v=11"></script>
+<script src="content/vocab.js?v=11"></script>
+<script src="content/grammar.js?v=11"></script>
+<script src="content/prompts.js?v=11"></script>
+<script src="bank.js?v=11"></script>
+<script src="conjugate.js?v=11"></script>
+<script src="app.js?v=11"></script>
+<script src="study.js?v=11"></script>
+<script src="exam.js?v=11"></script>
+<script src="connected.js?v=11"></script>
 </body>
 </html>

@@ -26,6 +26,9 @@ jobs:
         run: |
           node --check app.js
           node --check connected.js
+          for f in study.js exam.js bank.js conjugate.js content/*.js; do node --check "$f"; done
+      - name: Conjugation engine tests
+        run: node --test "tests/*.test.cjs"
       - name: Content QA
         run: node --input-type=commonjs < qa/content-qa.txt
       - name: Static QA

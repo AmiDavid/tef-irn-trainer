@@ -20,6 +20,7 @@ jobs:
         run: |
           node --check app.js
           node --check connected.js
+          for f in study.js exam.js bank.js conjugate.js content/*.js; do node --check "$f"; done
           for f in api/*.js; do node --check "$f"; done
       - name: Check required files
         run: |
@@ -27,6 +28,8 @@ jobs:
           test -f styles.css
           test -f data.js
           test -f manifest.webmanifest
+      - name: Conjugation engine tests
+        run: node --test "tests/*.test.cjs"
       - name: Run content QA
         run: node --input-type=commonjs < qa/content-qa.txt
       - name: Run static QA
