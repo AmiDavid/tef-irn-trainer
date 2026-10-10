@@ -213,3 +213,25 @@ input::placeholder,textarea::placeholder{color:#7783a3}
 @media(prefers-reduced-motion:reduce){.skyline .beam,.skyline .twinkle{animation:none}}
 @media(min-width:681px){.hero-night{padding:28px 30px 170px}.hero-night h1{font-size:40px}.skyline{height:200px}}
 .flash-choices .choice{font-size:17px;font-weight:600;line-height:1.35}
+
+/* Skyline kept small at the bottom of every screen (build 13) */
+.city-bg{position:fixed;left:0;right:0;bottom:0;height:96px;z-index:0;pointer-events:none;opacity:.6}
+.city-bg .skyline-mini{position:absolute;inset:auto 0 0 0;width:100%;height:96px}
+.layout,.topbar{position:relative;z-index:1}
+.topbar{z-index:20}
+.bottom-nav{z-index:30}
+body[data-view="today"] .city-bg{display:none}
+.modal{z-index:50}
+.exam-runner .city-bg{position:fixed;opacity:.45}
+.exam-runner .runner{position:relative;z-index:1}
+@media(max-width:680px){.city-bg{bottom:calc(58px + env(safe-area-inset-bottom));height:78px}.city-bg .skyline-mini{height:78px}.exam-runner .city-bg{bottom:0}}
+@media(min-width:681px){.city-bg{height:120px}.city-bg .skyline-mini{height:120px}}
+.layout{padding-bottom:150px}
+.city-bg::after{content:"";position:absolute;left:0;right:0;bottom:0;height:7%;min-height:5px;background:#091129}
+.city-bg::before{content:"";position:absolute;left:0;right:0;bottom:0;height:16%;background:linear-gradient(180deg,rgba(12,21,49,0),#0c1531)}
+/* let the skyline glow through panels */
+:root{--panel:rgba(23,36,71,.86);--panel2:rgba(30,46,88,.88)}
+.card,.vocab-item,.vocab-stat,.grammar-item,.task,.flashcard,.feedback,.doc-box{-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.flashcard{background:linear-gradient(160deg,rgba(34,53,106,.9),rgba(23,36,71,.86))}
+.accent-card{background:linear-gradient(160deg,rgba(33,51,95,.9),rgba(23,36,71,.86))}
+@media(min-width:681px){.city-bg{height:170px}.city-bg .skyline-mini{height:170px}}
