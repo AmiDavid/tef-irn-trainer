@@ -1,4 +1,4 @@
-const CACHE='tef-b2-coach-v11';
+const CACHE='tef-b2-coach-v12';
 const ASSETS=['./','./index.html','./styles.css','./data.js','./app.js','./connected.js','./bank.js','./conjugate.js','./study.js','./exam.js','./content/reading.js','./content/listening.js','./content/vocab.js','./content/grammar.js','./content/prompts.js','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));
