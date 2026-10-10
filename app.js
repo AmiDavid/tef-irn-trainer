@@ -81,8 +81,8 @@ async function init(){cityBackdrop();
   $('#scanText').value=S.scanText||'';
   msg('Bonjour ! Ton diagnostic est déjà chargé. Demande-moi ton plan ou une révision de tes erreurs.');
   show(S.view||'today');
-  if('serviceWorker'in navigator&&!new URLSearchParams(location.search).has('native'))navigator.serviceWorker.register('./sw.js?v=13').catch(()=>{});
-  const v=document.querySelector('#buildVersion');if(v)v.textContent='v2.2 • build 13';
+  if('serviceWorker'in navigator&&!new URLSearchParams(location.search).has('native'))navigator.serviceWorker.register('./sw.js?v=14').catch(()=>{});
+  const v=document.querySelector('#buildVersion');if(v)v.textContent='v2.3 • build 14';
 }
 window.TEF_APP={D,S,save,show,toast,modal,close,say,addMin,today,known,timer,errors,vocab,mergeAIErrors,writeTask,speakTask,esc,practice,examinerBriefFor:examinerBrief};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init()})();
