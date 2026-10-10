@@ -20,7 +20,7 @@ async function visible(page,selector){
 
 (async()=>{
   await waitServer();
-  const browser=await chromium.launch({headless:true});
+  const browser=await chromium.launch({headless:true,executablePath:process.env.PW_CHROMIUM||undefined});
   try{
     for(const vp of [{width:360,height:800},{width:412,height:915},{width:480,height:960}]){
       const page=await browser.newPage({viewport:vp});
@@ -80,6 +80,69 @@ async function visible(page,selector){
       assert.ok(await item.locator(".grammar-details").isVisible());
       assert.ok(await item.locator("[data-gc]").count()>=3);
     }
+
+    /* Grammar drills record progress; conjugation tables render. */
+    await page.locator("#conjInput").fill("s’inscrire");
+    await page.locator("#conjGo").click();
+    assert.ok((await page.locator("#conjOut").textContent()).includes("elle s’est inscrite"),"conjugation table missing être agreement");
+    assert.equal(await page.locator("#conjOut .conj-table").count(),9);
+
+    /* Vocabulary search ranks whole-word matches first and filters by theme / verb group. */
+    await page.locator('#bottomNav [data-view="flashcards"]').click();
+    await page.locator('[data-vocab-tab="list"]').click();
+    await page.locator("#vocabSearch").fill("logement");
+    assert.equal(await page.locator(".vocab-item strong").first().textContent(),"le logement");
+    await page.locator("#vocabSearch").fill("");
+    await page.locator("#vocabPos").selectOption("verbe:2");
+    const g2=await page.locator(".vocab-detail").allTextContents();
+    assert.ok(g2.length>0&&g2.every(t=>t.includes("2e groupe")),"verb-group filter");
+    await page.locator("#vocabPos").selectOption("all");
+
+    /* Gender & plural flashcards. */
+    await page.locator('[data-vocab-tab="practice"]').click();
+    await page.locator('[data-deck-mode="gender"]').click();
+    assert.ok((await page.locator("#flashcard .front").textContent()).includes("Genre et pluriel"));
+    await page.locator("[data-flash-answer]").first().click();
+    await page.locator('[data-rate="good"]').click();
+    await page.locator('[data-deck-mode="mix"]').click();
+
+    /* Reading practice series: immediate feedback with explanation. */
+    await page.locator('#bottomNav [data-view="practice"]').click();
+    await page.locator('#practiceTabs [data-tab="reading"]').click();
+    await page.locator("#startSeries").click();
+    await visible(page,"#examRunner .doc-box");
+    for(let i=0;i<5;i++){
+      await page.locator("#examRunner [data-ans]").first().click();
+      assert.ok((await page.locator("#rFb").textContent()).trim().length>10,"practice feedback");
+      await page.locator("#rNext").click();
+    }
+    await visible(page,"#rAgain");
+    await page.locator("#rClose").click();
+
+    /* Mini mock exam: reading (6 q) then listening (6 q, audio once), saved to history. */
+    await page.locator('#bottomNav [data-view="mock"]').click();
+    await page.locator('[data-mock="mini"]').click();
+    await page.locator("#rGo").click();
+    assert.match(await page.locator("#rTimer").textContent(),/^0?\d:\d\d$/);
+    for(let i=0;i<6;i++){await page.locator("#examRunner [data-ans]").nth(i%4).click();await page.locator("#rNext").click()}
+    await page.locator("#rGo").click();
+    page.on("dialog",d=>d.accept());
+    for(let i=0;i<6;i++){
+      await page.locator("#rPlay").click();
+      assert.ok(await page.locator("#rPlay").isDisabled(),"audio must be playable only once");
+      assert.equal(await page.locator("#rPrev").count(),0,"no going back in listening");
+      await page.locator("#examRunner [data-ans]").first().click();
+      await page.locator("#rNext").click();
+    }
+    await page.locator(".result-card").first().waitFor({state:"visible"});
+    assert.equal(await page.locator(".result-card").count(),2);
+    await page.locator("#rClose").click();
+    assert.equal(await page.locator("#mockHistory tbody tr").count(),1);
+
+    /* Dashboard levels move once enough comprehension answers exist. */
+    await page.locator('#bottomNav [data-view="today"]').click();
+    const notes=await page.locator("#skillList small").allTextContents();
+    assert.ok(notes.some(t=>/questions récentes/.test(t)),"reading/listening estimate should come from practice data");
 
     assert.deepEqual(pageErrors,[],"runtime errors: "+pageErrors.join(" | "));
     await page.close();

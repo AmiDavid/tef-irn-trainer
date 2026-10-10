@@ -67,61 +67,61 @@ window.TEF_DATA = {
   ],
   grammar: [
     {
-      id:'g1', title:'Quantité + de', status:'weak', short:'Après beaucoup, peu, assez, trop, combien : de + nom.',
+      id:'g1', section:'Les déterminants et accords', order:12, title:'Quantité + de', status:'weak', short:'Après beaucoup, peu, assez, trop, combien : de + nom.',
       details:'On emploie généralement de après une expression de quantité : beaucoup de commerces, peu de temps, assez d’argent, trop de voitures. Devant une voyelle, de devient d’ : beaucoup d’idées. On ne met pas automatiquement des après beaucoup.',
       examples:['beaucoup de magasins','assez de temps','trop d’erreurs','beaucoup d’idées'],
       drill:{prompt:'Complète : Il y a ___ commerces dans ce quartier.', choices:['beaucoup des','beaucoup de','beaucoup les'], answer:1}
     },
     {
-      id:'g2', title:'De + les = des', status:'weak', short:'La contraction de + les devient des.',
+      id:'g2', section:'Les déterminants et accords', order:15, title:'De + les = des', status:'weak', short:'La contraction de + les devient des.',
       details:'Certaines prépositions et certains articles se contractent. de + le = du, de + les = des, à + le = au, à + les = aux. On dit l’opinion des habitants, l’accès au métro, parler aux voisins.',
       examples:['l’opinion des habitants','près du métro','accéder au centre','parler aux voisins'],
       drill:{prompt:'Choisis : l’avis ___ habitants.', choices:['de les','des','du'], answer:1}
     },
     {
-      id:'g3', title:'Pour que + subjonctif', status:'weak', short:'Après pour que, le verbe se met au subjonctif.',
+      id:'g3', section:'Les modes', order:54, title:'Pour que + subjonctif', status:'weak', short:'Après pour que, le verbe se met au subjonctif.',
       details:'Pour exprimer un but avec deux sujets différents, on utilise pour que + subjonctif : Je vous écris pour que vous preniez ma demande en compte. Si le sujet est le même, on préfère pour + infinitif : Je travaille pour réussir.',
       examples:['pour que vous preniez','pour qu’il puisse venir','pour que nous trouvions une solution'],
       drill:{prompt:'Complète : Je vous écris pour que vous ___ ma demande.', choices:['prenez','prendre','preniez'], answer:2}
     },
     {
-      id:'g4', title:'Négation : ne…pas', status:'learning', short:'À l’oral courant, « ne » est souvent omis ; à l’écrit soigné, garde-le.',
+      id:'g4', section:'La phrase complexe', order:9, title:'Négation : ne…pas', status:'learning', short:'À l’oral courant, « ne » est souvent omis ; à l’écrit soigné, garde-le.',
       details:'En français standard écrit : sujet + ne/n’ + verbe + pas. Il n’est pas assez bien desservi. Je ne comprends pas. À l’oral familier, on entend souvent « je sais pas », mais évite cette forme dans la production écrite du TEF.',
       examples:['Je ne suis pas disponible.','Le quartier n’est pas bien desservi.','Nous n’avons pas assez de temps.'],
       drill:{prompt:'Version écrite correcte : “Le quartier est pas pratique.”', choices:['Le quartier ne pas est pratique.','Le quartier n’est pas pratique.','Le quartier n’est pratique pas.'], answer:1}
     },
     {
-      id:'g5', title:'Genre et accord', status:'weak', short:'Déterminant, nom et adjectif doivent s’accorder.',
+      id:'g5', section:'Les déterminants et accords', order:3, title:'Genre et accord', status:'weak', short:'Déterminant, nom et adjectif doivent s’accorder.',
       details:'Repère le genre du nom, puis accorde les éléments qui dépendent de lui. « semaine » est féminin : la semaine dernière. « travail » est masculin : un nouveau travail. Les erreurs de genre sont particulièrement visibles dans une production courte.',
       examples:['la semaine dernière','un nouveau travail','une solution équilibrée','des transports publics'],
       drill:{prompt:'Choisis la bonne forme : ___ travail intéressant.', choices:['une nouvelle','un nouveau','un nouvelle'], answer:1}
     },
     {
-      id:'g6', title:'Passé composé ou imparfait', status:'untested', short:'Action terminée vs contexte/habitude dans le passé.',
+      id:'g6', section:'Les temps', order:21, title:'Passé composé ou imparfait', status:'untested', short:'Action terminée vs contexte/habitude dans le passé.',
       details:'Le passé composé présente généralement un événement borné : J’ai commencé un nouveau travail lundi. L’imparfait décrit un état, une habitude ou un arrière-plan : Quand j’habitais à Lyon, je prenais le tram tous les jours.',
       examples:['J’ai commencé lundi.','Je travaillais souvent le soir.','Il pleuvait quand je suis sorti.'],
       drill:{prompt:'Quand j’___ à Paris, je prenais souvent le métro.', choices:['ai habité','habitais','habiterai'], answer:1}
     },
     {
-      id:'g7', title:'Hypothèse avec si', status:'untested', short:'Si + imparfait → conditionnel présent pour une hypothèse.',
+      id:'g7', section:'Les modes', order:42, title:'Hypothèse avec si', status:'untested', short:'Si + imparfait → conditionnel présent pour une hypothèse.',
       details:'Pour une situation hypothétique au présent : si + imparfait, conditionnel présent. Si j’avais plus de temps, je suivrais deux cours. Pour une condition réelle ou possible : si + présent, puis présent, futur ou impératif selon le sens.',
       examples:['Si j’avais le temps, je viendrais.','Si je peux, je viendrai.'],
       drill:{prompt:'Si j’___ plus de temps, je suivrais deux cours.', choices:['aurais','avais','ai'], answer:1}
     },
     {
-      id:'g8', title:'Connecteurs B2', status:'learning', short:'Relie les idées avec précision, sans empiler les connecteurs.',
+      id:'g8', section:'Argumenter', order:63, title:'Connecteurs B2', status:'learning', short:'Relie les idées avec précision, sans empiler les connecteurs.',
       details:'Cependant introduit une opposition ou une nuance ; pourtant marque une contradiction ou une concession ; en revanche met deux éléments en contraste ; en effet apporte une explication ou une justification ; par conséquent introduit une conséquence ; d’ailleurs ajoute un argument ou une précision. Au B2, le but est surtout de choisir le lien logique qui correspond exactement au rapport entre les idées.',
       examples:['C’est pratique. Cependant, c’est cher.','Il n’y a pas de métro ; par conséquent, beaucoup prennent la voiture.','Le projet est utile. D’ailleurs, il réduit le bruit.'],
       drill:{prompt:'Il n’y a pas de métro ; ___, beaucoup prennent la voiture.', choices:['par conséquent','cependant','tandis que'], answer:0}
     },
     {
-      id:'g9', title:'Pronoms relatifs : qui, que, dont, où', status:'untested', short:'Choisis le pronom selon sa fonction dans la proposition.',
+      id:'g9', section:'Les pronoms', order:33, title:'Pronoms relatifs : qui, que, dont, où', status:'untested', short:'Choisis le pronom selon sa fonction dans la proposition.',
       details:'« qui » est sujet ; « que » est complément d’objet direct ; « dont » remplace un complément introduit par « de » ; « où » renvoie à un lieu ou à un moment. Avec « à », on peut employer « auquel / à laquelle / auxquels / auxquelles » pour une chose, ou « à qui » pour une personne : C’est l’examen auquel je me prépare.',
       examples:['Le livre qui est ici','Le livre que je lis','Le sujet dont je parle','La ville où j’habite','L’examen auquel je me prépare'],
       drill:{prompt:'Le sujet ___ je parle est important.', choices:['que','dont','qui'], answer:1}
     },
     {
-      id:'g10', title:'Y et en', status:'untested', short:'« y » remplace souvent un lieu ou « à + chose » ; « en » remplace souvent « de + chose » ou une quantité.',
+      id:'g10', section:'Les pronoms', order:27, title:'Y et en', status:'untested', short:'« y » remplace souvent un lieu ou « à + chose » ; « en » remplace souvent « de + chose » ou une quantité.',
       details:'« y » remplace souvent un complément de lieu ou un complément introduit par « à » lorsqu’il s’agit d’une chose : J’y vais ; j’y pense. « en » remplace souvent un complément introduit par « de » ou une quantité : J’en parle ; j’en voudrais deux. Pour des personnes, on emploie généralement un pronom adapté à la construction du verbe.',
       examples:['J’y vais demain.','J’en ai besoin.','J’en voudrais deux.'],
       drill:{prompt:'J’ai parlé de ce problème. → J’___ ai parlé.', choices:['y','en','lui'], answer:1}
@@ -135,35 +135,34 @@ window.TEF_DATA = {
   ],
   listening: [
     {
-      id:'l1', level:'B1+', text:'Bonjour, je vous appelle au sujet de l’atelier de samedi. J’avais réservé une place pour dix heures, mais mon train arrive finalement à onze heures. Est-ce qu’il serait possible de participer au groupe de l’après-midi à la place ?',
+      id:'l1', level:'B1', genre:'repondeur', theme:'loisirs', explain:'La personne explique que son train arrive à onze heures et demande à rejoindre le groupe de l’après-midi : elle veut changer d’horaire.', text:'Bonjour, je vous appelle au sujet de l’atelier de samedi. J’avais réservé une place pour dix heures, mais mon train arrive finalement à onze heures. Est-ce qu’il serait possible de participer au groupe de l’après-midi à la place ?',
       question:'Pourquoi la personne appelle-t-elle ?', choices:['Pour demander le remboursement d’un billet','Pour changer d’horaire','Pour réserver un train','Pour annuler définitivement'], answer:1
     },
     {
-      id:'l2', level:'B2', text:'Le télétravail reste apprécié pour la souplesse qu’il offre, mais plusieurs salariés disent désormais qu’ils préfèrent venir au bureau deux ou trois jours par semaine. Ce n’est donc pas un rejet du travail à distance : ils cherchent surtout un meilleur équilibre entre autonomie et échanges avec leurs collègues.',
+      id:'l2', level:'B2', genre:'chronique', theme:'travail', explain:'« Ce n’est donc pas un rejet du travail à distance » : les salariés cherchent un équilibre, donc un compromis.', text:'Le télétravail reste apprécié pour la souplesse qu’il offre, mais plusieurs salariés disent désormais qu’ils préfèrent venir au bureau deux ou trois jours par semaine. Ce n’est donc pas un rejet du travail à distance : ils cherchent surtout un meilleur équilibre entre autonomie et échanges avec leurs collègues.',
       question:'Quelle idée principale est exprimée ?', choices:['Les salariés veulent supprimer le télétravail','Les salariés cherchent un compromis','Les entreprises refusent le travail hybride','Le bureau est toujours plus efficace'], answer:1
     },
     {
-      id:'l3', level:'B2', text:'Au départ, la mairie voulait fermer entièrement la rue aux voitures. Après plusieurs réunions avec les habitants, elle a finalement décidé de maintenir l’accès le matin pour les livraisons et les personnes à mobilité réduite. Le projet a donc été modifié, mais son objectif environnemental reste le même.',
+      id:'l3', level:'B2', genre:'radio', theme:'environnement', explain:'La mairie maintient l’accès le matin pour les livraisons et les personnes à mobilité réduite ; l’objectif reste le même.', text:'Au départ, la mairie voulait fermer entièrement la rue aux voitures. Après plusieurs réunions avec les habitants, elle a finalement décidé de maintenir l’accès le matin pour les livraisons et les personnes à mobilité réduite. Le projet a donc été modifié, mais son objectif environnemental reste le même.',
       question:'Qu’est-ce qui a changé ?', choices:['L’objectif environnemental','La possibilité d’un accès limité','Le nombre d’habitants','La date du projet'], answer:1
     }
   ],
   reading: [
     {
-      id:'r1', text:'La mairie expérimente pendant six mois une nouvelle organisation de la collecte des déchets. Les habitants devront sortir les bacs le soir précédant le passage, et non plus le matin même. Cette mesure vise à réduire les retards, particulièrement fréquents aux heures de pointe. Un bilan sera réalisé avant toute décision définitive.',
+      id:'r1', level:'B1', genre:'avis', theme:'environnement', explain:'Le texte indique que la mesure « vise à réduire les retards ».', text:'La mairie expérimente pendant six mois une nouvelle organisation de la collecte des déchets. Les habitants devront sortir les bacs le soir précédant le passage, et non plus le matin même. Cette mesure vise à réduire les retards, particulièrement fréquents aux heures de pointe. Un bilan sera réalisé avant toute décision définitive.',
       question:'Pourquoi la mairie change-t-elle l’organisation ?', choices:['Pour supprimer la collecte','Pour réduire les retards','Pour faire payer les habitants','Pour diminuer le nombre de bacs'], answer:1
     },
     {
-      id:'r2', text:'De nombreux salariés apprécient les formations en ligne parce qu’elles sont faciles à intégrer à leur emploi du temps. Toutefois, lorsque le contenu exige beaucoup d’échanges ou de pratique, le présentiel reste souvent privilégié. Le choix dépend donc moins d’une opposition entre ancien et moderne que des objectifs de la formation.',
+      id:'r2', level:'B2', genre:'article', theme:'travail', explain:'La dernière phrase conclut que le choix dépend « des objectifs de la formation ».', text:'De nombreux salariés apprécient les formations en ligne parce qu’elles sont faciles à intégrer à leur emploi du temps. Toutefois, lorsque le contenu exige beaucoup d’échanges ou de pratique, le présentiel reste souvent privilégié. Le choix dépend donc moins d’une opposition entre ancien et moderne que des objectifs de la formation.',
       question:'Quelle est la conclusion du texte ?', choices:['Le présentiel est toujours meilleur','Le numérique remplace toutes les formations','Le format doit dépendre du but recherché','Les salariés refusent les formations en ligne'], answer:2
     }
   ],
   writingPrompts: [
-    {type:'A', minutes:10, minWords:40, prompt:'Tu écris à une connaissance que tu n’as pas vue depuis longtemps. Prends de ses nouvelles et propose de reprendre contact.'},
-    {type:'B', minutes:20, minWords:100, prompt:'Ta mairie envisage de supprimer des places de stationnement pour créer davantage d’espaces verts. Écris pour expliquer ton point de vue et essayer de convaincre.'}
+    {id:'wA0', type:'A', minutes:10, minWords:40, title:'Reprendre contact', prompt:'Tu écris à une connaissance que tu n’as pas vue depuis longtemps. Prends de ses nouvelles et propose de reprendre contact.', checklist:['Saluer et expliquer pourquoi tu écris','Poser des questions sur sa vie actuelle','Donner une ou deux nouvelles de toi','Proposer une façon de se revoir']}
   ],
   speakingPrompts: [
-    {type:'A', minutes:5, title:'Obtenir des renseignements', prompt:'Tu téléphones à une association qui propose des cours du soir. Demande les horaires, le prix, le niveau, la durée et les modalités d’inscription.'},
-    {type:'B', minutes:5, title:'Convaincre un ami', prompt:'Convaincs un ami de participer avec toi à une activité le samedi. Il trouve cela trop cher et pense ne pas avoir le niveau.'}
+    {id:'sA0', type:'A', minutes:5, title:'Cours du soir', prompt:'Tu téléphones à une association qui propose des cours du soir. Demande les horaires, le prix, le niveau, la durée et les modalités d’inscription.', points:['les horaires','le prix','le niveau demandé','la durée de la formation','les modalités d’inscription'], examiner:'Tu joues M. Lambert, accueil de l’association Savoirs du Soir. Cours le lundi et le jeudi de 19 h à 21 h ; 180 € par semestre, 120 € pour les demandeurs d’emploi ; un test de niveau gratuit de vingt minutes est obligatoire ; la formation dure de septembre à juin ; inscription en ligne puis paiement au premier cours. Complication : le groupe du jeudi est presque complet. Réponds naturellement, sans tout dire d’un coup.'},
+    {id:'sB0', type:'B', minutes:5, title:'Une activité le samedi', prompt:'Ton ami hésite à s’inscrire avec toi à une activité le samedi matin. Aide-le à prendre une décision : pose-lui des questions, examine avec lui les avantages et les inconvénients, puis donne-lui ton conseil.', examiner:'Tu joues Karim, un ami du candidat. Tu hésites à t’inscrire à un club de randonnée le samedi matin. Hésitations, une par une : 1) l’adhésion coûte 90 € par an et ton budget est serré ; 2) tu as peur de ne pas avoir le niveau physique ; 3) le samedi matin est ton seul moment pour faire les courses. Réagis aux questions et aux arguments, et ne te décide qu’à la fin.'}
   ],
   quests: [
     {id:'q1', title:'Maîtriser 10 mots faibles', target:10, progress:0},

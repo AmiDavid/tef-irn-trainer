@@ -3,9 +3,17 @@ const vm = require("node:vm");
 const assert = require("node:assert").strict;
 
 const sandbox = { window: {} };
+sandbox.globalThis = sandbox;
 vm.createContext(sandbox);
+const BANK_FILES=["content/reading.js","content/listening.js","content/vocab.js","content/grammar.js","content/prompts.js"];
 vm.runInContext(fs.readFileSync("data.js","utf8"), sandbox);
+const CORE = JSON.parse(JSON.stringify(sandbox.window.TEF_DATA));
+for(const f of BANK_FILES) vm.runInContext(fs.readFileSync(f,"utf8"), sandbox, {filename:f});
+vm.runInContext(fs.readFileSync("bank.js","utf8"), sandbox, {filename:"bank.js"});
+vm.runInContext(fs.readFileSync("conjugate.js","utf8"), sandbox, {filename:"conjugate.js"});
 const D = sandbox.window.TEF_DATA;
+const CONJ = sandbox.window.TEF_CONJ;
+const BANK = sandbox.window.TEF_BANK;
 
 const nonempty = v => typeof v === "string" && v.trim().length > 0;
 const unique = arr => new Set(arr.map(x => String(x).trim().toLocaleLowerCase("fr"))).size === arr.length;
@@ -109,11 +117,76 @@ for(const [kind,items] of [["reading",D.reading],["listening",D.listening]]){
   }
 }
 
-const wa=D.writingPrompts.find(x=>x.type==="A"), wb=D.writingPrompts.find(x=>x.type==="B");
-assert.deepEqual([wa.minutes,wa.minWords],[10,40]);
-assert.deepEqual([wb.minutes,wb.minWords],[20,100]);
-assert.equal(D.speakingPrompts.length,2);
-for(const s of D.speakingPrompts) assert.equal(s.minutes,5);
+/* Prompts must follow the official TEF IRN task types (verified on lefrancaisdesaffaires.fr). */
+const LEVELS=["A2","B1","B2","C1"];
+for(const p of D.writingPrompts){
+  assert.ok(["A","B"].includes(p.type),"writing type "+p.id);
+  assert.deepEqual([p.minutes,p.minWords],p.type==="A"?[10,40]:[20,100],"writing constraints "+p.id);
+  assert.ok(nonempty(p.prompt)&&nonempty(p.title),"writing prompt text "+p.id);
+  safe(p.prompt,"writing "+p.id);
+}
+for(const p of D.speakingPrompts){
+  assert.ok(["A","B"].includes(p.type),"speaking type "+p.id);
+  assert.equal(p.minutes,5,"speaking minutes "+p.id);
+  assert.ok(nonempty(p.prompt)&&nonempty(p.title)&&nonempty(p.examiner),"speaking prompt/examiner "+p.id);
+  if(p.type==="A") assert.ok(Array.isArray(p.points)&&p.points.length>=4,"speaking A points "+p.id);
+  if(p.type==="B") assert.match(p.prompt,/décision|décider/i,"speaking B must be « aider un(e) ami(e) à prendre une décision »: "+p.id);
+  safe(p.prompt,"speaking "+p.id);
+}
+assert.ok(unique([...D.writingPrompts,...D.speakingPrompts].map(p=>p.id)),"prompt IDs duplicate");
+for(const t of ["A","B"]){
+  assert.ok(D.writingPrompts.filter(p=>p.type===t).length>=10,"need ≥10 writing prompts "+t);
+  assert.ok(D.speakingPrompts.filter(p=>p.type===t).length>=10,"need ≥10 speaking prompts "+t);
+}
+
+/* Banks: comprehension items carry a CEFR level and an explanation; there must be enough per level for a full mock. */
+for(const kind of ["reading","listening"]){
+  for(const q of D[kind]){
+    assert.ok(LEVELS.includes(q.level),kind+" "+q.id+" bad level "+q.level);
+    assert.ok(nonempty(q.explain),kind+" "+q.id+" missing explanation");
+    safe(q.explain,kind+" "+q.id+" explain");
+    if(q.lines){
+      assert.ok(q.lines.every(l=>Array.isArray(l)&&/^(F|H)2?$/.test(l[0])&&nonempty(l[1])),kind+" "+q.id+" bad dialogue lines");
+      assert.equal(q.text,q.lines.map(l=>"— "+l[1]).join("\n"),kind+" "+q.id+" text must mirror dialogue lines");
+    }
+  }
+  const need={A2:3,B1:6,B2:8,C1:3};
+  for(const L of LEVELS) assert.ok(D[kind].filter(q=>q.level===L).length>=need[L]*2,kind+": not enough "+L+" items for two different full mocks");
+}
+
+/* Bank typography: curated bank text uses the typographic apostrophe. */
+const bankStrings=[];
+const walk=v=>{if(typeof v==="string")bankStrings.push(v);else if(Array.isArray(v))v.forEach(walk);else if(v&&typeof v==="object")Object.values(v).forEach(walk)};
+walk(BANK);
+for(const s of bankStrings) assert.ok(!s.includes("'"),"ASCII apostrophe in bank text: "+s.slice(0,80));
+
+/* Vocabulary metadata. */
+const POS=new Set(["nom","verbe","adj","adv","expr","connecteur"]);
+for(const v of BANK.vocab){
+  assert.ok(POS.has(v.pos),"vocab pos "+v.id);
+  if(v.pos==="nom"){assert.ok(["m","f"].includes(v.gender),"noun gender "+v.id);assert.match(v.front,/^(le |la |l’|les )/,"noun article "+v.id);assert.match(v.plural||"",/^les /,"noun plural "+v.id)}
+  if(v.pos==="adj")assert.ok(nonempty(v.fem),"adjective feminine "+v.id);
+  if(v.pos==="verbe"){
+    assert.ok([1,2,3].includes(v.group),"verb group "+v.id);assert.ok(["avoir","être"].includes(v.aux),"verb aux "+v.id);
+    const c=CONJ.conjugate(v.front);
+    assert.ok(c,"conjugation engine does not know "+v.front);
+    assert.equal(c.aux,v.aux,"aux mismatch vocab vs engine: "+v.front);
+    assert.equal(c.group,v.group,"group mismatch vocab vs engine: "+v.front);
+  }
+}
+assert.ok(unique(D.vocab.map(x=>x.front)),"vocab fronts duplicate across banks");
+
+/* Grammar: every card is placed in the learning path; every drill is valid. */
+for(const g of D.grammar){
+  assert.ok(nonempty(g.section)&&Number.isInteger(g.order),"grammar path "+g.id);
+  for(const d of [g.drill,...(g.drills||[])]){
+    assert.ok(Array.isArray(d.choices)&&d.choices.length>=3&&unique(d.choices),"grammar drill choices "+g.id);
+    assert.ok(Number.isInteger(d.answer)&&d.answer>=0&&d.answer<d.choices.length,"grammar drill answer "+g.id);
+    safe(d.choices[d.answer],"grammar "+g.id+" drill answer");safe(d.prompt,"grammar "+g.id+" drill prompt");
+  }
+  for(const m of g.mistakes||[]){assert.ok(nonempty(m.wrong)&&nonempty(m.right)&&nonempty(m.why),"grammar mistake "+g.id);assert.notEqual(m.wrong,m.right);safe(m.right,"grammar "+g.id+" mistake fix")}
+}
+assert.ok(unique(D.grammar.map(g=>g.order)),"grammar order collision");
 
 const teachingText=[
   ...D.vocab.flatMap(v=>[v.front,v.example]),
@@ -127,4 +200,4 @@ assert.ok(D.vocab.some(v=>v.front==="un cours d’essai"));
 assert.ok(D.vocab.some(v=>v.front==="prendre sa retraite"));
 assert.ok(D.vocab.some(v=>v.front==="les transports en commun"));
 
-console.log(`CONTENT QA OK — ${D.vocab.length} vocab, ${D.grammar.length} grammar, ${D.reading.length} reading, ${D.listening.length} listening items.`);
+console.log(`CONTENT QA OK — ${D.vocab.length} vocab, ${D.grammar.length} grammar, ${D.reading.length} reading, ${D.listening.length} listening, ${D.writingPrompts.length} writing + ${D.speakingPrompts.length} speaking prompts.`);
