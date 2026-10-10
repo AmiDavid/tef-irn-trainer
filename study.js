@@ -220,21 +220,10 @@ function grammar(){
   const sections=[];list.forEach(g=>{const s=g.section||'Autres';if(!sections.includes(s))sections.push(s)});
   const conj=`<div class="card conj-card"><h3>🔤 Conjugaison</h3><p class="muted">Tous les temps de l’examen, pour n’importe quel verbe (réguliers et irréguliers).</p><div class="conj-form"><input id="conjInput" list="conjVerbs" placeholder="ex. prendre, s’inscrire, recevoir" autocomplete="off" autocapitalize="none"><button class="btn" id="conjGo">Conjuguer</button></div><datalist id="conjVerbs">${verbList().map(v=>`<option value="${esc(v)}">`).join('')}</datalist><div id="conjOut"></div></div>`;
   root.innerHTML=conj+(list.length?'':'<div class="card"><p class="muted">Aucune règle dans ce filtre.</p></div>')+sections.map(sec=>`<h3 class="grammar-section">${esc(sec)}</h3>`+list.filter(g=>(g.section||'Autres')===sec).map(g=>{
-    const drills=[g.drill,...(g.drills||[])].filter(Boolean),stt=gStatus(g),st=S().gstats[g.id];
-    return `<div class="grammar-item" data-g="${g.id}"><div class="grammar-head"><div><strong>${esc(g.title)}</strong><div class="muted">${esc(g.short)}</div></div><span class="status ${stt}">${STATUS_LABEL[stt]||stt}${st?` · ${st.ok}/${st.n}`:''}</span></div><div class="grammar-details"><p>${esc(g.details)}</p><div class="examples">${g.examples.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>${g.mistakes?.length?`<div class="mistakes"><strong>Erreurs fréquentes</strong>${g.mistakes.map(m=>`<div class="mistake"><span class="wrong">✕ ${esc(m.wrong)}</span><span class="right">✓ ${esc(m.right)}</span><small>${esc(m.why)}</small></div>`).join('')}</div>`:''}${drills.map((d,k)=>{const order=shuffle(d.choices.map((c,i)=>({c,ok:i===d.answer})));return `<div class="feedback drill"><strong>Exercice ${drills.length>1?k+1:''}</strong><br>${esc(d.prompt)}<div class="choice-list">${order.map(o=>`<button class="choice" data-gc="${o.ok?1:0}">${esc(o.c)}</button>`).join('')}</div><div class="gfb"></div></div>`}).join('')}</div></div>`;
+    const stt=gStatus(g),st=S().gstats[g.id],n=window.TEF_TOPIC?TEF_TOPIC.practiceItems(g.id).length:0,best=(S().gbest||{})[g.id];
+    return `<button class="grammar-item topic-link" data-g="${g.id}"><div class="grammar-head"><div><strong>${esc(g.title)}</strong><div class="muted">${esc(g.short)}</div><div class="topic-sub">${n} exercices${best?` · meilleur score ${best.score}/${best.total}`:''}${S().gnotes?.[g.id]?' · 📝 notes':''}</div></div><div class="topic-side"><span class="status ${stt}">${STATUS_LABEL[stt]||stt}${st?` · ${st.ok}/${st.n}`:''}</span><span class="chev" aria-hidden="true">›</span></div></div></button>`;
   }).join('')).join('');
-  $$('.grammar-item',root).forEach(it=>{
-    it.querySelector('.grammar-head').onclick=()=>it.classList.toggle('open');
-    $$('.drill',it).forEach(dr=>$$('[data-gc]',dr).forEach(b=>b.onclick=e=>{
-      e.stopPropagation();if(dr.dataset.done)return;dr.dataset.done='1';
-      const ok=b.dataset.gc==='1',st=S();st.gstats[it.dataset.g]=st.gstats[it.dataset.g]||{n:0,ok:0};st.gstats[it.dataset.g].n++;if(ok)st.gstats[it.dataset.g].ok++;
-      $$('[data-gc]',dr).forEach(x=>{x.disabled=true;if(x.dataset.gc==='1')x.classList.add('correct')});if(!ok)b.classList.add('wrong');
-      dr.querySelector('.gfb').textContent=ok?'✓ Correct':'✕ La bonne réponse est en vert.';
-      app().save();
-      const g=D().grammar.find(x=>x.id===it.dataset.g),badge=it.querySelector('.status'),s2=st.gstats[g.id],stt=gStatus(g);
-      badge.className='status '+stt;badge.textContent=`${STATUS_LABEL[stt]||stt} · ${s2.ok}/${s2.n}`;
-    }));
-  });
+  $$('.topic-link',root).forEach(it=>it.onclick=()=>window.TEF_TOPIC?.open(it.dataset.g));
   const go=()=>{const v=$('#conjInput').value.trim();if(v)$('#conjOut').innerHTML=conjTables(v)};
   $('#conjGo').onclick=go;$('#conjInput').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();go()}};
 }

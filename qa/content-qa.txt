@@ -5,7 +5,7 @@ const assert = require("node:assert").strict;
 const sandbox = { window: {} };
 sandbox.globalThis = sandbox;
 vm.createContext(sandbox);
-const BANK_FILES=["content/reading.js","content/listening.js","content/vocab.js","content/grammar.js","content/prompts.js"];
+const BANK_FILES=["content/reading.js","content/listening.js","content/vocab.js","content/grammar.js","content/grammar-plus-1.js","content/grammar-plus-2.js","content/grammar-plus-3.js","content/prompts.js"];
 vm.runInContext(fs.readFileSync("data.js","utf8"), sandbox);
 const CORE = JSON.parse(JSON.stringify(sandbox.window.TEF_DATA));
 for(const f of BANK_FILES) vm.runInContext(fs.readFileSync(f,"utf8"), sandbox, {filename:f});
@@ -187,6 +187,36 @@ for(const g of D.grammar){
   for(const m of g.mistakes||[]){assert.ok(nonempty(m.wrong)&&nonempty(m.right)&&nonempty(m.why),"grammar mistake "+g.id);assert.notEqual(m.wrong,m.right);safe(m.right,"grammar "+g.id+" mistake fix")}
 }
 assert.ok(unique(D.grammar.map(g=>g.order)),"grammar order collision");
+
+/* Grammar topic pages: every card has a lesson page and a practice set whose answers are checkable. */
+const GP=D.grammarPlus||{};
+const TYPES=["mcq","fill","fix","transform","order"];
+const qnorm=t=>String(t).replace(/[\u00A0\u202F]/g," ").replace(/\s+/g," ").trim().replace(/\s*[.!?…]+$/,"").toLocaleLowerCase("fr");
+for(const g of D.grammar){
+  const p=GP[g.id];
+  assert.ok(p,"grammar page missing for "+g.id);
+  assert.ok(nonempty(p.intro),"intro "+g.id);
+  for(const k of ["rule","tips","examples","summary","practice"]) assert.ok(Array.isArray(p[k])&&p[k].length>=3,g.id+" needs "+k);
+  for(const e of p.examples){assert.ok(nonempty(e.fr),"example fr "+g.id);safe(e.fr,g.id+" example")}
+  [...p.rule,...p.tips,...p.summary].forEach((t,i)=>safe(t,g.id+" text "+i));
+  assert.ok(p.practice.length>=12,g.id+" needs 12 exercises");
+  for(const t of TYPES) assert.ok(p.practice.filter(x=>x.type===t).length>=2,g.id+" needs 2 "+t);
+  p.practice.forEach((x,i)=>{
+    const id=g.id+" ex"+i;
+    assert.ok(TYPES.includes(x.type),id+" type");
+    if(x.type==="mcq"){assert.ok(x.choices.length>=3&&unique(x.choices),id+" choices");assert.ok(Number.isInteger(x.answer)&&x.answer>=0&&x.answer<x.choices.length,id+" answer");safe(x.choices[x.answer],id)}
+    else{
+      assert.ok(Array.isArray(x.answers)&&x.answers.length>=1&&x.answers.every(nonempty),id+" answers");
+      x.answers.forEach(a=>safe(a,id+" answer"));
+      if(x.type==="fill")assert.equal((x.prompt.match(/_{3,}/g)||[]).length,1,id+" must have one gap");
+      if(x.type==="fix")assert.ok(x.answers.every(a=>qnorm(a)!==qnorm(x.prompt)),id+" fix answer equals prompt");
+      if(x.type==="order"){
+        const sorted=a=>a.slice().map(w=>w.toLocaleLowerCase("fr")).sort().join("|");
+        assert.ok(x.answers.every(a=>sorted(qnorm(a).split(" "))===sorted(x.words.map(w=>qnorm(w)))),id+" order tokens do not rebuild the answer");
+      }
+    }
+  });
+}
 
 const teachingText=[
   ...D.vocab.flatMap(v=>[v.front,v.example]),

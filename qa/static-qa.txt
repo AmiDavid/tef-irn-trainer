@@ -2,7 +2,7 @@ const fs = require("node:fs");
 const assert = require("node:assert").strict;
 
 const read=p=>fs.readFileSync(p,"utf8");
-const required=["index.html","styles.css","data.js","app.js","connected.js","bank.js","conjugate.js","study.js","exam.js","content/reading.js","content/listening.js","content/vocab.js","content/grammar.js","content/prompts.js","manifest.webmanifest","sw.js","android/app/src/main/java/io/github/amidavid/tefb2coach/MainActivity.java","android/app/build.gradle.kts"];
+const required=["index.html","styles.css","data.js","app.js","connected.js","bank.js","conjugate.js","study.js","exam.js","content/reading.js","content/listening.js","content/vocab.js","content/grammar.js","content/prompts.js","content/grammar-plus-1.js","content/grammar-plus-2.js","content/grammar-plus-3.js","topic.js","manifest.webmanifest","sw.js","android/app/src/main/java/io/github/amidavid/tefb2coach/MainActivity.java","android/app/build.gradle.kts"];
 for(const p of required) assert.ok(fs.existsSync(p),"missing "+p);
 
 const html=read("index.html"), css=read("styles.css"), app=read("app.js"), connected=read("connected.js"), sw=read("sw.js");
@@ -29,7 +29,7 @@ assert.equal(new Set(ids).size,ids.length,"duplicate static HTML id");
 const buildMatch=html.match(/v(\d+\.\d+)\s*•\s*build\s*(\d+)/);
 assert.ok(buildMatch,"visible build version missing");
 const build=buildMatch[2];
-const ASSETS=["styles.css","data.js","content/reading.js","content/listening.js","content/vocab.js","content/grammar.js","content/prompts.js","bank.js","conjugate.js","app.js","study.js","exam.js","connected.js"];
+const ASSETS=["styles.css","data.js","content/reading.js","content/listening.js","content/vocab.js","content/grammar.js","content/grammar-plus-1.js","content/grammar-plus-2.js","content/grammar-plus-3.js","content/prompts.js","bank.js","conjugate.js","app.js","study.js","exam.js","topic.js","connected.js"];
 for(const asset of ASSETS) assert.ok(html.includes(asset+"?v="+build),asset+" version does not match visible build");
 /* Script order matters: data → banks → merge → engine → app → modules → connected client. */
 const pos=ASSETS.slice(1).map(a=>html.indexOf(a+"?v="));

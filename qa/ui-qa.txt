@@ -73,13 +73,55 @@ async function visible(page,selector){
     await page.locator("#mobileMoreBtn").click();
     await page.locator('[data-more-view="grammar"]').click();
     const grammarCount=await page.locator(".grammar-item").count();
-    assert.ok(grammarCount>=10);
+    assert.ok(grammarCount>=28,"all grammar topics listed");
+    /* Every topic opens its own page with rule, examples, notes, summary and a practice set. */
     for(let i=0;i<grammarCount;i++){
-      const item=page.locator(".grammar-item").nth(i);
-      await item.locator(".grammar-head").click();
-      assert.ok(await item.locator(".grammar-details").isVisible());
-      assert.ok(await item.locator("[data-gc]").count()>=3);
+      const id=await page.locator(".grammar-item").nth(i).getAttribute("data-g");
+      await page.evaluate(id=>{location.hash="#g/"+id},id);
+      await visible(page,"#view-gtopic.active .topic-hero h1");
+      for(const h of ["La règle","Exemples","Mes notes","À retenir"]) assert.ok((await page.locator("#gtopicBody").textContent()).includes(h),id+" missing section "+h);
+      assert.ok(await page.locator("#gtopicBody .ex").count()>=3,id+" examples");
     }
+    await page.locator("#mobileMoreBtn").click();
+    await page.locator('[data-more-view="grammar"]').click();
+    await page.locator('.grammar-item[data-g="g7"]').click();
+    await visible(page,"#view-gtopic.active");
+    await page.locator("#topicNotes").fill("Les si n’aiment pas les -rais.");
+    await page.waitForTimeout(700);
+    /* Practice page: answer each exercise; typed answers use the expected answer, then one deliberate mistake. */
+    await page.locator("[data-practice]").first().click();
+    await visible(page,"#view-gpractice.active .exercise");
+    const items=await page.evaluate(()=>window.TEF_TOPIC.practiceItems("g7"));
+    assert.ok(items.length>=12);
+    for(let i=0;i<items.length;i++){
+      const x=items[i];
+      if(x.type==="mcq"){await page.locator("#gpracticeBody [data-ok='1']").click()}
+      else if(x.type==="order"){
+        const target=x.answers[0].replace(/[.!?…]+$/,"").split(" ");
+        const used=new Set();
+        for(const w of target){
+          const toks=page.locator("#orderBank .token");const n=await toks.count();
+          for(let k=0;k<n;k++){const t=toks.nth(k);const idx=await t.getAttribute("data-t");if(used.has(idx))continue;if((await t.textContent()).toLocaleLowerCase("fr")===w.toLocaleLowerCase("fr")){await t.click();used.add(idx);break}}
+        }
+        await page.locator("#exCheck").click();
+      }else{
+        const ans=i===2?"mauvaise réponse":x.answers[0];
+        await page.locator("#exInput").fill(ans);
+        await page.locator("#exCheck").click();
+      }
+      const fb=await page.locator("#exFb").textContent();
+      if(i===2&&x.type!=="mcq"&&x.type!=="order")assert.ok(fb.includes("Pas tout à fait"),"wrong typed answer must be rejected");
+      else assert.ok(fb.includes("Correct"),"exercise "+i+" ("+x.type+") should accept the expected answer: "+fb);
+      await page.locator("#exNext").click();
+    }
+    await visible(page,"#redoAll");
+    assert.ok(await page.evaluate(()=>window.TEF_APP.S.gnotes.g7.includes("rais")),"notes saved");
+    /* Accent-only differences are flagged as « presque ». */
+    assert.equal(await page.evaluate(()=>window.TEF_TOPIC.check("Je préfère",["Je préfère."]).verdict),"ok");
+    assert.equal(await page.evaluate(()=>window.TEF_TOPIC.check("je prefere",["Je préfère."]).verdict),"accents");
+    assert.equal(await page.evaluate(()=>window.TEF_TOPIC.check("J'ai  fini !",["J’ai fini."]).verdict),"ok");
+    await page.locator("#mobileMoreBtn").click();
+    await page.locator('[data-more-view="grammar"]').click();
 
     /* Grammar drills record progress; conjugation tables render. */
     await page.locator("#conjInput").fill("s’inscrire");
