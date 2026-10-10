@@ -8,7 +8,11 @@ export async function verifyUser(req){
   if(!url||!key||!auth.startsWith("Bearer ")) throw Object.assign(new Error("Authentication required"),{status:401});
   const r=await fetch(url+"/auth/v1/user",{headers:{apikey:key,Authorization:auth}});
   if(!r.ok) throw Object.assign(new Error("Invalid session"),{status:401});
-  return r.json();
+  const user=await r.json();
+  /* Only listed accounts may use the AI (protects paid API credits). ALLOWED_EMAILS: comma-separated. */
+  const allowed=(process.env.ALLOWED_EMAILS||"").split(",").map(x=>x.trim().toLowerCase()).filter(Boolean);
+  if(allowed.length&&!allowed.includes(String(user?.email||"").toLowerCase())) throw Object.assign(new Error("Accès réservé : ce compte n’est pas autorisé à utiliser l’IA."),{status:403});
+  return user;
 }
 export function safetyId(user){return crypto.createHash("sha256").update(String(user?.id||"anonymous")).digest("hex").slice(0,64)}
 async function openaiCall({instructions,input,user,model}){

@@ -7,5 +7,5 @@ export default async function handler(req,res){cors(req,res);if(req.method==="OP
   provider:aiConfigured()?(provider()==="anthropic"?"Claude":"OpenAI"):"",
   voice:Boolean(process.env.OPENAI_API_KEY),
   /* Non-secret diagnostics: never returns key material. */
-  diagnostics:{server:"2026-10-10b",anthropicKey:(()=>{const k=String(process.env.ANTHROPIC_API_KEY||"");return !k?"missing":/^\s|\s$/.test(k)?"has spaces":/^sk-ant-/.test(k)?"ok":"unexpected format"})(),providerSetting:process.env.AI_PROVIDER||"(auto)"}
+  diagnostics:{server:"2026-10-10b",anthropicKey:(()=>{const k=String(process.env.ANTHROPIC_API_KEY||"");return !k?"missing":/^\s|\s$/.test(k)?"has spaces":/^sk-ant-/.test(k)?"ok":"unexpected format"})(),providerSetting:process.env.AI_PROVIDER||"(auto)",accessRestricted:Boolean((process.env.ALLOWED_EMAILS||"").trim())}
 })}
