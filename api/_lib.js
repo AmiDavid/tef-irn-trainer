@@ -25,7 +25,7 @@ async function openaiCall({instructions,input,user,model}){
 /* ---------- provider dispatch ----------
    AI_PROVIDER=anthropic|openai (default: anthropic when ANTHROPIC_API_KEY is set).
    Realtime voice and audio transcription stay on OpenAI (they need OPENAI_API_KEY). */
-export function provider(){const p=(process.env.AI_PROVIDER||"").toLowerCase();if(p==="openai"||p==="anthropic")return p;return process.env.ANTHROPIC_API_KEY?"anthropic":"openai"}
+export function provider(){const p=(process.env.AI_PROVIDER||"").trim().toLowerCase();if(p==="openai"||p==="anthropic")return p;return process.env.ANTHROPIC_API_KEY?"anthropic":"openai"}
 export function aiConfigured(){return Boolean(provider()==="anthropic"?process.env.ANTHROPIC_API_KEY:process.env.OPENAI_API_KEY)}
 /* Current Claude model ids, best first; ANTHROPIC_MODEL overrides. Retired ids are never used. */
 function claudeModels(model){return [...new Set([model&&/^claude-/.test(model)?model:null,process.env.ANTHROPIC_MODEL,"claude-sonnet-5-5","claude-haiku-5-5"].filter(Boolean))]}
@@ -46,7 +46,7 @@ async function claudeCall({instructions,input,user,model,json}){
     for(let attempt=0;attempt<2;attempt++){
       const payload={model:m,max_tokens:json?6000:2500,system:instructions,messages:[{role:"user",content:claudeContent(input)}],metadata:{user_id:safetyId(user)}};
       if(json){payload.tools=[{name:"submit_result",description:"Return the complete result as one JSON object with the keys requested in the instructions.",input_schema:{type:"object",additionalProperties:true}}];payload.tool_choice=forceTool?{type:"tool",name:"submit_result"}:{type:"auto"}}
-      const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"x-api-key":process.env.ANTHROPIC_API_KEY,"anthropic-version":"2023-06-01","content-type":"application/json"},body:JSON.stringify(payload)});
+      const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"x-api-key":String(process.env.ANTHROPIC_API_KEY).trim(),"anthropic-version":"2023-06-01","content-type":"application/json"},body:JSON.stringify(payload)});
       const j=await r.json().catch(()=>({}));
       if(r.ok){
         const tool=(j.content||[]).find(c=>c.type==="tool_use");
