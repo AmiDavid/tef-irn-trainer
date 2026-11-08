@@ -4,7 +4,7 @@
     {type:"fill",lvl:1,prompt:"La boulangerie ___ coin ferme le lundi.",answers:["du"],hint:"(de + article défini)",explain:"Coin est masculin singulier : de + le se contracte en du."},
     {type:"mcq",lvl:1,prompt:"Le bureau ___ directrice est au premier étage.",choices:["du","de la","de le"],answer:1,explain:"On ne contracte jamais de + la : la forme reste en deux mots."},
     {type:"fix",lvl:1,prompt:"Tu vas à le supermarché après le travail ?",answers:["Tu vas au supermarché après le travail ?"],explain:"Devant un nom masculin, à + le doit se contracter en au."},
-    {type:"mcq",lvl:1,prompt:"Nous avons téléphoné ___ urgences cette nuit.",choices:["aux","à les","des"],answer:0,explain:"Téléphoner à + les urgences : à + les se contracte en aux."},
+    {type:"mcq",lvl:1,prompt:"Nous avons téléphoné ___ urgences cette nuit.",choices:["aux","à les","au"],answer:0,explain:"Téléphoner à + les urgences : à + les se contracte en aux."},
     {type:"fill",lvl:1,prompt:"Le dimanche, nous rendons visite ___ grands-parents de Léa.",answers:["aux"],hint:"(rendre visite à + article défini)",explain:"Rendre visite à + les grands-parents : à + les se contracte en aux."},
     {type:"transform",lvl:1,instruction:"Remplacez « la banque » par « le bureau de poste ».",prompt:"Je dois passer à la banque avant midi.",answers:["Je dois passer au bureau de poste avant midi."],explain:"Bureau est masculin : à + le se contracte en au, alors que à la ne change pas."},
     {type:"mcq",lvl:1,prompt:"La salle ___ fêtes est réservée pour samedi.",choices:["des","de les","du"],answer:0,explain:"Fêtes est au pluriel : de + les se contracte en des."},
@@ -28,7 +28,7 @@
     {type:"fill",lvl:3,prompt:"Conformément ___ règlement intérieur, il est interdit de fumer dans les parties communes.",answers:["au"],hint:"(conformément à + article défini)",explain:"Conformément à + le règlement : à + le se contracte en au."},
     {type:"fix",lvl:3,prompt:"Quant aux pièces manquantes, nous vous demandons des envoyer au plus vite.",answers:["Quant aux pièces manquantes, nous vous demandons de les envoyer au plus vite."],explain:"Les est ici un pronom COD placé devant l’infinitif : on écrit de les, sans contraction."},
     {type:"fill",lvl:3,prompt:"Lors ___ dernier conseil municipal, les élus ont adopté le budget.",answers:["du"],hint:"(lors de + article défini)",explain:"Lors de + le dernier conseil : de + le se contracte en du."},
-    {type:"transform",lvl:3,instruction:"Remplacez « Lyon » par « Le Havre ».",prompt:"Ce train arrive à Lyon à 18 heures.",answers:["Ce train arrive au Havre à 18 heures."],explain:"L’article de Le Havre se contracte avec à, car le h aspiré empêche l’élision."},
+    {type:"transform",lvl:3,instruction:"Remplacez « Lyon » par « Le Havre ».",prompt:"Ce train arrive à Lyon à 18 heures.",answers:["Ce train arrive au Havre à 18 heures."],explain:"Le Havre contient l’article le, non élidé à cause du h aspiré : à + le se contracte donc en au."},
     {type:"order",lvl:3,words:["besoins","tenir","des","il","familles","compte","des","faut"],answers:["Il faut tenir compte des besoins des familles."],explain:"Tenir compte de + les besoins, puis les besoins de + les familles : deux contractions en des."}
   ],
   g12:[
