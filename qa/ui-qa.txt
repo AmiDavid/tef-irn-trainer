@@ -95,7 +95,7 @@ async function visible(page,selector){
       if(x.type==="fill"&&x.hint)assert.ok((await page.locator("#gpracticeBody .ex-cue").textContent()).includes(x.hint.trim().replace(/^\((.*)\)$/,"$1")),"a gap's hint is shown next to it");
       if(x.type==="mcq")await page.locator(`#gpracticeBody [data-ok='${wrong?0:1}']`).first().click();
       else if(x.type==="order"){
-        const target=x.answers[0].replace(/[.!?…]+$/,"").split(" "),used=new Set();
+        const target=x.answers[0].replace(/[.!?…]+$/,"").replace(/,/g,"").split(" ").filter(Boolean),used=new Set();
         for(const w of target){const toks=page.locator("#orderBank .token"),n=await toks.count();
           for(let k=0;k<n;k++){const t=toks.nth(k),id=await t.getAttribute("data-t");if(used.has(id))continue;if((await t.textContent()).toLocaleLowerCase("fr")===w.toLocaleLowerCase("fr")){await t.click();used.add(id);break}}}
         await page.locator("#exCheck").click();
