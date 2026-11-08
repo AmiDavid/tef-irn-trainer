@@ -1,5 +1,6 @@
-/* TEF B2 Coach — one page per grammar topic (lesson + notes + summary) and a practice page
-   with typed answers checked automatically. Routes: #g/<id> (lesson) and #gp/<id> (practice). */
+/* TEF B2 Coach — one page per grammar topic (lesson + notes + summary), a notebook page to copy by hand,
+   and a practice runner with typed answers checked automatically.
+   Routes: #g/<id> lesson · #c/<id> notebook copy · #gp/<id> topic practice · #gs/<key> session started by the daily plan. */
 (()=>{
 'use strict';
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -8,6 +9,7 @@ const esc=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const card=id=>D().grammar.find(g=>g.id===id);
 const plus=id=>(D().grammarPlus||{})[id]||{};
+const daily=()=>window.TEF_DAILY;
 const TYPE_LABEL={mcq:'Choix multiple',fill:'Complète',fix:'Corrige l’erreur',transform:'Transforme',order:'Remets dans l’ordre'};
 
 /* ---------- answer checking ---------- */
@@ -40,52 +42,70 @@ function closest(given,answers){
 }
 
 /* ---------- routing ---------- */
+let origin='grammar'; // where « retour » goes: the grammar list or today's lesson plan
 function go(hash){if(location.hash!==hash)location.hash=hash;else route()}
 function route(){
-  const m=location.hash.match(/^#(g|gp)\/(g\d+)$/);
-  if(!m){if(/^#g/.test(location.hash))history.replaceState(null,'',location.pathname+location.search);return false}
-  if(!card(m[2]))return false;
-  if(m[1]==='g')renderLesson(m[2]);else renderPractice(m[2]);
-  return true;
+  const h=location.hash;
+  let m=h.match(/^#(g|gp|c)\/(g\d+)$/);
+  if(m&&card(m[2])){if(m[1]==='g')renderLesson(m[2]);else if(m[1]==='c')renderCopy(m[2]);else renderPractice(m[2]);return true}
+  m=h.match(/^#gs\/([\w-]+)$/);
+  if(m){
+    if(P&&P.key===m[1]){app().show('gpractice');renderExercise();return true}
+    if(daily()?.resume(m[1]))return true;
+  }
+  if(/^#(g|gp|c|gs)\//.test(h))history.replaceState(null,'',location.pathname+location.search);
+  return false;
 }
 function leave(){history.replaceState(null,'',location.pathname+location.search)}
+function backHome(){leave();app().show(origin==='today'?'today':'grammar')}
+const backLabel=()=>origin==='today'?'Leçon du jour':'Grammaire';
 
 /* ---------- lesson page ---------- */
 const STATUS_LABEL={weak:'à renforcer',learning:'en cours',untested:'à tester',reliable:'fiable',mastered:'maîtrisé'};
 function status(g){const st=S().gstats[g.id];if(!st||st.n<3)return g.status;const a=st.ok/st.n;return a>=.85&&st.n>=4?'reliable':a>=.6?'learning':'weak'}
+const examplesOf=id=>{const p=plus(id),g=card(id);return p.examples?.length?p.examples:g.examples.map(fr=>({fr}))};
 function renderLesson(id){
   const g=card(id),p=plus(id),st=S().gstats[id],best=(S().gbest||{})[id],stt=status(g);
   const root=$('#gtopicBody');
   const count=practiceItems(id).length;
+  const today=daily()?.isTodayTopic(id);
+  if(today)origin='today';
   root.innerHTML=`
-    <button class="back-link" data-back>‹ Grammaire</button>
+    <button class="back-link" data-back>‹ ${backLabel()}</button>
+    ${today?`<div class="today-banner"><strong>Leçon du jour · étape 1</strong><span>Lis toute la leçon. Ensuite, recopie-la dans ton cahier avec la version cahier.</span></div>`:''}
     <div class="topic-hero">
       <div class="kicker">${esc(g.section||'Grammaire')}</div>
       <h1>${esc(g.title)}</h1>
       <p>${esc(g.short)}</p>
       <div class="topic-meta"><span class="status ${stt}">${STATUS_LABEL[stt]||stt}${st?` · ${st.ok}/${st.n} justes`:''}</span>${best?`<span class="chip">Meilleur score : ${best.score}/${best.total}</span>`:''}</div>
-      <button class="btn" data-practice>S’entraîner : ${count} exercices</button>
+      <div class="button-row"><button class="btn" data-practice>S’entraîner : ${count} exercices</button><button class="btn secondary" data-copy>📓 Version cahier</button></div>
     </div>
     ${p.intro?`<section class="card topic-sec"><h2>Pourquoi c’est utile au TEF</h2><p>${esc(p.intro)}</p></section>`:''}
     <section class="card topic-sec"><h2>La règle</h2>
       ${p.rule?.length?`<ol class="rule-list">${p.rule.map(r=>`<li>${esc(r)}</li>`).join('')}</ol>`:''}
       <details class="rule-more"${p.rule?.length?'':' open'}><summary>Explication complète</summary><p>${esc(g.details)}</p></details>
-      ${p.table?`<div class="table-wrap"><table class="topic-table"><thead><tr>${p.table.head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${p.table.rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:''}
+      ${tableHTML(p.table,'topic-table')}
     </section>
     ${p.tips?.length?`<section class="card topic-sec"><h2>Astuces</h2><ul class="tip-list">${p.tips.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></section>`:''}
-    <section class="card topic-sec"><h2>Exemples</h2><div class="ex-list">${(p.examples?.length?p.examples:g.examples.map(fr=>({fr}))).map((e,i)=>`<div class="ex"><button class="say" data-say="${i}" title="Écouter" aria-label="Écouter">🔊</button><div><div class="ex-fr">${esc(e.fr)}</div>${e.en?`<div class="ex-en">${esc(e.en)}</div>`:''}${e.note?`<div class="ex-note">${esc(e.note)}</div>`:''}</div></div>`).join('')}</div></section>
+    <section class="card topic-sec"><h2>Exemples</h2><div class="ex-list">${examplesOf(id).map((e,i)=>`<div class="ex"><button class="say" data-say="${i}" title="Écouter" aria-label="Écouter">🔊</button><div><div class="ex-fr">${esc(e.fr)}</div>${e.en?`<div class="ex-en">${esc(e.en)}</div>`:''}${e.note?`<div class="ex-note">${esc(e.note)}</div>`:''}</div></div>`).join('')}</div></section>
     ${g.mistakes?.length?`<section class="card topic-sec"><h2>Erreurs fréquentes</h2><div class="mistakes">${g.mistakes.map(m=>`<div class="mistake"><span class="wrong">✕ ${esc(m.wrong)}</span><span class="right">✓ ${esc(m.right)}</span><small>${esc(m.why)}</small></div>`).join('')}</div></section>`:''}
     ${myErrors(id)}
     <section class="card topic-sec"><h2>Mes notes</h2><p class="muted">Ton espace libre : exemples de ton cours, questions pour ton professeur, phrases à retenir. Enregistré automatiquement.</p><textarea class="writing-area notes-area" id="topicNotes" placeholder="Écris ici…"></textarea><small class="muted" id="notesSaved"></small></section>
     ${p.summary?.length?`<section class="card topic-sec summary-sec"><h2>À retenir</h2><ul>${p.summary.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></section>`:''}
-    <div class="topic-cta"><button class="btn" data-practice>S’entraîner : ${count} exercices</button><button class="btn ghost" data-back>Retour à la grammaire</button></div>`;
+    <div class="topic-cta">${today?`<button class="btn" id="readDone">J’ai lu la leçon → Recopier dans mon cahier</button>`:`<button class="btn" data-practice>S’entraîner : ${count} exercices</button><button class="btn secondary" data-copy>📓 Version cahier</button>`}<button class="btn ghost" data-back>Retour : ${backLabel()}</button></div>`;
   app().show('gtopic');window.scrollTo(0,0);
-  $$('[data-back]',root).forEach(b=>b.onclick=()=>{leave();app().show('grammar')});
+  $$('[data-back]',root).forEach(b=>b.onclick=backHome);
   $$('[data-practice]',root).forEach(b=>b.onclick=()=>go('#gp/'+id));
-  const exs=p.examples?.length?p.examples:g.examples.map(fr=>({fr}));
+  $$('[data-copy]',root).forEach(b=>b.onclick=()=>go('#c/'+id));
+  $('#readDone')&&($('#readDone').onclick=()=>{daily()?.mark('read');go('#c/'+id)});
+  const exs=examplesOf(id);
   $$('[data-say]',root).forEach(b=>b.onclick=()=>window.TEF_EXAM?.speakItem({text:exs[+b.dataset.say].fr}));
   const ta=$('#topicNotes');S().gnotes=S().gnotes||{};ta.value=S().gnotes[id]||'';
   let t;ta.oninput=()=>{clearTimeout(t);t=setTimeout(()=>{S().gnotes[id]=ta.value;app().save();$('#notesSaved').textContent='Enregistré ✓'},500)};
+}
+function tableHTML(t,cls){
+  if(!t?.head?.length)return '';
+  return `<div class="table-wrap"><table class="${cls}"><thead><tr>${t.head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${t.rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 }
 function myErrors(id){
   const g=card(id),list=(S().aiErrors||[]).filter(e=>e.category===`Grammaire : ${g.title}`).slice(-6);
@@ -93,24 +113,65 @@ function myErrors(id){
   return `<section class="card topic-sec"><h2>Mes erreurs sur ce point</h2><div class="mistakes">${list.map(e=>`<div class="mistake"><span class="wrong">✕ ${esc(e.wrong)}</span><span class="right">✓ ${esc(e.correct)}</span>${e.note?`<small>${esc(e.note)}</small>`:''}</div>`).join('')}</div></section>`;
 }
 
-/* ---------- practice page ---------- */
+/* ---------- notebook page: the whole topic, laid out to copy by hand (Seyès paper) ---------- */
+function renderCopy(id){
+  const g=card(id),p=plus(id),today=daily()?.isTodayTopic(id);
+  if(today)origin='today';
+  const showEn=S().copyEn!==false;
+  const date=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const done=today&&daily()?.stepDone('copy');
+  const root=$('#gcopyBody');
+  root.innerHTML=`
+    <div class="copy-tools no-print">
+      <button class="back-link" data-back>‹ ${backLabel()}</button>
+      <div class="copy-actions"><label class="copy-toggle"><input type="checkbox" id="copyEn" ${showEn?'checked':''}> Traductions</label><button class="btn ghost small" id="copyPrint">Imprimer</button></div>
+    </div>
+    ${today?`<div class="today-banner no-print"><strong>Leçon du jour · étape 2</strong><span>Recopie toute la page dans ton cahier, à la main. Écrire aide à retenir.</span></div>`:''}
+    <article class="notebook" aria-label="Version cahier : ${esc(g.title)}">
+      <div class="nb-date">${esc(date.charAt(0).toUpperCase()+date.slice(1))}</div>
+      <h1 class="nb-title">${esc(g.title)}</h1>
+      <p class="nb-sub">${esc(g.short)}</p>
+      <h2>La règle</h2>
+      ${p.rule?.length?`<ol class="nb-rule">${p.rule.map(r=>`<li>${esc(r)}</li>`).join('')}</ol>`:`<p>${esc(g.details)}</p>`}
+      ${tableHTML(p.table,'nb-table')}
+      <h2>Exemples</h2>
+      <ul class="nb-ex">${examplesOf(id).map(e=>`<li>${esc(e.fr)}${showEn&&e.en?` <span class="nb-en">(${esc(e.en)})</span>`:''}</li>`).join('')}</ul>
+      ${g.mistakes?.length?`<h2>Attention aux erreurs</h2><ul class="nb-mist">${g.mistakes.map(m=>`<li><span class="nb-wrong">${esc(m.wrong)}</span> → <span class="nb-right">${esc(m.right)}</span></li>`).join('')}</ul>`:''}
+      ${p.tips?.length?`<h2>Astuces</h2><ul class="nb-tips">${p.tips.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`:''}
+      ${p.summary?.length?`<div class="nb-box"><h2>À retenir</h2><ul>${p.summary.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></div>`:''}
+    </article>
+    <div class="topic-cta no-print">${today?(done?`<span class="chip">✓ Recopié</span><button class="btn" id="copyNext">Continuer : questions de base</button>`:`<button class="btn" id="copyDone">J’ai tout recopié ✓</button>`):''}<button class="btn ghost" id="copyLesson">Revoir la leçon</button></div>`;
+  app().show('gcopy');window.scrollTo(0,0);
+  $('[data-back]',root).onclick=backHome;
+  $('#copyEn').onchange=e=>{S().copyEn=e.target.checked;app().save();renderCopy(id)};
+  $('#copyPrint').onclick=()=>window.print();
+  $('#copyLesson').onclick=()=>go('#g/'+id);
+  $('#copyDone')&&($('#copyDone').onclick=()=>{daily()?.mark('copy');backHome()});
+  $('#copyNext')&&($('#copyNext').onclick=()=>daily()?.start('daily-basic'));
+}
+
+/* ---------- practice runner (one topic, or a mixed session from the daily plan) ---------- */
 function practiceItems(id){
   const g=card(id),p=plus(id);
   const extra=[g.drill,...(g.drills||[])].filter(Boolean).map(d=>({type:'mcq',prompt:d.prompt,choices:d.choices,answer:d.answer,explain:''}));
   const own=p.practice||[];
-  // Card drills first only when there is no dedicated practice set.
   return own.length?[...own,...extra.filter(d=>!own.some(o=>norm(o.prompt)===norm(d.prompt)))]:extra;
 }
 let P=null;
 function renderPractice(id,only){
-  const all=practiceItems(id);
-  P={id,items:only?only.map(i=>all[i]).filter(Boolean):all,idx:0,results:[],srcIdx:only||all.map((_,i)=>i)};
-  app().show('gpractice');window.scrollTo(0,0);
-  renderExercise();
+  const all=practiceItems(id),idx=only||all.map((_,i)=>i);
+  if(origin!=='today'||!daily()?.isTodayTopic(id))origin='grammar';
+  session({key:'topic-'+id,title:card(id).title,topicId:id,items:idx.map(i=>({tid:id,i,x:all[i]})).filter(o=>o.x),back:{label:card(id).title,fn:()=>go('#g/'+id)}},true);
+}
+/* cfg: {key,title,items:[{tid,i,x}],mixed?,topicId?,back:{label,fn},onEnd?(summary),endPrimary?{label,fn}} */
+function session(cfg,viaRoute){
+  P={...cfg,idx:0,results:[]};
+  if(!viaRoute&&location.hash!=='#gs/'+cfg.key){location.hash='#gs/'+cfg.key;return}
+  app().show('gpractice');window.scrollTo(0,0);renderExercise();
 }
 function head(){
-  const g=card(P.id),done=P.results.length,ok=P.results.filter(r=>r.ok).length;
-  return `<div class="practice-head"><button class="back-link" data-lesson>‹ ${esc(g.title)}</button><div class="practice-progress"><span>${Math.min(P.idx+1,P.items.length)}/${P.items.length}</span><span class="muted">${ok} juste${ok>1?'s':''} sur ${done}</span></div><div class="mini-bar"><i style="width:${Math.round(100*P.idx/P.items.length)}%"></i></div></div>`;
+  const done=P.results.length,ok=P.results.filter(r=>r.ok).length;
+  return `<div class="practice-head"><button class="back-link" data-lesson>‹ ${esc(P.back.label)}</button>${P.mixed||P.subtitle?`<div class="practice-title">${esc(P.title)}</div>`:''}<div class="practice-progress"><span>${Math.min(P.idx+1,P.items.length)}/${P.items.length}</span><span class="muted">${ok} juste${ok>1?'s':''} sur ${done}</span></div><div class="mini-bar"><i style="width:${Math.round(100*P.idx/P.items.length)}%"></i></div></div>`;
 }
 function promptHTML(s,inputHTML){
   const parts=String(s).split(/_{3,}/);
@@ -120,7 +181,7 @@ function promptHTML(s,inputHTML){
 function renderExercise(){
   const root=$('#gpracticeBody');
   if(P.idx>=P.items.length)return renderEnd();
-  const x=P.items[P.idx];
+  const it=P.items[P.idx],x=it.x;
   let body='';
   if(x.type==='mcq'){
     const order=shuffle(x.choices.map((c,i)=>({c,ok:i===x.answer})));
@@ -132,8 +193,9 @@ function renderExercise(){
   }else if(x.type==='order'){
     body=`<p class="ex-instruction">Touche les mots dans le bon ordre pour former la phrase.</p><div class="order-line" id="orderLine"><span class="muted">Ta phrase apparaîtra ici</span></div><div class="order-bank" id="orderBank">${shuffle(x.words.map((w,i)=>({w,i}))).map(o=>`<button class="token" data-t="${o.i}">${esc(o.w)}</button>`).join('')}</div><div class="button-row"><button class="btn ghost small" id="orderReset">Recommencer</button><button class="btn" id="exCheck">Vérifier</button></div>`;
   }
-  root.innerHTML=head()+`<div class="card exercise"><div class="kicker">${TYPE_LABEL[x.type]||''}</div>${body}<div id="exFb"></div><div class="runner-nav" id="exNav" hidden><span></span><button class="btn" id="exNext">${P.idx<P.items.length-1?'Suivant ›':'Voir mon score'}</button></div></div>`;
-  $('[data-lesson]',root).onclick=()=>go('#g/'+P.id);
+  const topicChip=P.mixed?`<span class="chip topic-chip">${esc(card(it.tid).title)}</span>`:'';
+  root.innerHTML=head()+`<div class="card exercise"><div class="exercise-top"><span class="kicker">${TYPE_LABEL[x.type]||''}</span>${topicChip}</div>${body}<div id="exFb"></div><div class="runner-nav" id="exNav" hidden><span></span><button class="btn" id="exNext">${P.idx<P.items.length-1?'Suivant ›':'Voir mon score'}</button></div></div>`;
+  $('[data-lesson]',root).onclick=()=>P.back.fn();
   $('#exHint')&&($('#exHint').onclick=()=>{$('#exHintText').hidden=false;$('#exHint').hidden=true});
   $$('.accent-key',root).forEach(k=>k.onmousedown=e=>{e.preventDefault();const i=$('#exInput');if(!i)return;const s=i.selectionStart??i.value.length,en=i.selectionEnd??s;i.value=i.value.slice(0,s)+k.textContent+i.value.slice(en);i.selectionStart=i.selectionEnd=s+k.textContent.length;i.focus()});
   if(x.type==='mcq'){
@@ -178,29 +240,39 @@ function feedback(verdict,x,expected,diffHTML,others){
   $('#exNext').onclick=()=>{P.idx++;renderExercise()};
 }
 function record(ok,given,expected){
-  const st=S(),g=card(P.id);
-  st.gstats[P.id]=st.gstats[P.id]||{n:0,ok:0};st.gstats[P.id].n++;if(ok)st.gstats[P.id].ok++;
-  P.results.push({ok,i:P.srcIdx[P.idx]});
-  const x=P.items[P.idx];
+  const st=S(),it=P.items[P.idx],x=it.x,g=card(it.tid);
+  st.gstats[it.tid]=st.gstats[it.tid]||{n:0,ok:0};st.gstats[it.tid].n++;if(ok)st.gstats[it.tid].ok++;
+  P.results.push({ok,k:P.idx});
+  daily()?.logAnswer(it.tid,it.i,ok);
   if(!ok&&given&&x.type!=='mcq'&&x.type!=='order'){
     st.aiErrors=app().mergeAIErrors(st.aiErrors,[{original:String(x.type==='fill'?x.prompt.replace(/_{3,}/,given.trim()):given).trim(),correction:x.type==='fill'?x.prompt.replace(/_{3,}/,expected):expected,rule:x.explain||g.short,category:`Grammaire : ${g.title}`}]);
   }
   app().save();
 }
 function renderEnd(){
-  const g=card(P.id),ok=P.results.filter(r=>r.ok).length,total=P.results.length,wrong=P.results.filter(r=>!r.ok).map(r=>r.i);
+  const ok=P.results.filter(r=>r.ok).length,total=P.results.length,wrongK=P.results.filter(r=>!r.ok).map(r=>r.k);
   const st=S();st.gbest=st.gbest||{};
-  const full=P.items.length===practiceItems(P.id).length;
-  if(full&&(!st.gbest[P.id]||ok>st.gbest[P.id].score))st.gbest[P.id]={score:ok,total,date:new Date().toISOString()};
+  if(P.topicId&&P.items.length===practiceItems(P.topicId).length&&(!st.gbest[P.topicId]||ok>st.gbest[P.topicId].score))st.gbest[P.topicId]={score:ok,total,date:new Date().toISOString()};
   app().addMin(Math.max(2,Math.round(total*0.7)));app().save();app().errors?.();
+  // per-topic breakdown for mixed sessions
+  const by={};P.results.forEach(r=>{const t=P.items[r.k].tid;by[t]=by[t]||{ok:0,n:0};by[t].n++;if(r.ok)by[t].ok++});
+  const breakdown=P.mixed?`<div class="breakdown">${Object.entries(by).map(([t,v])=>`<div class="bd-row"><span>${esc(card(t).title)}</span><strong class="${v.ok===v.n?'ok':v.ok/v.n>=.5?'mid':'low'}">${v.ok}/${v.n}</strong></div>`).join('')}</div>`:'';
+  const cb=P.onEnd;P.onEnd=null; // only the first full pass counts for the daily plan
+  cb?.({ok,total,by});
   const pct=total?Math.round(100*ok/total):0;
-  const msg=pct>=85?'Excellent : ce point est en place. Reviens dans une semaine pour le consolider.':pct>=60?'Bien. Refais tes erreurs maintenant, puis relis la partie « À retenir ».':'Relis la règle et les exemples, puis refais l’exercice. Tes erreurs sont dans « Mes erreurs ».';
-  $('#gpracticeBody').innerHTML=`<div class="practice-head"><button class="back-link" data-lesson>‹ ${esc(g.title)}</button></div><div class="card intro-card"><h2>${ok}/${total}</h2><p>${msg}</p><div class="button-row" style="justify-content:center">${wrong.length?'<button class="btn" id="redoWrong">Refaire mes erreurs ('+wrong.length+')</button>':''}<button class="btn ${wrong.length?'secondary':''}" id="redoAll">Tout refaire</button><button class="btn ghost" data-lesson>Revoir le cours</button></div></div>`;
-  $$('[data-lesson]').forEach(b=>b.onclick=()=>go('#g/'+P.id));
-  $('#redoWrong')&&($('#redoWrong').onclick=()=>renderPractice(P.id,wrong));
-  $('#redoAll').onclick=()=>renderPractice(P.id);
+  const msg=pct>=85?'Excellent : c’est en place.':pct>=60?'Bien. Refais tes erreurs maintenant, puis relis la partie « À retenir ».':'Relis la règle et les exemples, puis refais tes erreurs. Elles sont aussi dans « Mes erreurs ».';
+  const primary=P.endPrimary;
+  $('#gpracticeBody').innerHTML=`<div class="practice-head"><button class="back-link" data-lesson>‹ ${esc(P.back.label)}</button></div><div class="card intro-card"><h2>${ok}/${total}</h2><p>${msg}</p>${breakdown}<div class="button-row" style="justify-content:center">${primary?`<button class="btn" id="endPrimary">${esc(primary.label)}</button>`:''}${wrongK.length?`<button class="btn ${primary?'secondary':''}" id="redoWrong">Refaire mes erreurs (${wrongK.length})</button>`:''}${P.topicId?`<button class="btn ${wrongK.length||primary?'ghost':''}" id="redoAll">Tout refaire</button>`:''}<button class="btn ghost" data-lesson>${P.topicId?'Revoir le cours':'Retour'}</button></div></div>`;
+  $$('[data-lesson]').forEach(b=>b.onclick=()=>P.back.fn());
+  $('#endPrimary')&&($('#endPrimary').onclick=()=>primary.fn());
+  $('#redoWrong')&&($('#redoWrong').onclick=()=>session({...P,key:P.key+'-r',title:P.title,items:wrongK.map(k=>P.items[k]),onEnd:null},false));
+  $('#redoAll')&&($('#redoAll').onclick=()=>renderPractice(P.topicId));
 }
 
-function init(){window.addEventListener('hashchange',()=>{if(!route()&&/^#?$/.test(location.hash)){const v=S().view;if(v==='gtopic'||v==='gpractice')app().show('grammar')}});route()}
-window.TEF_TOPIC={init,open:id=>go('#g/'+id),practice:id=>go('#gp/'+id),check,norm,practiceItems,route};
+function init(){
+  window.addEventListener('hashchange',()=>{if(!route()&&/^#?$/.test(location.hash)){const v=S().view;if(/^g(topic|practice|copy)$/.test(v))app().show(origin==='today'?'today':'grammar')}});
+  route();
+}
+window.TEF_TOPIC={init,open:(id,o)=>{origin=o||'grammar';go('#g/'+id)},copy:(id,o)=>{origin=o||'grammar';go('#c/'+id)},practice:id=>go('#gp/'+id),
+  session:(cfg)=>{origin='today';session(cfg,false)},check,norm,practiceItems,route,current:()=>P&&{key:P.key,items:P.items.map(o=>({tid:o.tid,i:o.i,x:o.x})),idx:P.idx}};
 })();

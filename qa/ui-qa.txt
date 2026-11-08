@@ -186,6 +186,70 @@ async function visible(page,selector){
     const notes=await page.locator("#skillList small").allTextContents();
     assert.ok(notes.some(t=>/questions récentes/.test(t)),"reading/listening estimate should come from practice data");
 
+    /* Daily lesson plan: day 1 = read → notebook copy → basic questions; day 2 adds a review of day 1;
+       an unfinished day carries over. Dates are simulated with window.__TEF_TODAY__. */
+    async function answerSession(wrongAt=-1){
+      for(let guard=0;guard<40;guard++){
+        if(await page.locator("#endPrimary").count())break;
+        const cur=await page.evaluate(()=>{const c=TEF_TOPIC.current();return c&&c.items[c.idx]?{x:c.items[c.idx].x,idx:c.idx}:null});
+        if(!cur)break;
+        assert.ok(await page.locator("#exNav").isHidden(),"Next must stay hidden until the question is answered");
+        const x=cur.x,wrong=cur.idx===wrongAt;
+        if(x.type==="mcq")await page.locator(`#gpracticeBody [data-ok='${wrong?0:1}']`).first().click();
+        else if(x.type==="order"){
+          const target=x.answers[0].replace(/[.!?…]+$/,"").split(" "),used=new Set();
+          for(const w of target){const toks=page.locator("#orderBank .token"),n=await toks.count();
+            for(let k=0;k<n;k++){const t=toks.nth(k),id=await t.getAttribute("data-t");if(used.has(id))continue;if((await t.textContent()).toLocaleLowerCase("fr")===w.toLocaleLowerCase("fr")){await t.click();used.add(id);break}}}
+          await page.locator("#exCheck").click();
+        }else{await page.locator("#exInput").fill(wrong?"réponse fausse":x.answers[0]);await page.locator("#exCheck").click()}
+        await page.locator("#exNext").click();
+      }
+    }
+    await page.evaluate(()=>{delete TEF_APP.S.course;window.__TEF_TODAY__="2026-11-08";TEF_APP.save()});
+    await page.locator('#bottomNav [data-view="today"]').click();
+    const firstId=await page.evaluate(()=>TEF_APP.D.grammar[0].id);
+    assert.equal(await page.locator("#lessonDay .ld-step").count(),3,"day 1 has no review step");
+    assert.ok((await page.locator("#lessonDay .plaque-name").textContent()).length>3);
+    await page.locator('#lessonDay [data-step="read"]').click();
+    await visible(page,"#view-gtopic.active .today-banner");
+    await page.locator("#readDone").click();
+    await visible(page,"#view-gcopy.active .notebook");
+    const nb=await page.locator(".notebook").textContent();
+    for(const h of ["La règle","Exemples","À retenir"]) assert.ok(nb.includes(h),"notebook page missing "+h);
+    assert.ok(await page.locator(".notebook .nb-rule li").count()>=3,"notebook rule list");
+    await page.locator("#copyDone").click();
+    await visible(page,"#view-today.active");
+    await page.locator('#lessonDay [data-step="practice"]').click();
+    await visible(page,"#view-gpractice.active .exercise");
+    assert.equal(await page.evaluate(()=>TEF_TOPIC.current().items.length),8);
+    await answerSession(1);
+    assert.match(await page.locator("#gpracticeBody .intro-card h2").textContent(),/^7\/8$/);
+    await page.locator("#endPrimary").click();
+    await visible(page,"#lessonDay .ld-done");
+    let course=await page.evaluate(()=>TEF_APP.S.course);
+    assert.deepEqual(course.seq,[firstId]);
+    assert.deepEqual(course.done[firstId].practice,{ok:7,total:8});
+    /* Day 2: new topic + review that only uses day-1 questions, starting with the one answered wrong. */
+    await page.evaluate(()=>{window.__TEF_TODAY__="2026-11-09";TEF_DAILY.render()});
+    course=await page.evaluate(()=>TEF_APP.S.course);
+    assert.notEqual(course.day.topicId,firstId);assert.equal(course.day.n,2);
+    assert.equal(await page.locator("#lessonDay .ld-step").count(),4,"day 2 adds a review step");
+    await page.locator('#lessonDay [data-step="review"]').click();
+    await visible(page,"#view-gpractice.active .exercise .topic-chip");
+    const rev=await page.evaluate(()=>TEF_TOPIC.current().items.map(o=>o.tid+":"+o.i));
+    assert.ok(rev.length>=4&&rev.every(k=>k.startsWith(firstId+":")),"review must use earlier topics only: "+rev);
+    assert.ok(rev.includes(firstId+":1"),"the question answered wrong yesterday comes back");
+    await answerSession();
+    await page.locator("#endPrimary").click();
+    course=await page.evaluate(()=>TEF_APP.S.course);
+    assert.equal(course.day.review.total,rev.length);assert.ok(!course.day.complete,"day 2 not complete before reading/copying");
+    /* Day 3 without finishing day 2: the same topic carries over, review already done stays done. */
+    await page.evaluate(()=>{window.__TEF_TODAY__="2026-11-10";TEF_DAILY.render()});
+    course=await page.evaluate(()=>TEF_APP.S.course);
+    assert.equal(course.day.n,2);assert.ok(course.day.carried);
+    assert.ok((await page.locator("#lessonDay").textContent()).includes("On reprend la leçon d’hier"));
+    await page.evaluate(()=>{delete window.__TEF_TODAY__;delete TEF_APP.S.course;TEF_APP.save();TEF_DAILY.render()});
+
     assert.deepEqual(pageErrors,[],"runtime errors: "+pageErrors.join(" | "));
     await page.close();
     console.log("UI QA OK");

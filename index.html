@@ -10,13 +10,13 @@
   <meta name="description" content="Coach personnel TEF IRN B2 — plan, jeux, vocabulaire, grammaire, erreurs, oral et examens blancs.">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css?v=15">
+  <link rel="stylesheet" href="styles.css?v=16">
   <title>TEF B2 Coach</title>
 </head>
 <body>
 <div class="app">
   <header class="topbar"><div class="topbar-inner">
-    <div class="brand"><div class="brand-badge">FR</div><div><span>TEF B2 Coach</span><small>Naturalisation • objectif B2 <span id="buildVersion">v2.4 • build 15</span></small></div></div>
+    <div class="brand"><div class="brand-badge">FR</div><div><span>TEF B2 Coach</span><small>Naturalisation • objectif B2 <span id="buildVersion">v2.5 • build 16</span></small></div></div>
     <div class="top-actions"><span class="pill" id="momentumPill">🔥 0 min cette semaine</span><button class="btn small secondary" id="quick5"><span class="wide-label">J’ai 5 minutes</span><span class="mobile-label">5 min</span></button></div>
   </div></header>
   <div class="layout">
@@ -77,9 +77,10 @@
             <rect x="0" y="152" width="800" height="18" fill="#091129"/><g stroke-linecap="round"><path d="M518 157 H542 M522 161 H538 M526 165 H534" stroke="#f3c66d" stroke-width="1.4" opacity=".55"/><path d="M240 158 H268 M246 162 H262" stroke="#d9def0" stroke-width="1.2" opacity=".3"/><path d="M670 158 H694 M676 162 H688" stroke="#d9a94e" stroke-width="1.2" opacity=".4"/></g>
           </svg>
         </div>
+        <section class="card lesson-day" id="lessonDay" aria-label="Leçon du jour"></section>
         <div class="grid grid-2">
           <div class="card accent-card">
-            <div class="today-head"><div><div class="kicker">Session du jour</div><div class="big">15–20 minutes</div><div class="muted">Courte, ciblée, sans longue leçon.</div></div><button class="btn secondary" id="startToday">Commencer</button></div>
+            <div class="today-head"><div><div class="kicker">Ensuite, si tu as le temps</div><div class="big">10–15 minutes</div><div class="muted">Cartes, lecture, écoute, oral : court et ciblé.</div></div><button class="btn secondary" id="startToday">Commencer</button></div>
             <div class="tasks" id="todayTasks"></div>
           </div>
           <div class="card"><h3>Niveau estimé</h3><p>Estimation d’entraînement — pas un score TEF officiel.</p><div class="skills" id="skillList"></div></div>
@@ -145,6 +146,8 @@
 
       <section class="view" id="view-gtopic"><div id="gtopicBody" class="topic-page"></div></section>
 
+      <section class="view" id="view-gcopy"><div id="gcopyBody" class="topic-page copy-page"></div></section>
+
       <section class="view" id="view-gpractice"><div id="gpracticeBody" class="topic-page"></div></section>
 
       <section class="view" id="view-errors">
@@ -189,21 +192,22 @@
 </div>
 <div class="modal" id="modal"><div class="modal-box"><div class="modal-head"><h2 id="modalTitle"></h2><button class="close" id="closeModal">×</button></div><div id="modalBody"></div></div></div>
 <div class="toast" id="toast"></div>
-<script src="data.js?v=15"></script>
-<script src="content/reading.js?v=15"></script>
-<script src="content/listening.js?v=15"></script>
-<script src="content/vocab.js?v=15"></script>
-<script src="content/grammar.js?v=15"></script>
-<script src="content/grammar-plus-1.js?v=15"></script>
-<script src="content/grammar-plus-2.js?v=15"></script>
-<script src="content/grammar-plus-3.js?v=15"></script>
-<script src="content/prompts.js?v=15"></script>
-<script src="bank.js?v=15"></script>
-<script src="conjugate.js?v=15"></script>
-<script src="app.js?v=15"></script>
-<script src="study.js?v=15"></script>
-<script src="exam.js?v=15"></script>
-<script src="topic.js?v=15"></script>
-<script src="connected.js?v=15"></script>
+<script src="data.js?v=16"></script>
+<script src="content/reading.js?v=16"></script>
+<script src="content/listening.js?v=16"></script>
+<script src="content/vocab.js?v=16"></script>
+<script src="content/grammar.js?v=16"></script>
+<script src="content/grammar-plus-1.js?v=16"></script>
+<script src="content/grammar-plus-2.js?v=16"></script>
+<script src="content/grammar-plus-3.js?v=16"></script>
+<script src="content/prompts.js?v=16"></script>
+<script src="bank.js?v=16"></script>
+<script src="conjugate.js?v=16"></script>
+<script src="app.js?v=16"></script>
+<script src="study.js?v=16"></script>
+<script src="exam.js?v=16"></script>
+<script src="topic.js?v=16"></script>
+<script src="daily.js?v=16"></script>
+<script src="connected.js?v=16"></script>
 </body>
 </html>
