@@ -396,3 +396,16 @@ body[data-view="today"] .city-bg{display:none}
   .hero-night p{display:none}
   .hero-night .skyline{height:128px}
 }
+
+/* daily amount selector + bank line (build 17) */
+.ld-size{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:14px;font-size:14px;color:#c8d0ea}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg-btn{border:0;background:transparent;color:var(--muted);padding:6px 14px;font-weight:700;cursor:pointer}
+.seg-btn+.seg-btn{border-left:1px solid var(--line)}
+.seg-btn.active{background:var(--brand);color:var(--ink)}
+.bank-line{font-size:13px;color:var(--muted);margin:10px 0 0}
+.ai-chip{font-size:11px;background:rgba(243,198,109,.16);color:var(--brand)}
+.exercise-top{flex-wrap:wrap}
+.more-row{margin-top:8px}
+.flag-btn{display:block;margin-top:8px;font-weight:600}
+.ex-cue{color:var(--muted);font-style:italic;font-size:.92em}

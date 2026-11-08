@@ -18,9 +18,11 @@ function norm(s){
     .replace(/\s+/g,' ').trim().replace(/\s*([.!?…]+)\s*$/,'').replace(/\s+([,;:?!])/g,'$1').toLocaleLowerCase('fr');
 }
 const strip=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'');
+/* Commas never decide a grammar answer (« À l’époque, il… » = « À l’époque il… »), so they are ignored. */
+const nocomma=s=>s.replace(/,/g,' ').replace(/\s+/g,' ').trim();
 function check(given,answers){
-  const g=norm(given);if(!g)return {verdict:'empty'};
-  const list=(answers||[]).map(norm);
+  const g=nocomma(norm(given));if(!g)return {verdict:'empty'};
+  const list=(answers||[]).map(a=>nocomma(norm(a)));
   if(list.includes(g))return {verdict:'ok'};
   if(list.some(a=>strip(a)===strip(g)))return {verdict:'accents'};
   return {verdict:'wrong'};
@@ -29,9 +31,10 @@ function check(given,answers){
 function diff(given,answer){
   const a=String(given||'').trim().split(/\s+/),b=String(answer||'').trim().split(/\s+/);
   const n=a.length,m=b.length,L=Array.from({length:n+1},()=>new Array(m+1).fill(0));
-  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)L[i][j]=norm(a[i])===norm(b[j])?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  const same=(u,v)=>nocomma(norm(u))===nocomma(norm(v));
+  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)L[i][j]=same(a[i],b[j])?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
   const out=[];let i=0,j=0;
-  while(i<n&&j<m){if(norm(a[i])===norm(b[j])){out.push(esc(b[j]));i++;j++}else if(L[i+1][j]>=L[i][j+1]){out.push(`<del>${esc(a[i])}</del>`);i++}else{out.push(`<ins>${esc(b[j])}</ins>`);j++}}
+  while(i<n&&j<m){if(same(a[i],b[j])){out.push(esc(b[j]));i++;j++}else if(L[i+1][j]>=L[i][j+1]){out.push(`<del>${esc(a[i])}</del>`);i++}else{out.push(`<ins>${esc(b[j])}</ins>`);j++}}
   while(i<n)out.push(`<del>${esc(a[i++])}</del>`);while(j<m)out.push(`<ins>${esc(b[j++])}</ins>`);
   return out.join(' ');
 }
@@ -67,7 +70,7 @@ const examplesOf=id=>{const p=plus(id),g=card(id);return p.examples?.length?p.ex
 function renderLesson(id){
   const g=card(id),p=plus(id),st=S().gstats[id],best=(S().gbest||{})[id],stt=status(g);
   const root=$('#gtopicBody');
-  const count=practiceItems(id).length;
+  const count=practiceItems(id).length,seen=daily()?.seenCount(id)||0;
   const today=daily()?.isTodayTopic(id);
   if(today)origin='today';
   root.innerHTML=`
@@ -78,7 +81,9 @@ function renderLesson(id){
       <h1>${esc(g.title)}</h1>
       <p>${esc(g.short)}</p>
       <div class="topic-meta"><span class="status ${stt}">${STATUS_LABEL[stt]||stt}${st?` · ${st.ok}/${st.n} justes`:''}</span>${best?`<span class="chip">Meilleur score : ${best.score}/${best.total}</span>`:''}</div>
-      <div class="button-row"><button class="btn" data-practice>S’entraîner : ${count} exercices</button><button class="btn secondary" data-copy>📓 Version cahier</button></div>
+      <div class="button-row"><button class="btn" data-practice>S’entraîner : ${Math.min(SERIES,count)} questions</button><button class="btn secondary" data-copy>📓 Version cahier</button></div>
+      <p class="bank-line">${count} exercices sur ce sujet${seen?` · ${seen} déjà faits`:''}. Chaque série prend d’abord ceux que tu n’as pas encore faits ou que tu as ratés.</p>
+      <div class="button-row more-row">${window.TEF_GEN?.has(id)?'<button class="btn ghost small" id="genBtn">♾️ Exercices illimités</button>':''}<button class="btn ghost small" id="aiBtn">✨ 10 nouvelles questions (IA)</button></div>
     </div>
     ${p.intro?`<section class="card topic-sec"><h2>Pourquoi c’est utile au TEF</h2><p>${esc(p.intro)}</p></section>`:''}
     <section class="card topic-sec"><h2>La règle</h2>
@@ -92,11 +97,13 @@ function renderLesson(id){
     ${myErrors(id)}
     <section class="card topic-sec"><h2>Mes notes</h2><p class="muted">Ton espace libre : exemples de ton cours, questions pour ton professeur, phrases à retenir. Enregistré automatiquement.</p><textarea class="writing-area notes-area" id="topicNotes" placeholder="Écris ici…"></textarea><small class="muted" id="notesSaved"></small></section>
     ${p.summary?.length?`<section class="card topic-sec summary-sec"><h2>À retenir</h2><ul>${p.summary.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></section>`:''}
-    <div class="topic-cta">${today?`<button class="btn" id="readDone">J’ai lu la leçon → Recopier dans mon cahier</button>`:`<button class="btn" data-practice>S’entraîner : ${count} exercices</button><button class="btn secondary" data-copy>📓 Version cahier</button>`}<button class="btn ghost" data-back>Retour : ${backLabel()}</button></div>`;
+    <div class="topic-cta">${today?`<button class="btn" id="readDone">J’ai lu la leçon → Recopier dans mon cahier</button>`:`<button class="btn" data-practice>S’entraîner : ${Math.min(SERIES,count)} questions</button><button class="btn secondary" data-copy>📓 Version cahier</button>`}<button class="btn ghost" data-back>Retour : ${backLabel()}</button></div>`;
   app().show('gtopic');window.scrollTo(0,0);
   $$('[data-back]',root).forEach(b=>b.onclick=backHome);
   $$('[data-practice]',root).forEach(b=>b.onclick=()=>go('#gp/'+id));
   $$('[data-copy]',root).forEach(b=>b.onclick=()=>go('#c/'+id));
+  $('#genBtn')&&($('#genBtn').onclick=()=>unlimited(id));
+  $('#aiBtn').onclick=e=>generateAI(id,e.currentTarget);
   $('#readDone')&&($('#readDone').onclick=()=>{daily()?.mark('read');go('#c/'+id)});
   const exs=examplesOf(id);
   $$('[data-say]',root).forEach(b=>b.onclick=()=>window.TEF_EXAM?.speakItem({text:exs[+b.dataset.say].fr}));
@@ -151,17 +158,66 @@ function renderCopy(id){
 }
 
 /* ---------- practice runner (one topic, or a mixed session from the daily plan) ---------- */
+const bankCache=new Map();
+/* One sentence = one exercise. Word-order exercises have no prompt, so they are known by their answer. */
+const sig=x=>norm(x.prompt||(x.answers||[])[0]||(x.words||[]).join(' '));
+/* Questions the learner reported as wrong never come back (S.flags syncs with the progress, so they can be fixed later). */
+const isFlagged=x=>!!x&&(!!x.flagged||!!(S().flags||{})[sig(x)]);
 function practiceItems(id){
+  if(bankCache.has(id))return bankCache.get(id);
   const g=card(id),p=plus(id);
-  const extra=[g.drill,...(g.drills||[])].filter(Boolean).map(d=>({type:'mcq',prompt:d.prompt,choices:d.choices,answer:d.answer,explain:''}));
+  const extra=[g.drill,...(g.drills||[])].filter(Boolean).map(d=>({type:'mcq',lvl:1,prompt:d.prompt,choices:d.choices,answer:d.answer,explain:''}));
   const own=p.practice||[];
-  return own.length?[...own,...extra.filter(d=>!own.some(o=>norm(o.prompt)===norm(d.prompt)))]:extra;
+  // Order is stable on purpose (answer history is keyed by index): own set, card drills, then the larger bank.
+  const base=own.length?[...own,...extra.filter(d=>!own.some(o=>sig(o)===sig(d)))]:extra;
+  const seenSig=new Set(base.map(sig));
+  const more=((D().grammarMore||{})[id]||[]).filter(m=>{const k=sig(m);if(seenSig.has(k))return false;seenSig.add(k);return true});
+  const ai=((S().aiBank||{})[id]||[]); // questions generated for this learner, appended so their history keys stay stable
+  const all=[...base,...more,...ai];
+  bankCache.set(id,all);return all;
+}
+const invalidate=id=>id?bankCache.delete(id):bankCache.clear();
+/* ---------- new questions: unlimited automatic drills (generators.js) and AI questions (Claude, verified) ---------- */
+const aiReady=()=>!!window.TEF_CONNECTED?.ready;
+async function generateAI(id,btn){
+  if(!aiReady())return app().toast('Connecte-toi (☁️ Sync) pour les questions IA.');
+  const g=card(id),p=plus(id);
+  if(btn){btn.disabled=true;btn.dataset.label=btn.textContent;btn.textContent='Génération et vérification… (≈30 s)'}
+  try{
+    const r=await window.TEF_CONNECTED.generateExercises({topic:{id,title:g.title,short:g.short,rule:p.rule||[g.details],mistakes:(g.mistakes||[]).map(m=>`${m.wrong} → ${m.right}`)},n:10,level:'mix',
+      avoid:practiceItems(id).map(x=>x.prompt||(x.answers||[])[0]).filter(Boolean)});
+    const got=(r.exercises||[]).filter(x=>x&&x.type);
+    if(!got.length)throw new Error('Aucune question validée. Réessaie.');
+    const st=S();st.aiBank=st.aiBank||{};const prev=st.aiBank[id]||[];
+    st.aiBank[id]=[...prev,...got].slice(-300);invalidate(id);app().save();
+    const all=practiceItems(id),start=all.length-got.length;
+    session({key:'ai-'+id,title:`Nouvelles questions (IA) · ${g.title}`,topicId:null,ai:true,items:got.map((x,k)=>({tid:id,i:start+k,x:all[start+k]})),back:P?.back||{label:g.title,fn:()=>go('#g/'+id)},
+      more:{label:'✨ 10 autres questions (IA)',fn:(b)=>generateAI(id,b)},extraMore:moreFor(id)},false);
+  }catch(e){app().toast(e.message||'Génération impossible.');if(btn){btn.disabled=false;btn.textContent=btn.dataset.label}}
+}
+function unlimited(id){
+  const n=15,items=window.TEF_GEN?.make(id,n)||[];if(!items.length)return;
+  session({key:'gen-'+id,title:`Exercices illimités · ${card(id).title}`,topicId:null,items,back:{label:card(id).title,fn:()=>go('#g/'+id)},
+    more:{label:`Encore ${n} exercices`,fn:()=>unlimited(id)}},false);
+}
+/* Secondary « new questions » button shown on end screens. */
+const moreFor=id=>aiReady()?{label:'✨ 10 nouvelles questions (IA)',fn:(b)=>generateAI(id,b)}:window.TEF_GEN?.has(id)?{label:'♾️ Exercices automatiques',fn:()=>unlimited(id)}:null;
+/* 1 = basic, 2 = intermediate, 3 = B2. The first 12 exercises were written from easy to hard. */
+function levelOf(id,i){
+  const x=practiceItems(id)[i];if(!x)return 1;if(x.lvl)return x.lvl;
+  const own=(plus(id).practice||[]).length;return i<own?(i<5?1:i<9?2:3):1;
 }
 let P=null;
+const SERIES=15;
 function renderPractice(id,only){
-  const all=practiceItems(id),idx=only||all.map((_,i)=>i);
+  const all=practiceItems(id);
+  const idx=only||(daily()?.pickFrom(id,SERIES,{fresh:true})||all.map((_,i)=>i).slice(0,SERIES));
   if(origin!=='today'||!daily()?.isTodayTopic(id))origin='grammar';
-  session({key:'topic-'+id,title:card(id).title,topicId:id,items:idx.map(i=>({tid:id,i,x:all[i]})).filter(o=>o.x),back:{label:card(id).title,fn:()=>go('#g/'+id)}},true);
+  let list=idx.map(i=>({tid:id,i,x:all[i]})).filter(o=>o.x);
+  if(!only&&list.length<SERIES)list=[...list,...(window.TEF_GEN?.make(id,SERIES-list.length)||[])];
+  if(!list.length){app().toast('Tu as fait toutes les questions de ce sujet aujourd’hui. Reviens demain, ou essaie les questions IA.');return}
+  session({key:'topic-'+id,title:card(id).title,topicId:id,items:list,back:{label:card(id).title,fn:()=>go('#g/'+id)},extraMore:moreFor(id),
+    more:{label:`Encore ${SERIES} questions`,fn:()=>{P=null;renderPractice(id);if(location.hash!=='#gp/'+id)history.replaceState(null,'','#gp/'+id)}}},true);
 }
 /* cfg: {key,title,items:[{tid,i,x}],mixed?,topicId?,back:{label,fn},onEnd?(summary),endPrimary?{label,fn}} */
 function session(cfg,viaRoute){
@@ -173,6 +229,8 @@ function head(){
   const done=P.results.length,ok=P.results.filter(r=>r.ok).length;
   return `<div class="practice-head"><button class="back-link" data-lesson>‹ ${esc(P.back.label)}</button>${P.mixed||P.subtitle?`<div class="practice-title">${esc(P.title)}</div>`:''}<div class="practice-progress"><span>${Math.min(P.idx+1,P.items.length)}/${P.items.length}</span><span class="muted">${ok} juste${ok>1?'s':''} sur ${done}</span></div><div class="mini-bar"><i style="width:${Math.round(100*P.idx/P.items.length)}%"></i></div></div>`;
 }
+/* « (aller, futur simple) », « aller (futur simple) » and « aller, futur simple » are all shown as (aller, futur simple). */
+const cueText=h=>String(h).trim().replace(/^\((.*)\)$/,'$1').replace(/\s*\(([^()]*)\)/g,', $1').replace(/^,\s*/,'').trim();
 function promptHTML(s,inputHTML){
   const parts=String(s).split(/_{3,}/);
   if(parts.length<2)return esc(s)+(inputHTML?`<div style="margin-top:10px">${inputHTML}</div>`:'');
@@ -187,13 +245,15 @@ function renderExercise(){
     const order=shuffle(x.choices.map((c,i)=>({c,ok:i===x.answer})));
     body=`<p class="ex-prompt">${promptHTML(x.prompt)}</p><div class="choice-list">${order.map(o=>`<button class="choice" data-ok="${o.ok?1:0}">${esc(o.c)}</button>`).join('')}</div>`;
   }else if(x.type==='fill'){
-    body=`<p class="ex-prompt">${promptHTML(x.prompt,'<input class="gap-input" id="exInput" autocomplete="off" autocapitalize="none" spellcheck="false" enterkeyhint="done">')}</p>${x.hint?`<button class="hint-btn" id="exHint">Indice</button><span class="muted" id="exHintText" hidden>${esc(x.hint)}</span>`:''}${accentBar()}<button class="btn" id="exCheck">Vérifier</button>`;
+    /* A gap's hint says which word or form goes in it (« pouvoir », « possessif, je »), so it is shown right after the gap, textbook style. */
+    const cue=x.hint?` <span class="ex-cue">(${esc(cueText(x.hint))})</span>`:'';
+    body=`<p class="ex-prompt">${promptHTML(x.prompt,'<input class="gap-input" id="exInput" autocomplete="off" autocapitalize="none" spellcheck="false" enterkeyhint="done">'+cue)}</p>${accentBar()}<button class="btn" id="exCheck">Vérifier</button>`;
   }else if(x.type==='fix'||x.type==='transform'){
     body=`${x.instruction?`<p class="ex-instruction">${esc(x.instruction)}</p>`:'<p class="ex-instruction">Cette phrase contient une erreur. Réécris-la correctement.</p>'}<div class="doc-box ex-source">${esc(x.prompt)}</div><textarea class="writing-area ex-area" id="exInput" rows="3" autocomplete="off" autocapitalize="sentences" spellcheck="false">${x.type==='fix'?esc(x.prompt):''}</textarea>${x.hint?`<button class="hint-btn" id="exHint">Indice</button><span class="muted" id="exHintText" hidden>${esc(x.hint)}</span>`:''}${accentBar()}<button class="btn" id="exCheck">Vérifier</button>`;
   }else if(x.type==='order'){
     body=`<p class="ex-instruction">Touche les mots dans le bon ordre pour former la phrase.</p><div class="order-line" id="orderLine"><span class="muted">Ta phrase apparaîtra ici</span></div><div class="order-bank" id="orderBank">${shuffle(x.words.map((w,i)=>({w,i}))).map(o=>`<button class="token" data-t="${o.i}">${esc(o.w)}</button>`).join('')}</div><div class="button-row"><button class="btn ghost small" id="orderReset">Recommencer</button><button class="btn" id="exCheck">Vérifier</button></div>`;
   }
-  const topicChip=P.mixed?`<span class="chip topic-chip">${esc(card(it.tid).title)}</span>`:'';
+  const topicChip=(P.mixed?`<span class="chip topic-chip">${esc(card(it.tid).title)}</span>`:'')+(x.ai?'<span class="chip ai-chip">IA</span>':x.gen?'<span class="chip ai-chip">auto</span>':'');
   root.innerHTML=head()+`<div class="card exercise"><div class="exercise-top"><span class="kicker">${TYPE_LABEL[x.type]||''}</span>${topicChip}</div>${body}<div id="exFb"></div><div class="runner-nav" id="exNav" hidden><span></span><button class="btn" id="exNext">${P.idx<P.items.length-1?'Suivant ›':'Voir mon score'}</button></div></div>`;
   $('[data-lesson]',root).onclick=()=>P.back.fn();
   $('#exHint')&&($('#exHint').onclick=()=>{$('#exHintText').hidden=false;$('#exHint').hidden=true});
@@ -231,11 +291,24 @@ function gradeTyped(x,given){
   record(ok,given,best);
   const fullGiven=x.type==='fill'?String(x.prompt).replace(/_{3,}/,given.trim()):given;
   const fullBest=x.type==='fill'?String(x.prompt).replace(/_{3,}/,best):best;
-  feedback(r.verdict,x,ok?'':(x.type==='fill'?`<strong>${esc(best)}</strong>`:esc(best)),ok?'':diff(fullGiven,fullBest),x.answers.length>1&&!ok?x.answers.filter(a=>a!==best):null);
+  feedback(r.verdict,x,ok?'':(x.type==='fill'?`<strong>${esc(best)}</strong>`:esc(best)),ok?'':diff(fullGiven,fullBest),x.answers.length>1&&!ok?alsoOk(x.answers,best):null);
+}
+/* Other accepted answers, without the ones that only differ by a comma; at most three are shown. */
+function alsoOk(answers,best){
+  const seen=new Set([nocomma(norm(best))]),out=[];
+  for(const a of answers){const k=nocomma(norm(a));if(!seen.has(k)){seen.add(k);out.push(a)}}
+  return out.length>3?[...out.slice(0,3),'…']:out;
 }
 function feedback(verdict,x,expected,diffHTML,others){
   const title={ok:'✓ Correct',accents:'≈ Presque : vérifie les accents',wrong:'✕ Pas tout à fait'}[verdict];
   $('#exFb').innerHTML=`<div class="feedback ex-feedback v-${verdict}"><strong>${title}</strong>${expected?`<div>Réponse attendue : ${expected}</div>`:''}${diffHTML?`<div class="diff">${diffHTML}</div>`:''}${others?.length?`<div class="muted">Aussi accepté : ${others.map(esc).join(' · ')}</div>`:''}${x.explain?`<div class="ex-explain">${esc(x.explain)}</div>`:''}</div>`;
+  if(!P.items[P.idx]?.x?.gen)$('#exFb').insertAdjacentHTML('beforeend','<button class="link-btn flag-btn" id="exFlag">Signaler une erreur dans cette question</button>');
+  $('#exFlag')&&($('#exFlag').onclick=()=>{
+    const it=P.items[P.idx],st=S();st.flags=st.flags||{};
+    st.flags[sig(it.x)]={t:Date.now(),tid:it.tid,type:it.x.type,ai:!!it.x.ai};
+    if(it.x.ai)it.x.flagged=true;
+    app().save();$('#exFlag').textContent='Merci : cette question ne reviendra plus.';$('#exFlag').disabled=true;
+  });
   $('#exNav').hidden=false;$('#exNext').focus();
   $('#exNext').onclick=()=>{P.idx++;renderExercise()};
 }
@@ -261,12 +334,13 @@ function renderEnd(){
   cb?.({ok,total,by});
   const pct=total?Math.round(100*ok/total):0;
   const msg=pct>=85?'Excellent : c’est en place.':pct>=60?'Bien. Refais tes erreurs maintenant, puis relis la partie « À retenir ».':'Relis la règle et les exemples, puis refais tes erreurs. Elles sont aussi dans « Mes erreurs ».';
-  const primary=P.endPrimary;
-  $('#gpracticeBody').innerHTML=`<div class="practice-head"><button class="back-link" data-lesson>‹ ${esc(P.back.label)}</button></div><div class="card intro-card"><h2>${ok}/${total}</h2><p>${msg}</p>${breakdown}<div class="button-row" style="justify-content:center">${primary?`<button class="btn" id="endPrimary">${esc(primary.label)}</button>`:''}${wrongK.length?`<button class="btn ${primary?'secondary':''}" id="redoWrong">Refaire mes erreurs (${wrongK.length})</button>`:''}${P.topicId?`<button class="btn ${wrongK.length||primary?'ghost':''}" id="redoAll">Tout refaire</button>`:''}<button class="btn ghost" data-lesson>${P.topicId?'Revoir le cours':'Retour'}</button></div></div>`;
+  const primary=P.endPrimary,more=P.more,extra=P.extraMore;
+  $('#gpracticeBody').innerHTML=`<div class="practice-head"><button class="back-link" data-lesson>‹ ${esc(P.back.label)}</button></div><div class="card intro-card"><h2>${ok}/${total}</h2><p>${msg}</p>${breakdown}<div class="button-row" style="justify-content:center">${primary?`<button class="btn" id="endPrimary">${esc(primary.label)}</button>`:''}${wrongK.length?`<button class="btn ${primary?'secondary':''}" id="redoWrong">Refaire mes erreurs (${wrongK.length})</button>`:''}${more?`<button class="btn ${wrongK.length||primary?'secondary':''}" id="moreQ">${esc(more.label)}</button>`:''}${extra?`<button class="btn ghost" id="extraQ">${esc(extra.label)}</button>`:''}<button class="btn ghost" data-lesson>${P.topicId?'Revoir le cours':'Retour'}</button></div></div>`;
   $$('[data-lesson]').forEach(b=>b.onclick=()=>P.back.fn());
   $('#endPrimary')&&($('#endPrimary').onclick=()=>primary.fn());
   $('#redoWrong')&&($('#redoWrong').onclick=()=>session({...P,key:P.key+'-r',title:P.title,items:wrongK.map(k=>P.items[k]),onEnd:null},false));
-  $('#redoAll')&&($('#redoAll').onclick=()=>renderPractice(P.topicId));
+  $('#moreQ')&&($('#moreQ').onclick=e=>more.fn(e.currentTarget));
+  $('#extraQ')&&($('#extraQ').onclick=e=>extra.fn(e.currentTarget));
 }
 
 function init(){
@@ -274,5 +348,5 @@ function init(){
   route();
 }
 window.TEF_TOPIC={init,open:(id,o)=>{origin=o||'grammar';go('#g/'+id)},copy:(id,o)=>{origin=o||'grammar';go('#c/'+id)},practice:id=>go('#gp/'+id),
-  session:(cfg)=>{origin='today';session(cfg,false)},check,norm,practiceItems,route,current:()=>P&&{key:P.key,items:P.items.map(o=>({tid:o.tid,i:o.i,x:o.x})),idx:P.idx}};
+  session:(cfg)=>{origin='today';session(cfg,false)},check,norm,practiceItems,isFlagged,levelOf,invalidate,moreFor,unlimited,generateAI,route,current:()=>P&&{key:P.key,items:P.items.map(o=>({tid:o.tid,i:o.i,x:o.x})),idx:P.idx}};
 })();

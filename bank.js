@@ -9,5 +9,6 @@ for(const k of ['reading','listening','vocab','grammar','writingPrompts','speaki
   for(const x of B[k]||[])if(!ids.has(x.id)){D[k].push(x);ids.add(x.id)}
 }
 D.grammarPlus=Object.assign({},D.grammarPlus||{},B.grammarPlus||{});
+D.grammarMore=Object.assign({},D.grammarMore||{},B.grammarMore||{});
 D.grammar.sort((a,b)=>(a.order??999)-(b.order??999));
 })();
