@@ -162,8 +162,11 @@ function practiceItems(id){
   const extra=[g.drill,...(g.drills||[])].filter(Boolean).map(d=>({type:'mcq',lvl:1,prompt:d.prompt,choices:d.choices,answer:d.answer,explain:''}));
   const own=p.practice||[];
   // Order is stable on purpose (answer history is keyed by index): own set, card drills, then the larger bank.
-  const base=own.length?[...own,...extra.filter(d=>!own.some(o=>norm(o.prompt)===norm(d.prompt)))]:extra;
-  const more=((D().grammarMore||{})[id]||[]).filter(m=>!base.some(b=>norm(b.prompt)===norm(m.prompt)));
+  // Duplicate check by sentence; word-order exercises have no prompt, so they are compared by their answer.
+  const sig=x=>norm(x.prompt||(x.answers||[])[0]||(x.words||[]).join(' '));
+  const base=own.length?[...own,...extra.filter(d=>!own.some(o=>sig(o)===sig(d)))]:extra;
+  const seenSig=new Set(base.map(sig));
+  const more=((D().grammarMore||{})[id]||[]).filter(m=>{const k=sig(m);if(seenSig.has(k))return false;seenSig.add(k);return true});
   const ai=((S().aiBank||{})[id]||[]); // questions generated for this learner, appended so their history keys stay stable
   const all=[...base,...more,...ai];
   bankCache.set(id,all);return all;
