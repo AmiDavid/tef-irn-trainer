@@ -88,33 +88,57 @@ async function visible(page,selector){
     await visible(page,"#view-gtopic.active");
     await page.locator("#topicNotes").fill("Les si n’aiment pas les -rais.");
     await page.waitForTimeout(700);
-    /* Practice page: answer each exercise; typed answers use the expected answer, then one deliberate mistake. */
+    /* Practice page: a series picked from the bank (easy → hard); answer each question correctly except one typed answer. */
+    const answerCurrent=async(wrong=false)=>{
+      const x=await page.evaluate(()=>{const c=TEF_TOPIC.current();return c.items[c.idx].x});
+      assert.ok(await page.locator("#exNav").isHidden(),"Next must stay hidden until the question is answered");
+      if(x.type==="mcq")await page.locator(`#gpracticeBody [data-ok='${wrong?0:1}']`).first().click();
+      else if(x.type==="order"){
+        const target=x.answers[0].replace(/[.!?…]+$/,"").split(" "),used=new Set();
+        for(const w of target){const toks=page.locator("#orderBank .token"),n=await toks.count();
+          for(let k=0;k<n;k++){const t=toks.nth(k),id=await t.getAttribute("data-t");if(used.has(id))continue;if((await t.textContent()).toLocaleLowerCase("fr")===w.toLocaleLowerCase("fr")){await t.click();used.add(id);break}}}
+        await page.locator("#exCheck").click();
+      }else{await page.locator("#exInput").fill(wrong?"mauvaise réponse":x.answers[0]);await page.locator("#exCheck").click()}
+      const fb=await page.locator("#exFb").textContent();
+      await page.locator("#exNext").click();
+      return {x,fb};
+    };
+    const answerSession=async(wrongAt=-1)=>{
+      const keys=[];
+      for(let guard=0;guard<60;guard++){
+        if(await page.locator("#gpracticeBody .intro-card").count())break;
+        const c=await page.evaluate(()=>{const c=TEF_TOPIC.current();return c&&c.items[c.idx]?{idx:c.idx,key:c.items[c.idx].tid+":"+c.items[c.idx].i}:null});
+        if(!c)break;
+        const {x,fb}=await answerCurrent(c.idx===wrongAt);
+        if(c.idx===wrongAt&&x.type!=="mcq"&&x.type!=="order")assert.ok(fb.includes("Pas tout à fait"),"wrong typed answer must be rejected");
+        else if(c.idx!==wrongAt)assert.ok(fb.includes("Correct"),"question "+c.key+" ("+x.type+") should accept the expected answer: "+fb);
+        keys.push(c.key);
+      }
+      return keys;
+    };
     await page.locator("[data-practice]").first().click();
     await visible(page,"#view-gpractice.active .exercise");
-    const items=await page.evaluate(()=>window.TEF_TOPIC.practiceItems("g7"));
-    assert.ok(items.length>=12);
-    for(let i=0;i<items.length;i++){
-      const x=items[i];
-      if(x.type==="mcq"){await page.locator("#gpracticeBody [data-ok='1']").click()}
-      else if(x.type==="order"){
-        const target=x.answers[0].replace(/[.!?…]+$/,"").split(" ");
-        const used=new Set();
-        for(const w of target){
-          const toks=page.locator("#orderBank .token");const n=await toks.count();
-          for(let k=0;k<n;k++){const t=toks.nth(k);const idx=await t.getAttribute("data-t");if(used.has(idx))continue;if((await t.textContent()).toLocaleLowerCase("fr")===w.toLocaleLowerCase("fr")){await t.click();used.add(idx);break}}
-        }
-        await page.locator("#exCheck").click();
-      }else{
-        const ans=i===2?"mauvaise réponse":x.answers[0];
-        await page.locator("#exInput").fill(ans);
-        await page.locator("#exCheck").click();
-      }
-      const fb=await page.locator("#exFb").textContent();
-      if(i===2&&x.type!=="mcq"&&x.type!=="order")assert.ok(fb.includes("Pas tout à fait"),"wrong typed answer must be rejected");
-      else assert.ok(fb.includes("Correct"),"exercise "+i+" ("+x.type+") should accept the expected answer: "+fb);
-      await page.locator("#exNext").click();
-    }
-    await visible(page,"#redoAll");
+    assert.ok(await page.evaluate(()=>TEF_TOPIC.practiceItems("g7").length)>=40,"g7 bank has the extra questions");
+    const firstSeries=await page.evaluate(()=>TEF_TOPIC.current().items.map(o=>o.tid+":"+o.i));
+    assert.equal(firstSeries.length,15);
+    assert.ok(firstSeries.every(k=>k.startsWith("g7:")));
+    const lv=await page.evaluate(()=>TEF_TOPIC.current().items.map(o=>TEF_TOPIC.levelOf("g7",o.i)));
+    assert.deepEqual(lv,[...lv].sort((a,b)=>a-b),"a series goes from easy to hard");
+    await answerSession(2);
+    await visible(page,"#moreQ");
+    await page.locator("#moreQ").click();
+    await visible(page,"#view-gpractice.active .exercise");
+    const second=await page.evaluate(()=>TEF_TOPIC.current().items.map(o=>o.tid+":"+o.i));
+    assert.ok(second.every(k=>!firstSeries.includes(k)),"« Encore » brings questions not answered today");
+    /* Unlimited automatic drills on a conjugation topic. */
+    await page.evaluate(()=>{location.hash="#g/g12"});
+    await visible(page,"#view-gtopic.active #genBtn");
+    await page.locator("#genBtn").click();
+    await visible(page,"#view-gpractice.active .exercise .ai-chip");
+    assert.ok(await page.evaluate(()=>TEF_TOPIC.current().items.every(o=>o.x.gen&&o.i==="gen")),"generated drills");
+    for(let k=0;k<4;k++){const {fb}=await answerCurrent(false);assert.ok(fb.includes("Correct"),"generated drill answer accepted: "+fb)}
+    await page.evaluate(()=>{location.hash="#g/g7"});
+    await visible(page,"#view-gtopic.active");
     assert.ok(await page.evaluate(()=>window.TEF_APP.S.gnotes.g7.includes("rais")),"notes saved");
     /* Accent-only differences are flagged as « presque ». */
     assert.equal(await page.evaluate(()=>window.TEF_TOPIC.check("Je préfère",["Je préfère."]).verdict),"ok");
@@ -188,23 +212,6 @@ async function visible(page,selector){
 
     /* Daily lesson plan: day 1 = read → notebook copy → basic questions; day 2 adds a review of day 1;
        an unfinished day carries over. Dates are simulated with window.__TEF_TODAY__. */
-    async function answerSession(wrongAt=-1){
-      for(let guard=0;guard<40;guard++){
-        if(await page.locator("#endPrimary").count())break;
-        const cur=await page.evaluate(()=>{const c=TEF_TOPIC.current();return c&&c.items[c.idx]?{x:c.items[c.idx].x,idx:c.idx}:null});
-        if(!cur)break;
-        assert.ok(await page.locator("#exNav").isHidden(),"Next must stay hidden until the question is answered");
-        const x=cur.x,wrong=cur.idx===wrongAt;
-        if(x.type==="mcq")await page.locator(`#gpracticeBody [data-ok='${wrong?0:1}']`).first().click();
-        else if(x.type==="order"){
-          const target=x.answers[0].replace(/[.!?…]+$/,"").split(" "),used=new Set();
-          for(const w of target){const toks=page.locator("#orderBank .token"),n=await toks.count();
-            for(let k=0;k<n;k++){const t=toks.nth(k),id=await t.getAttribute("data-t");if(used.has(id))continue;if((await t.textContent()).toLocaleLowerCase("fr")===w.toLocaleLowerCase("fr")){await t.click();used.add(id);break}}}
-          await page.locator("#exCheck").click();
-        }else{await page.locator("#exInput").fill(wrong?"réponse fausse":x.answers[0]);await page.locator("#exCheck").click()}
-        await page.locator("#exNext").click();
-      }
-    }
     await page.evaluate(()=>{delete TEF_APP.S.course;window.__TEF_TODAY__="2026-11-08";TEF_APP.save()});
     await page.locator('#bottomNav [data-view="today"]').click();
     const firstId=await page.evaluate(()=>TEF_APP.D.grammar[0].id);
@@ -221,14 +228,17 @@ async function visible(page,selector){
     await visible(page,"#view-today.active");
     await page.locator('#lessonDay [data-step="practice"]').click();
     await visible(page,"#view-gpractice.active .exercise");
-    assert.equal(await page.evaluate(()=>TEF_TOPIC.current().items.length),8);
+    const basic=await page.evaluate(()=>TEF_TOPIC.current().items.map(o=>({key:o.tid+":"+o.i,lv:TEF_TOPIC.levelOf(o.tid,o.i)})));
+    assert.equal(basic.length,15,"15 basic questions by default");
+    assert.ok(basic.filter(b=>b.lv===1).length>=8&&basic.every(b=>b.lv<=2),"basic set = mostly level 1, then level 2");
+    const wrongKey=basic[1].key;
     await answerSession(1);
-    assert.match(await page.locator("#gpracticeBody .intro-card h2").textContent(),/^7\/8$/);
+    assert.match(await page.locator("#gpracticeBody .intro-card h2").textContent(),/^14\/15$/);
     await page.locator("#endPrimary").click();
     await visible(page,"#lessonDay .ld-done");
     let course=await page.evaluate(()=>TEF_APP.S.course);
     assert.deepEqual(course.seq,[firstId]);
-    assert.deepEqual(course.done[firstId].practice,{ok:7,total:8});
+    assert.deepEqual(course.done[firstId].practice,{ok:14,total:15});
     /* Day 2: new topic + review that only uses day-1 questions, starting with the one answered wrong. */
     await page.evaluate(()=>{window.__TEF_TODAY__="2026-11-09";TEF_DAILY.render()});
     course=await page.evaluate(()=>TEF_APP.S.course);
@@ -237,8 +247,10 @@ async function visible(page,selector){
     await page.locator('#lessonDay [data-step="review"]').click();
     await visible(page,"#view-gpractice.active .exercise .topic-chip");
     const rev=await page.evaluate(()=>TEF_TOPIC.current().items.map(o=>o.tid+":"+o.i));
-    assert.ok(rev.length>=4&&rev.every(k=>k.startsWith(firstId+":")),"review must use earlier topics only: "+rev);
-    assert.ok(rev.includes(firstId+":1"),"the question answered wrong yesterday comes back");
+    assert.equal(rev.length,12,"12 review questions by default");
+    assert.ok(rev.every(k=>k.startsWith(firstId+":")),"review must use earlier topics only: "+rev);
+    assert.ok(rev.includes(wrongKey),"the question answered wrong yesterday comes back");
+    assert.ok(rev.filter(k=>basic.some(b=>b.key===k)).length<=1,"review prefers questions not seen yesterday");
     await answerSession();
     await page.locator("#endPrimary").click();
     course=await page.evaluate(()=>TEF_APP.S.course);

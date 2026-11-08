@@ -57,6 +57,7 @@ let syncTimer;
 window.addEventListener('tef:state',()=>{clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncState(false),1200)});
 
 C.analyzeWriting=async({text,task,constraints,errors})=>post('/api/analyze-writing',{text,task,constraints,errors});
+C.generateExercises=async(payload)=>post('/api/generate-exercises',payload);
 async function fileDataURL(file,max=2000){
   const raw=await new Promise((ok,bad)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=bad;r.readAsDataURL(file)});
   const img=await new Promise((ok,bad)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=bad;i.src=raw});

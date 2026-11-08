@@ -18,6 +18,18 @@ A mobile-first PWA for personal TEF IRN preparation. The initial learner profile
 
 The app does not redistribute CCI/TEF audio. Official resources are linked separately. Internal audio exercises are original TEF-style practice.
 
+## Daily lesson and practice bank (builds 16–17)
+
+- **Leçon du jour** (home screen): one grammar topic per day in learning order — read the lesson, copy the
+  « version cahier » (Seyès page, printable) into a notebook, basic questions (10/15/25 per day), then from day 2 a
+  spaced review of earlier topics. Unfinished days carry over. Code: `daily.js`, `topic.js`.
+- **Practice bank**: ≈40 checked exercises per topic (`content/grammar-plus-*.js` + `content/grammar-more-*.js`,
+  levels 1–3, five types), validated by `npm run qa:content`.
+- **Unlimited automatic drills** (`generators.js`) for mechanical topics — conjugation in every exam tense
+  (from the tested conjugation engine), un/une, plurals, feminine adjectives, du/de la/des, au/à la/aux.
+- **AI questions on demand**: `api/generate-exercises.js` writes 10 new exercises with Claude, a second pass verifies
+  every answer key, and they are saved in the learner's state so they come back in reviews. Users can flag a question.
+
 ## Running locally
 
 Serve this folder over HTTP, e.g. `python -m http.server 8000`, then open `http://localhost:8000`.
