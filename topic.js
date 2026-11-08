@@ -229,6 +229,8 @@ function head(){
   const done=P.results.length,ok=P.results.filter(r=>r.ok).length;
   return `<div class="practice-head"><button class="back-link" data-lesson>‹ ${esc(P.back.label)}</button>${P.mixed||P.subtitle?`<div class="practice-title">${esc(P.title)}</div>`:''}<div class="practice-progress"><span>${Math.min(P.idx+1,P.items.length)}/${P.items.length}</span><span class="muted">${ok} juste${ok>1?'s':''} sur ${done}</span></div><div class="mini-bar"><i style="width:${Math.round(100*P.idx/P.items.length)}%"></i></div></div>`;
 }
+/* « (aller, futur simple) », « aller (futur simple) » and « aller, futur simple » are all shown as (aller, futur simple). */
+const cueText=h=>String(h).trim().replace(/^\((.*)\)$/,'$1').replace(/\s*\(([^()]*)\)/g,', $1').replace(/^,\s*/,'').trim();
 function promptHTML(s,inputHTML){
   const parts=String(s).split(/_{3,}/);
   if(parts.length<2)return esc(s)+(inputHTML?`<div style="margin-top:10px">${inputHTML}</div>`:'');
@@ -244,7 +246,7 @@ function renderExercise(){
     body=`<p class="ex-prompt">${promptHTML(x.prompt)}</p><div class="choice-list">${order.map(o=>`<button class="choice" data-ok="${o.ok?1:0}">${esc(o.c)}</button>`).join('')}</div>`;
   }else if(x.type==='fill'){
     /* A gap's hint says which word or form goes in it (« pouvoir », « possessif, je »), so it is shown right after the gap, textbook style. */
-    const cue=x.hint?` <span class="ex-cue">(${esc(String(x.hint).trim().replace(/^\((.*)\)$/,'$1'))})</span>`:'';
+    const cue=x.hint?` <span class="ex-cue">(${esc(cueText(x.hint))})</span>`:'';
     body=`<p class="ex-prompt">${promptHTML(x.prompt,'<input class="gap-input" id="exInput" autocomplete="off" autocapitalize="none" spellcheck="false" enterkeyhint="done">'+cue)}</p>${accentBar()}<button class="btn" id="exCheck">Vérifier</button>`;
   }else if(x.type==='fix'||x.type==='transform'){
     body=`${x.instruction?`<p class="ex-instruction">${esc(x.instruction)}</p>`:'<p class="ex-instruction">Cette phrase contient une erreur. Réécris-la correctement.</p>'}<div class="doc-box ex-source">${esc(x.prompt)}</div><textarea class="writing-area ex-area" id="exInput" rows="3" autocomplete="off" autocapitalize="sentences" spellcheck="false">${x.type==='fix'?esc(x.prompt):''}</textarea>${x.hint?`<button class="hint-btn" id="exHint">Indice</button><span class="muted" id="exHintText" hidden>${esc(x.hint)}</span>`:''}${accentBar()}<button class="btn" id="exCheck">Vérifier</button>`;

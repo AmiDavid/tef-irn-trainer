@@ -92,7 +92,7 @@ async function visible(page,selector){
     const answerCurrent=async(wrong=false,beforeNext=null)=>{
       const x=await page.evaluate(()=>{const c=TEF_TOPIC.current();return c.items[c.idx].x});
       assert.ok(await page.locator("#exNav").isHidden(),"Next must stay hidden until the question is answered");
-      if(x.type==="fill"&&x.hint)assert.ok((await page.locator("#gpracticeBody .ex-cue").textContent()).includes(x.hint.trim().replace(/^\((.*)\)$/,"$1")),"a gap's hint is shown next to it");
+      if(x.type==="fill"&&x.hint)assert.ok((await page.locator("#gpracticeBody .ex-cue").textContent()).includes(x.hint.trim().replace(/^\((.*)\)$/,"$1").replace(/\s*\(([^()]*)\)/g,", $1").replace(/^,\s*/,"").trim()),"a gap's hint is shown next to it");
       if(x.type==="mcq")await page.locator(`#gpracticeBody [data-ok='${wrong?0:1}']`).first().click();
       else if(x.type==="order"){
         const target=x.answers[0].replace(/[.!?…]+$/,"").replace(/,/g,"").split(" ").filter(Boolean),used=new Set();
