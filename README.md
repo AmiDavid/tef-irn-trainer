@@ -28,7 +28,11 @@ The app does not redistribute CCI/TEF audio. Official resources are linked separ
 - **Unlimited automatic drills** (`generators.js`) for mechanical topics — conjugation in every exam tense
   (from the tested conjugation engine), un/une, plurals, feminine adjectives, du/de la/des, au/à la/aux.
 - **AI questions on demand**: `api/generate-exercises.js` writes 10 new exercises with Claude, a second pass verifies
-  every answer key, and they are saved in the learner's state so they come back in reviews. Users can flag a question.
+  every answer key, and they are saved in the learner's state so they come back in reviews.
+- **Answer checking** (`topic.js`): case, spacing, final punctuation, commas and ' vs ’ are ignored; accent-only slips
+  count as « presque ». A gap's `hint` (base word / tense) is shown in brackets right after the gap.
+- **« Signaler une erreur »** on every bank or AI question: the question never comes back, and the report is kept in
+  `S.flags` (synced with the progress), keyed by the question's sentence, so it can be corrected in the content files.
 
 ## Running locally
 
