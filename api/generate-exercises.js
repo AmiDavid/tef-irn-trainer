@@ -20,14 +20,15 @@ function valid(x){
   if(x.type==="order"){
     if(!Array.isArray(x.words)||x.words.length<4||x.words.length>9)return false;
     const sorted=a=>a.map(w=>norm(w)).sort().join("|");
-    return x.answers.every(a=>sorted(norm(a).split(" "))===sorted(x.words));
+    if(x.words.some(w=>typeof w!=="string"||/[,\s]/.test(w.trim())))return false;
+    return x.answers.every(a=>sorted(norm(a).replace(/,/g," ").split(" ").filter(Boolean))===sorted(x.words));
   }
   return false;
 }
 
 const SPEC=`Exercise formats (JSON objects):
 - {"type":"mcq","lvl":1|2|3,"prompt":"Sentence with ___ .","choices":["a","b","c"],"answer":<index>,"explain":"why"} — 3–4 unique choices, exactly one correct.
-- {"type":"fill","lvl":..,"prompt":"Sentence with exactly one ___ gap.","answers":["every correct variant"],"hint":"e.g. venir, futur simple","explain":"why"} — the learner types only the gap; the hint is shown in brackets right after the gap, so use it to name the base word and form whenever another word could fit.
+- {"type":"fill","lvl":..,"prompt":"Sentence with exactly one ___ gap.","answers":["every correct variant"],"hint":"e.g. venir, futur simple","explain":"why"} — the learner types only the gap; the hint is shown in brackets right after the gap, so use it to name the base word and form whenever another word could fit, and do not also write it in the prompt.
 - {"type":"fix","lvl":..,"prompt":"Sentence with exactly ONE typical learner error on this topic.","answers":["Full corrected sentence."],"explain":"what was wrong"}
 - {"type":"transform","lvl":..,"instruction":"Consigne en français (vous)","prompt":"Source sentence.","answers":["Target sentence."],"explain":"why"}
 - {"type":"order","lvl":..,"words":["shuffled","tokens"],"answers":["The sentence."],"explain":"why"} — tokens = the answer split on spaces, final punctuation removed; 4–9 tokens; no commas or question marks.

@@ -31,9 +31,10 @@ function check(given,answers){
 function diff(given,answer){
   const a=String(given||'').trim().split(/\s+/),b=String(answer||'').trim().split(/\s+/);
   const n=a.length,m=b.length,L=Array.from({length:n+1},()=>new Array(m+1).fill(0));
-  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)L[i][j]=norm(a[i])===norm(b[j])?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  const same=(u,v)=>nocomma(norm(u))===nocomma(norm(v));
+  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)L[i][j]=same(a[i],b[j])?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
   const out=[];let i=0,j=0;
-  while(i<n&&j<m){if(norm(a[i])===norm(b[j])){out.push(esc(b[j]));i++;j++}else if(L[i+1][j]>=L[i][j+1]){out.push(`<del>${esc(a[i])}</del>`);i++}else{out.push(`<ins>${esc(b[j])}</ins>`);j++}}
+  while(i<n&&j<m){if(same(a[i],b[j])){out.push(esc(b[j]));i++;j++}else if(L[i+1][j]>=L[i][j+1]){out.push(`<del>${esc(a[i])}</del>`);i++}else{out.push(`<ins>${esc(b[j])}</ins>`);j++}}
   while(i<n)out.push(`<del>${esc(a[i++])}</del>`);while(j<m)out.push(`<ins>${esc(b[j++])}</ins>`);
   return out.join(' ');
 }

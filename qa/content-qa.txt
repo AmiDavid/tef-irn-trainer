@@ -211,7 +211,8 @@ for(const g of D.grammar){
       if(x.type==="fix")assert.ok(x.answers.every(a=>qnorm(a)!==qnorm(x.prompt)),id+" fix answer equals prompt");
       if(x.type==="order"){
         const sorted=a=>a.slice().map(w=>w.toLocaleLowerCase("fr")).sort().join("|");
-        assert.ok(x.answers.every(a=>sorted(qnorm(a).split(" "))===sorted(x.words.map(w=>qnorm(w)))),id+" order tokens do not rebuild the answer");
+        assert.ok(x.words.every(w=>!/,/.test(w)),id+" order tokens carry no comma");
+        assert.ok(x.answers.every(a=>sorted(qnorm(a).replace(/,/g," ").split(" ").filter(Boolean))===sorted(x.words.map(w=>qnorm(w)))),id+" order tokens do not rebuild the answer");
       }
     }
   };
