@@ -75,7 +75,7 @@ const seenCount=id=>Object.keys(C().qlog).filter(k=>k.startsWith(id+':')).length
    Questions answered today come last (only used when nothing else is left). */
 function ranked(id,avoid){
   const log=C().qlog,today=localDay();
-  return items(id).map((x,i)=>{const L=log[id+':'+i];return {i,key:id+':'+i,lv:lvl(id,i),bad:!!x.flagged,today:!!(L&&L.d===today),pr:!L?1:L.ok?2:0,t:L?L.t:0,r:Math.random()}})
+  return items(id).map((x,i)=>{const L=log[id+':'+i];return {i,key:id+':'+i,lv:lvl(id,i),bad:!!x.flagged||!!window.TEF_TOPIC?.isFlagged?.(x),today:!!(L&&L.d===today),pr:!L?1:L.ok?2:0,t:L?L.t:0,r:Math.random()}})
     .filter(o=>!o.bad&&(!avoid||!avoid.has(o.key)))
     .sort((a,b)=>(a.today-b.today)||(a.pr-b.pr)||(a.t-b.t)||(a.r-b.r));
 }

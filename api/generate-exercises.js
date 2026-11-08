@@ -27,7 +27,7 @@ function valid(x){
 
 const SPEC=`Exercise formats (JSON objects):
 - {"type":"mcq","lvl":1|2|3,"prompt":"Sentence with ___ .","choices":["a","b","c"],"answer":<index>,"explain":"why"} — 3–4 unique choices, exactly one correct.
-- {"type":"fill","lvl":..,"prompt":"Sentence with exactly one ___ gap.","answers":["every correct variant"],"hint":"optional, e.g. (venir, futur simple)","explain":"why"} — the learner types only the gap.
+- {"type":"fill","lvl":..,"prompt":"Sentence with exactly one ___ gap.","answers":["every correct variant"],"hint":"e.g. venir, futur simple","explain":"why"} — the learner types only the gap; the hint is shown in brackets right after the gap, so use it to name the base word and form whenever another word could fit.
 - {"type":"fix","lvl":..,"prompt":"Sentence with exactly ONE typical learner error on this topic.","answers":["Full corrected sentence."],"explain":"what was wrong"}
 - {"type":"transform","lvl":..,"instruction":"Consigne en français (vous)","prompt":"Source sentence.","answers":["Target sentence."],"explain":"why"}
 - {"type":"order","lvl":..,"words":["shuffled","tokens"],"answers":["The sentence."],"explain":"why"} — tokens = the answer split on spaces, final punctuation removed; 4–9 tokens; no commas or question marks.

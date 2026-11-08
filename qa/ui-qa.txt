@@ -89,9 +89,10 @@ async function visible(page,selector){
     await page.locator("#topicNotes").fill("Les si n’aiment pas les -rais.");
     await page.waitForTimeout(700);
     /* Practice page: a series picked from the bank (easy → hard); answer each question correctly except one typed answer. */
-    const answerCurrent=async(wrong=false)=>{
+    const answerCurrent=async(wrong=false,beforeNext=null)=>{
       const x=await page.evaluate(()=>{const c=TEF_TOPIC.current();return c.items[c.idx].x});
       assert.ok(await page.locator("#exNav").isHidden(),"Next must stay hidden until the question is answered");
+      if(x.type==="fill"&&x.hint)assert.ok((await page.locator("#gpracticeBody .ex-cue").textContent()).includes(x.hint.trim().replace(/^\((.*)\)$/,"$1")),"a gap's hint is shown next to it");
       if(x.type==="mcq")await page.locator(`#gpracticeBody [data-ok='${wrong?0:1}']`).first().click();
       else if(x.type==="order"){
         const target=x.answers[0].replace(/[.!?…]+$/,"").split(" "),used=new Set();
@@ -100,6 +101,7 @@ async function visible(page,selector){
         await page.locator("#exCheck").click();
       }else{await page.locator("#exInput").fill(wrong?"mauvaise réponse":x.answers[0]);await page.locator("#exCheck").click()}
       const fb=await page.locator("#exFb").textContent();
+      if(beforeNext)await beforeNext(x);
       await page.locator("#exNext").click();
       return {x,fb};
     };
@@ -130,6 +132,10 @@ async function visible(page,selector){
     await visible(page,"#view-gpractice.active .exercise");
     const second=await page.evaluate(()=>TEF_TOPIC.current().items.map(o=>o.tid+":"+o.i));
     assert.ok(second.every(k=>!firstSeries.includes(k)),"« Encore » brings questions not answered today");
+    /* « Signaler une erreur » : a reported question never comes back. */
+    await answerCurrent(false,async()=>{await visible(page,"#exFlag");await page.locator("#exFlag").click()});
+    assert.ok(await page.evaluate(k=>{const i=+k.split(":")[1];return TEF_TOPIC.isFlagged(TEF_TOPIC.practiceItems("g7")[i])&&!TEF_DAILY.pickFrom("g7",500).includes(i)},second[0]),"a reported question is never picked again");
+    assert.equal(await page.evaluate(()=>Object.keys(TEF_APP.S.flags||{}).length),1,"the report is saved with the progress");
     /* Unlimited automatic drills on a conjugation topic. */
     await page.evaluate(()=>{location.hash="#g/g12"});
     await visible(page,"#view-gtopic.active #genBtn");
@@ -144,6 +150,8 @@ async function visible(page,selector){
     assert.equal(await page.evaluate(()=>window.TEF_TOPIC.check("Je préfère",["Je préfère."]).verdict),"ok");
     assert.equal(await page.evaluate(()=>window.TEF_TOPIC.check("je prefere",["Je préfère."]).verdict),"accents");
     assert.equal(await page.evaluate(()=>window.TEF_TOPIC.check("J'ai  fini !",["J’ai fini."]).verdict),"ok");
+    assert.equal(await page.evaluate(()=>window.TEF_TOPIC.check("Hier il pleuvait",["Hier, il pleuvait."]).verdict),"ok");
+    assert.equal(await page.evaluate(()=>window.TEF_TOPIC.check("Hier, il pleut",["Hier, il pleuvait."]).verdict),"wrong");
     await page.locator("#mobileMoreBtn").click();
     await page.locator('[data-more-view="grammar"]').click();
 

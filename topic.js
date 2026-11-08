@@ -18,9 +18,11 @@ function norm(s){
     .replace(/\s+/g,' ').trim().replace(/\s*([.!?…]+)\s*$/,'').replace(/\s+([,;:?!])/g,'$1').toLocaleLowerCase('fr');
 }
 const strip=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'');
+/* Commas never decide a grammar answer (« À l’époque, il… » = « À l’époque il… »), so they are ignored. */
+const nocomma=s=>s.replace(/,/g,' ').replace(/\s+/g,' ').trim();
 function check(given,answers){
-  const g=norm(given);if(!g)return {verdict:'empty'};
-  const list=(answers||[]).map(norm);
+  const g=nocomma(norm(given));if(!g)return {verdict:'empty'};
+  const list=(answers||[]).map(a=>nocomma(norm(a)));
   if(list.includes(g))return {verdict:'ok'};
   if(list.some(a=>strip(a)===strip(g)))return {verdict:'accents'};
   return {verdict:'wrong'};
@@ -156,14 +158,16 @@ function renderCopy(id){
 
 /* ---------- practice runner (one topic, or a mixed session from the daily plan) ---------- */
 const bankCache=new Map();
+/* One sentence = one exercise. Word-order exercises have no prompt, so they are known by their answer. */
+const sig=x=>norm(x.prompt||(x.answers||[])[0]||(x.words||[]).join(' '));
+/* Questions the learner reported as wrong never come back (S.flags syncs with the progress, so they can be fixed later). */
+const isFlagged=x=>!!x&&(!!x.flagged||!!(S().flags||{})[sig(x)]);
 function practiceItems(id){
   if(bankCache.has(id))return bankCache.get(id);
   const g=card(id),p=plus(id);
   const extra=[g.drill,...(g.drills||[])].filter(Boolean).map(d=>({type:'mcq',lvl:1,prompt:d.prompt,choices:d.choices,answer:d.answer,explain:''}));
   const own=p.practice||[];
   // Order is stable on purpose (answer history is keyed by index): own set, card drills, then the larger bank.
-  // Duplicate check by sentence; word-order exercises have no prompt, so they are compared by their answer.
-  const sig=x=>norm(x.prompt||(x.answers||[])[0]||(x.words||[]).join(' '));
   const base=own.length?[...own,...extra.filter(d=>!own.some(o=>sig(o)===sig(d)))]:extra;
   const seenSig=new Set(base.map(sig));
   const more=((D().grammarMore||{})[id]||[]).filter(m=>{const k=sig(m);if(seenSig.has(k))return false;seenSig.add(k);return true});
@@ -238,7 +242,9 @@ function renderExercise(){
     const order=shuffle(x.choices.map((c,i)=>({c,ok:i===x.answer})));
     body=`<p class="ex-prompt">${promptHTML(x.prompt)}</p><div class="choice-list">${order.map(o=>`<button class="choice" data-ok="${o.ok?1:0}">${esc(o.c)}</button>`).join('')}</div>`;
   }else if(x.type==='fill'){
-    body=`<p class="ex-prompt">${promptHTML(x.prompt,'<input class="gap-input" id="exInput" autocomplete="off" autocapitalize="none" spellcheck="false" enterkeyhint="done">')}</p>${x.hint?`<button class="hint-btn" id="exHint">Indice</button><span class="muted" id="exHintText" hidden>${esc(x.hint)}</span>`:''}${accentBar()}<button class="btn" id="exCheck">Vérifier</button>`;
+    /* A gap's hint says which word or form goes in it (« pouvoir », « possessif, je »), so it is shown right after the gap, textbook style. */
+    const cue=x.hint?` <span class="ex-cue">(${esc(String(x.hint).trim().replace(/^\((.*)\)$/,'$1'))})</span>`:'';
+    body=`<p class="ex-prompt">${promptHTML(x.prompt,'<input class="gap-input" id="exInput" autocomplete="off" autocapitalize="none" spellcheck="false" enterkeyhint="done">'+cue)}</p>${accentBar()}<button class="btn" id="exCheck">Vérifier</button>`;
   }else if(x.type==='fix'||x.type==='transform'){
     body=`${x.instruction?`<p class="ex-instruction">${esc(x.instruction)}</p>`:'<p class="ex-instruction">Cette phrase contient une erreur. Réécris-la correctement.</p>'}<div class="doc-box ex-source">${esc(x.prompt)}</div><textarea class="writing-area ex-area" id="exInput" rows="3" autocomplete="off" autocapitalize="sentences" spellcheck="false">${x.type==='fix'?esc(x.prompt):''}</textarea>${x.hint?`<button class="hint-btn" id="exHint">Indice</button><span class="muted" id="exHintText" hidden>${esc(x.hint)}</span>`:''}${accentBar()}<button class="btn" id="exCheck">Vérifier</button>`;
   }else if(x.type==='order'){
@@ -282,13 +288,24 @@ function gradeTyped(x,given){
   record(ok,given,best);
   const fullGiven=x.type==='fill'?String(x.prompt).replace(/_{3,}/,given.trim()):given;
   const fullBest=x.type==='fill'?String(x.prompt).replace(/_{3,}/,best):best;
-  feedback(r.verdict,x,ok?'':(x.type==='fill'?`<strong>${esc(best)}</strong>`:esc(best)),ok?'':diff(fullGiven,fullBest),x.answers.length>1&&!ok?x.answers.filter(a=>a!==best):null);
+  feedback(r.verdict,x,ok?'':(x.type==='fill'?`<strong>${esc(best)}</strong>`:esc(best)),ok?'':diff(fullGiven,fullBest),x.answers.length>1&&!ok?alsoOk(x.answers,best):null);
+}
+/* Other accepted answers, without the ones that only differ by a comma; at most three are shown. */
+function alsoOk(answers,best){
+  const seen=new Set([nocomma(norm(best))]),out=[];
+  for(const a of answers){const k=nocomma(norm(a));if(!seen.has(k)){seen.add(k);out.push(a)}}
+  return out.length>3?[...out.slice(0,3),'…']:out;
 }
 function feedback(verdict,x,expected,diffHTML,others){
   const title={ok:'✓ Correct',accents:'≈ Presque : vérifie les accents',wrong:'✕ Pas tout à fait'}[verdict];
   $('#exFb').innerHTML=`<div class="feedback ex-feedback v-${verdict}"><strong>${title}</strong>${expected?`<div>Réponse attendue : ${expected}</div>`:''}${diffHTML?`<div class="diff">${diffHTML}</div>`:''}${others?.length?`<div class="muted">Aussi accepté : ${others.map(esc).join(' · ')}</div>`:''}${x.explain?`<div class="ex-explain">${esc(x.explain)}</div>`:''}</div>`;
-  if(P.items[P.idx]?.x?.ai)$('#exFb').insertAdjacentHTML('beforeend','<button class="link-btn flag-btn" id="exFlag">Signaler une erreur dans cette question</button>');
-  $('#exFlag')&&($('#exFlag').onclick=()=>{const it=P.items[P.idx];it.x.flagged=true;app().save();$('#exFlag').textContent='Merci : cette question ne reviendra plus.';$('#exFlag').disabled=true});
+  if(!P.items[P.idx]?.x?.gen)$('#exFb').insertAdjacentHTML('beforeend','<button class="link-btn flag-btn" id="exFlag">Signaler une erreur dans cette question</button>');
+  $('#exFlag')&&($('#exFlag').onclick=()=>{
+    const it=P.items[P.idx],st=S();st.flags=st.flags||{};
+    st.flags[sig(it.x)]={t:Date.now(),tid:it.tid,type:it.x.type,ai:!!it.x.ai};
+    if(it.x.ai)it.x.flagged=true;
+    app().save();$('#exFlag').textContent='Merci : cette question ne reviendra plus.';$('#exFlag').disabled=true;
+  });
   $('#exNav').hidden=false;$('#exNext').focus();
   $('#exNext').onclick=()=>{P.idx++;renderExercise()};
 }
@@ -328,5 +345,5 @@ function init(){
   route();
 }
 window.TEF_TOPIC={init,open:(id,o)=>{origin=o||'grammar';go('#g/'+id)},copy:(id,o)=>{origin=o||'grammar';go('#c/'+id)},practice:id=>go('#gp/'+id),
-  session:(cfg)=>{origin='today';session(cfg,false)},check,norm,practiceItems,levelOf,invalidate,moreFor,unlimited,generateAI,route,current:()=>P&&{key:P.key,items:P.items.map(o=>({tid:o.tid,i:o.i,x:o.x})),idx:P.idx}};
+  session:(cfg)=>{origin='today';session(cfg,false)},check,norm,practiceItems,isFlagged,levelOf,invalidate,moreFor,unlimited,generateAI,route,current:()=>P&&{key:P.key,items:P.items.map(o=>({tid:o.tid,i:o.i,x:o.x})),idx:P.idx}};
 })();

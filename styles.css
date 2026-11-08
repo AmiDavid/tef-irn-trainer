@@ -408,3 +408,4 @@ body[data-view="today"] .city-bg{display:none}
 .exercise-top{flex-wrap:wrap}
 .more-row{margin-top:8px}
 .flag-btn{display:block;margin-top:8px;font-weight:600}
+.ex-cue{color:var(--muted);font-style:italic;font-size:.92em}

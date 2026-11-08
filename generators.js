@@ -57,7 +57,7 @@ function conjItem(inf,t,lvl){
     const choices=[right];for(const o of shuffle(others)){if(choices.length>=4)break;if(!choices.includes(o))choices.push(o)}
     if(choices.length>=3){const sh=shuffle(choices);return {type:'mcq',lvl,gen:true,prompt:`${label} : ___`,choices:sh,answer:sh.indexOf(right),explain:explainFor(r,t)}}
   }
-  return {type:'fill',lvl,gen:true,prompt:`${label} : ___`,answers:variants(r,t,row),explain:explainFor(r,t),hint:'Écris la forme conjuguée (avec ou sans le pronom).'};
+  return {type:'fill',lvl,gen:true,prompt:`${label} : ___`,answers:variants(r,t,row),explain:explainFor(r,t),hint:'avec ou sans le pronom'};
 }
 function conjGen(tenses,pools){
   return n=>{const out=[];for(let g=0;out.length<n&&g<n*6;g++){const t=pick(tenses),pool=pick(pools);const x=conjItem(pick(pool),t,pool===V.regular?1:2);if(x&&!out.some(o=>o.prompt===x.prompt))out.push(x)}return out};
