@@ -249,6 +249,8 @@ async function visible(page,selector){
     let course=await page.evaluate(()=>TEF_APP.S.course);
     assert.deepEqual(course.seq,[firstId]);
     assert.deepEqual(course.done[firstId].practice,{ok:14,total:15});
+    assert.deepEqual(await page.evaluate(id=>{const v=TEF_DAILY.coverage(id);return [v.seen,v.wrong]},firstId),[15,1],"coverage counts seen and wrong questions");
+    assert.ok((await page.locator("#lessonDay .course-list li.is-done").first().textContent()).includes("15/"),"Mon parcours shows how much of the bank was seen");
     /* Day 2: new topic + review that only uses day-1 questions, starting with the one answered wrong. */
     await page.evaluate(()=>{window.__TEF_TODAY__="2026-11-09";TEF_DAILY.render()});
     course=await page.evaluate(()=>TEF_APP.S.course);

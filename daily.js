@@ -71,6 +71,9 @@ const isTodayTopic=id=>{const d=ensureDay();return !!d.topicId&&d.topicId===id&&
 /* ---------- picking questions ---------- */
 function logAnswer(tid,i,ok){if(typeof i!=='number')return;C().qlog[tid+':'+i]={t:Date.now(),d:localDay(),ok:ok?1:0}}
 const seenCount=id=>Object.keys(C().qlog).filter(k=>k.startsWith(id+':')).length;
+/* How far the learner is through a topic's bank: questions seen, and those whose last answer was wrong (they come back first). */
+function coverage(id){const log=C().qlog,n=items(id).length;let seen=0,wrong=0;for(let i=0;i<n;i++){const L=log[id+':'+i];if(L){seen++;if(!L.ok)wrong++}}return {n,seen,wrong}}
+const coverageText=id=>{const v=coverage(id);return `${v.seen}/${v.n} vues${v.wrong?` · ${v.wrong} à revoir`:''}`};
 /* Candidates of one topic, best first: answered wrong, then never seen, then seen longest ago.
    Questions answered today come last (only used when nothing else is left). */
 function ranked(id,avoid){
@@ -183,7 +186,7 @@ function streak(){
 function render(){
   const root=$('#lessonDay');if(!root||!window.TEF_TOPIC)return;
   const c=C(),d=ensureDay(),P=path(),total=P.length,doneN=c.seq.length,st=streak(),sz=size();
-  const mapHTML=`<details class="course-map"><summary>Mon parcours : ${doneN}/${total} sujets</summary><ol class="course-list">${P.map(id=>{const g=card(id),dn=c.done[id],cur=d.topicId===id&&!d.complete;return `<li class="${dn?'is-done':cur?'is-today':''}"><span class="cl-title">${esc(g.title)}</span><span class="cl-meta">${dn?`✓ ${esc(frDate(dn.date))}`:cur?'aujourd’hui':`<button class="link-btn" data-choose="${id}">Faire ce sujet</button>`}</span></li>`}).join('')}</ol></details>`;
+  const mapHTML=`<details class="course-map"><summary>Mon parcours : ${doneN}/${total} sujets</summary><ol class="course-list">${P.map(id=>{const g=card(id),dn=c.done[id],cur=d.topicId===id&&!d.complete;return `<li class="${dn?'is-done':cur?'is-today':''}"><span class="cl-title">${esc(g.title)}</span><span class="cl-meta">${dn?`✓ ${esc(frDate(dn.date))} · ${coverageText(id)}`:cur?`aujourd’hui · ${coverageText(id)}`:`<button class="link-btn" data-choose="${id}">Faire ce sujet</button>`}</span></li>`}).join('')}</ol></details>`;
   const upd=window.TEF_TOPIC?.notebookUpdates?.()||[];
   const updHTML=upd.length?`<div class="ld-updates"><strong>📌 À ajouter dans ton cahier</strong><span>Ces leçons, que tu as déjà recopiées, ont été complétées :</span><div class="ld-upd-list">${upd.map(u=>`<button class="chip-btn" data-upd="${u.id}">${esc(u.title)} · ${u.n}</button>`).join('')}</div></div>`:'';
   const sizeHTML=`<div class="ld-size"><span>Questions par jour</span><div class="seg" role="group" aria-label="Questions par jour">${Object.keys(SIZES).map(k=>`<button class="seg-btn ${+k===c.size?'active':''}" data-size="${k}" aria-pressed="${+k===c.size}">${k}</button>`).join('')}</div><span class="muted">+ ${sz.r} de révision</span></div>`;
@@ -225,6 +228,6 @@ function bindCommon(root){
 }
 
 function init(){render()}
-window.TEF_DAILY={init,render,mark,start,resume,isTodayTopic,stepDone,logAnswer,ensureDay,pickFrom,seenCount,setSize,
+window.TEF_DAILY={init,render,mark,start,resume,isTodayTopic,stepDone,logAnswer,ensureDay,pickFrom,seenCount,coverage,setSize,
   pickReview:()=>pickReview(ensureDay()),_localDay:localDay};
 })();
