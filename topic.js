@@ -110,9 +110,11 @@ function renderLesson(id){
   const ta=$('#topicNotes');S().gnotes=S().gnotes||{};ta.value=S().gnotes[id]||'';
   let t;ta.oninput=()=>{clearTimeout(t);t=setTimeout(()=>{S().gnotes[id]=ta.value;app().save();$('#notesSaved').textContent='Enregistré ✓'},500)};
 }
+/* An ending such as « -ail » or « -ence » must never be split across two lines. */
+const keepEndings=h=>h.replace(/(^|[\s(])(-[^\s,;()]+)/g,'$1<span class="nw">$2</span>');
 function tableHTML(t,cls){
   if(!t?.head?.length)return '';
-  return `<div class="table-wrap"><table class="${cls}"><thead><tr>${t.head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${t.rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  return `<div class="table-wrap"><table class="${cls}"><thead><tr>${t.head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${t.rows.map(r=>`<tr>${r.map(c=>`<td>${keepEndings(esc(c))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 }
 function myErrors(id){
   const g=card(id),list=(S().aiErrors||[]).filter(e=>e.category===`Grammaire : ${g.title}`).slice(-6);

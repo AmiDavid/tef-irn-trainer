@@ -390,7 +390,7 @@ body[data-view="today"] .city-bg{display:none}
   .notebook{position:absolute;left:0;top:0;width:100%;box-shadow:none;margin:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 .runner-nav[hidden]{display:none}
-.nb-table th,.nb-table td{overflow-wrap:normal;word-break:normal;-webkit-hyphens:auto;hyphens:auto}
+.nb-table th,.nb-table td{overflow-wrap:normal;word-break:normal;-webkit-hyphens:auto;hyphens:auto;hyphenate-limit-chars:10 4 4}
 @media(max-width:680px){
   .hero-night{padding:18px 18px 112px}
   .hero-night p{display:none}
@@ -409,3 +409,4 @@ body[data-view="today"] .city-bg{display:none}
 .more-row{margin-top:8px}
 .flag-btn{display:block;margin-top:8px;font-weight:600}
 .ex-cue{color:var(--muted);font-style:italic;font-size:.92em}
+.nw{white-space:nowrap}
