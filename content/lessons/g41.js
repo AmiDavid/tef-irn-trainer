@@ -17,10 +17,10 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g41:{
   rule:[
     "Emploi : le récit écrit au passé (littérature, histoire, presse). Même valeur que le passé composé (action terminée) ; il alterne avec l’imparfait (décor, description). À l’oral et dans vos courriels, utilisez le passé composé.",
     "Verbes en -er (et aller) : -ai, -as, -a, -âmes, -âtes, -èrent : il parla, elle alla, ils arrivèrent.",
-    "Verbes en -ir (finir, partir) et beaucoup de verbes en -re (prendre, mettre, dire, faire, écrire) : -is, -is, -it, -îmes, -îtes, -irent : il finit, il prit, elle mit, il dit, ils firent, elle écrivit.",
-    "Verbes en -oir et quelques autres : -us, -us, -ut, -ûmes, -ûtes, -urent : il fut (être), il eut (avoir), il put, il voulut, il sut, il dut, il lut, il connut, il vécut, il mourut.",
+    "La plupart des verbes en -ir (finir, partir, ouvrir), beaucoup de verbes en -re (prendre, mettre, dire, faire, écrire) et voir, s’asseoir : -is, -is, -it, -îmes, -îtes, -irent : il finit, il prit, elle mit, il dit, ils firent, elle écrivit, il vit, elle s’assit.",
+    "Les autres verbes en -oir et quelques autres (être, avoir, courir, mourir, lire, connaître, vivre…) : -us, -us, -ut, -ûmes, -ûtes, -urent : il fut (être), il eut (avoir), il put, il voulut, il sut, il dut, il lut, il connut, il vécut, il courut, il mourut.",
     "Venir, tenir et leurs composés : -ins, -ins, -int, -înmes, -întes, -inrent : il vint, ils revinrent, elle obtint. Naître : il naquit.",
-    "Pièges de lecture : il fit (faire) ≠ il fut (être) ; il vit (voir) ≠ il vécut (vivre) ; il finit, il dit ont la même forme au présent (le contexte dit le temps)."
+    "Pièges de lecture : il fit (faire) ≠ il fut (être) ; il vit (voir) ≠ il vécut (vivre), mais au présent, il vit vient de vivre ; il finit, il dit ont la même forme au présent (le contexte dit le temps)."
   ],
   table:{head:["Infinitif","il / elle","ils / elles"],rows:[
     ["parler","il parla","ils parlèrent"],
@@ -40,7 +40,8 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g41:{
     "Repérez la terminaison : -a / -èrent (verbes en -er), -it / -irent, -ut / -urent, -int / -inrent.",
     "Dans un récit, le passé simple fait avancer l’histoire, l’imparfait pose le décor : Il pleuvait quand il sortit.",
     "Ne l’utilisez pas dans vos productions du TEF : le passé composé est attendu, même à l’écrit B.",
-    "Le passé antérieur (il eut fini, il fut parti) accompagne le passé simple après quand, dès que, après que : Dès qu’il eut fini, il partit."
+    "Le passé antérieur (il eut fini, il fut parti) accompagne le passé simple après quand, dès que, après que : Dès qu’il eut fini, il partit.",
+    "Avec un accent circonflexe, fût et eût sont des subjonctifs de l’écrit soutenu, pas des passés simples : bien qu’il fût malade ; il eût été préférable (= il aurait été préférable)."
   ],
   examples:[
     {fr:"Il ouvrit la lettre et lut les premières lignes.", en:"He opened the letter and read the first lines.", note:"ouvrir → il ouvrit ; lire → il lut."},

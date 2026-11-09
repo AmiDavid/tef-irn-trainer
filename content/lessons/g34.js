@@ -39,7 +39,7 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g34:{
     "Dans ≠ en : je finis dans une heure (le moment où je finirai) / je finis en une heure (le temps que ça me prend).",
     "Depuis + passé composé : à la forme négative (Je ne l’ai pas vu depuis des mois) et quand le participe décrit un état qui dure (Il est parti depuis une heure = il est absent depuis une heure).",
     "Depuis quand… ? demande le début ; depuis combien de temps… ? demande la durée : Depuis combien de temps habitez-vous ici ?",
-    "Dans et il y a se comptent à partir de maintenant. Dans un récit au passé : deux jours plus tard ou au bout de deux jours (pas dans) ; deux jours plus tôt ou avant (pas il y a)."
+    "Dans et il y a se comptent à partir de maintenant. Dans un récit au passé, on dit deux jours plus tard ou au bout de deux jours (pas dans deux jours), et deux jours plus tôt ou deux jours avant (pas il y a deux jours)."
   ],
   examples:[
     {fr:"J’habite en France depuis 2019.", en:"I’ve lived in France since 2019.", note:"Situation qui continue : présent."},
