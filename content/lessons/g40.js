@@ -3,7 +3,7 @@
 (B.grammar=B.grammar||[]).push({
   id:"g40", section:"La phrase complexe", order:73, title:"Faire + infinitif : faire réparer, se faire aider, laisser entrer", status:"untested",
   short:"Faire + infinitif : quelqu’un d’autre fait l’action ; se faire + infinitif : le sujet la subit ou en bénéficie ; laisser + infinitif : permettre.",
-  details:"Faire + infinitif indique qu’on fait faire l’action par quelqu’un d’autre : Je fais réparer ma voiture (le garagiste la répare). La personne qui agit est introduite par par ou à : Je fais réparer la voiture par le garagiste. Les pronoms se placent devant faire : Je la fais réparer. Se faire + infinitif : le sujet subit ou bénéficie de l’action (Il s’est fait voler son vélo ; je me suis fait couper les cheveux). Au passé composé, fait reste invariable : Je les ai fait venir. Laisser + infinitif = permettre, ne pas empêcher : Laissez-moi passer.",
+  details:"Faire + infinitif indique qu’on fait faire l’action par quelqu’un d’autre : Je fais réparer ma voiture (le garagiste la répare). Il peut aussi signifier provoquer : Ce film m’a fait pleurer. La personne qui agit est introduite par par ou à : Je fais réparer la voiture par le garagiste. Les pronoms se placent devant faire : Je la fais réparer. Se faire + infinitif : le sujet subit ou bénéficie de l’action (Il s’est fait voler son vélo ; je me suis fait couper les cheveux). Au passé composé, fait reste invariable : Je les ai fait venir. Laisser + infinitif = permettre, ne pas empêcher : Laissez-moi passer.",
   examples:["Je fais installer la fibre la semaine prochaine.","Elle s’est fait opérer du genou.","Le professeur nous a fait lire un article.","Laissez les passagers descendre."],
   mistakes:[
     {wrong:"Je fais réparer elle.", right:"Je la fais réparer.", why:"Le pronom se place devant faire."},
@@ -14,28 +14,31 @@
   drill:{prompt:"Complète : Ma voiture ? Je ___ réviser chaque année.", choices:["la fais","fais la","la fait","fais-la"], answer:0}
 });
 B.grammarPlus=Object.assign(B.grammarPlus||{},{g40:{
-  intro:"Faire + infinitif est indispensable dans la vie quotidienne (faire réparer, faire installer, faire venir un plombier) et dans les faits divers (« il s’est fait voler son téléphone »). À l’écrit A, une réclamation en a souvent besoin : « J’ai dû faire intervenir un technicien… ».",
+  intro:"Faire + infinitif est indispensable dans la vie quotidienne (faire réparer, faire installer, faire venir un plombier) et dans les faits divers (« il s’est fait voler son téléphone »). À l’écrit A, il sert à prendre des nouvelles (« J’ai appris que tu t’étais fait opérer… ») ; à l’écrit B, à se présenter (« Je souhaite faire valoir mon expérience »).",
   rule:[
-    "Faire + infinitif : le sujet décide, quelqu’un d’autre fait l’action : Je fais réparer ma voiture (un garagiste la répare) ; ils font construire une maison.",
-    "La personne qui fait l’action est introduite par par ou à : Je fais vérifier les comptes par un expert ; je fais lire le texte aux élèves. Sans autre complément, elle suit directement l’infinitif : Je fais venir le plombier.",
-    "Les pronoms se placent devant faire, pas devant l’infinitif : Je le fais venir ; je la fais réparer. À l’impératif affirmatif, ils suivent faire : Faites-le entrer !",
+    "Faire + infinitif : le sujet décide, quelqu’un d’autre fait l’action : Je fais réparer ma voiture (un garagiste la répare) ; ils font construire une maison. Il peut aussi signifier provoquer : Ce film m’a fait pleurer ; faites cuire les pâtes.",
+    "La personne qui fait l’action est introduite par par ou à : Je fais vérifier les comptes par un expert ; je fais lire le texte aux élèves. Sans autre complément, elle suit directement l’infinitif : Je fais venir le plombier (jamais « je fais le plombier venir »).",
+    "Les pronoms se placent devant faire, pas devant l’infinitif : Je le fais venir ; je la fais réparer. La personne qui agit devient le / la / les si l’infinitif n’a pas de COD (je le fais venir), lui / leur s’il en a un (je leur fais lire le texte). À l’impératif affirmatif, les pronoms suivent faire : Faites-le entrer !",
     "Aux temps composés, fait suivi d’un infinitif reste invariable : Ma voiture, je l’ai fait réparer ; les techniciens que j’ai fait venir.",
     "Se faire + infinitif : le sujet subit l’action (Il s’est fait voler son portefeuille ; elle s’est fait renverser par un vélo) ou en bénéficie (Je me suis fait couper les cheveux ; il s’est fait rembourser).",
-    "Laisser + infinitif = permettre, ne pas empêcher : Laissez-moi passer ; il laisse ses enfants jouer dehors. Le pronom se place aussi devant laisser : Je les laisse sortir.",
-    "Expressions fréquentes : faire savoir (informer), faire attendre quelqu’un, faire remarquer, faire suivre son courrier, se faire comprendre, se faire rembourser."
+    "Laisser + infinitif = permettre, ne pas empêcher : Laissez-moi passer ; il laisse ses enfants jouer dehors (ou : il laisse jouer ses enfants ; avec faire, le nom suit toujours l’infinitif). Le pronom se place aussi devant laisser : Je les laisse sortir.",
+    "Expressions fréquentes : faire savoir (informer), faire valoir (mettre en avant), faire attendre quelqu’un, faire remarquer, faire suivre son courrier, se faire comprendre, se faire rembourser."
   ],
   table:{head:["Construction","Sens","Exemple"],rows:[
     ["faire + infinitif","quelqu’un d’autre fait l’action","Je fais repeindre la cuisine."],
+    ["faire + infinitif","provoquer","Ce film m’a fait rire."],
     ["faire + infinitif + par / à","qui fait l’action","Je la fais vérifier par un expert."],
     ["pronom + faire + infinitif","le pronom va devant faire","Je le fais venir demain."],
+    ["temps composés : fait + infinitif","fait reste invariable","Je les ai fait venir ; elle s’est fait opérer."],
     ["se faire + infinitif","le sujet subit ou bénéficie","Il s’est fait voler son vélo."],
     ["laisser + infinitif","permettre","Laissez-le parler."]
   ]},
   tips:[
     "Anglais : I’m having my car repaired / I got my hair cut → je fais réparer ma voiture / je me suis fait couper les cheveux.",
     "Faire faire existe : je fais faire des travaux (une entreprise les réalise).",
-    "Fait + infinitif reste invariable, même avec un COD féminin ou pluriel placé avant : la lettre que j’ai fait traduire.",
-    "À l’écrit A (réclamation) : « J’ai dû faire intervenir un serrurier », « Je souhaite me faire rembourser »."
+    "Fait + infinitif reste invariable, même avec un COD féminin ou pluriel placé avant : la lettre que j’ai fait traduire. Laissé + infinitif peut aussi rester invariable (orthographe de 1990) : je les ai laissé partir (l’accord laissés reste admis).",
+    "« Make » + adjectif ne se traduit pas par faire : Ce travail me rend heureux (et non « me fait heureux »).",
+    "À l’écrit A, pour prendre des nouvelles : « J’ai appris que tu t’étais fait opérer », « Fais-moi savoir comment tu vas »."
   ],
   examples:[
     {fr:"Nous faisons installer une nouvelle chaudière.", en:"We’re having a new boiler installed."},
@@ -55,17 +58,17 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g40:{
   ],
   practice:[
     {type:"mcq", lvl:1, prompt:"Je ___ couper les cheveux tous les mois.", choices:["me fais","fais","me fait"], answer:0, explain:"Se faire + infinitif : je me fais couper les cheveux."},
-    {type:"mcq", lvl:1, prompt:"Mon ordinateur est en panne : je vais le faire ___ .", choices:["réparer","réparé","répare"], answer:0, explain:"Faire + infinitif."},
+    {type:"mcq", lvl:1, prompt:"Mon ordinateur est en panne : je vais le faire ___.", choices:["réparer","réparé","répare"], answer:0, explain:"Faire + infinitif."},
     {type:"fill", lvl:1, prompt:"Ils font ___ une maison à la campagne.", answers:["construire"], hint:"construire", explain:"Faire + infinitif : une entreprise construit la maison."},
     {type:"fill", lvl:1, prompt:"Ce document ? Je ___ fais traduire.", answers:["le"], hint:"pronom : le document", explain:"Le pronom se place devant faire."},
     {type:"order", lvl:1, words:["les","Je","laisse","sortir"], answers:["Je les laisse sortir."], explain:"Pronom devant laisser + infinitif."},
     {type:"fix", lvl:2, prompt:"J’ai fait entrer eux dans le salon.", answers:["Je les ai fait entrer dans le salon."], explain:"Le pronom COD se place devant l’auxiliaire ; fait reste invariable."},
     {type:"fix", lvl:2, prompt:"La facture que j’ai faite corriger est arrivée.", answers:["La facture que j’ai fait corriger est arrivée."], explain:"Fait suivi d’un infinitif reste invariable."},
-    {type:"transform", lvl:2, instruction:"Reformulez avec « faire » + infinitif : vous ne faites pas l’action vous-même.", prompt:"Un électricien vérifie mon installation.", answers:["Je fais vérifier mon installation par un électricien."], explain:"Faire + infinitif + par + la personne qui agit."},
+    {type:"transform", lvl:2, instruction:"Reformulez avec « faire » + infinitif : vous ne faites pas l’action vous-même.", prompt:"Un électricien vérifie mon installation.", answers:["Je fais vérifier mon installation par un électricien.","Je fais vérifier mon installation à un électricien."], explain:"Faire + infinitif + par (ou à) + la personne qui agit."},
     {type:"transform", lvl:2, instruction:"Reformulez avec « se faire » + infinitif.", prompt:"On a volé le téléphone de Paul.", answers:["Paul s’est fait voler son téléphone."], explain:"Se faire + infinitif : le sujet subit l’action."},
     {type:"order", lvl:2, words:["fait","Il","venir","a","plombier","le"], answers:["Il a fait venir le plombier."], explain:"Faire venir quelqu’un."},
     {type:"mcq", lvl:3, prompt:"Les ouvriers que nous avons ___ venir sont arrivés.", choices:["fait","faits","faites"], answer:0, explain:"Fait suivi d’un infinitif : invariable."},
-    {type:"fill", lvl:3, prompt:"Faites-___ savoir dès que possible.", answers:["nous"], hint:"nous", explain:"Impératif affirmatif : le pronom suit faire (faites-nous savoir)."}
+    {type:"fill", lvl:3, prompt:"Faites-___ savoir quand vous serez disponible.", answers:["moi"], hint:"me", explain:"Impératif affirmatif : le pronom suit faire et me devient moi : faites-moi savoir."}
   ]
 }});
 B.grammarMore=Object.assign(B.grammarMore||{},{g40:[

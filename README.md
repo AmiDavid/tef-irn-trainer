@@ -44,6 +44,19 @@ The app does not redistribute CCI/TEF audio. Official resources are linked separ
   Pages copied before build 19 are compared with `content/notebook-baseline.js` (the lessons at build 17). The line keys come
   from `lessonLines()` in `topic.js` (between `lines:start` and `lines:end`).
 
+## 43 lessons (builds 20–21)
+
+- Lessons g29–g43 live one per file in `content/lessons/gNN.js`: the card (pushed into `grammar`), the lesson page
+  (`grammarPlus`) with 12 practice items, and 28 bank items (`grammarMore`). They cover articles, questions, the imperative,
+  pronominal verbs, prepositions of place, duration (depuis / il y a / pendant), adverbs in -ment, homophones,
+  tonic / possessive / demonstrative pronouns, verb + à / de + infinitive, indefinites, time clauses, faire + infinitive,
+  the passé simple (to recognise in texts) and nominalisation.
+- A new lesson file must be listed in `index.html`, `sw.js`, `qa/static-qa.txt` and `BANK_FILES` in `qa/content-qa.txt`.
+  Its `order` must be unique and come after the lessons its exercises rely on.
+- **Mon parcours** shows, for each topic, how many of its checked questions have been seen and how many are waiting to be
+  redone (`coverage()` in `daily.js`). Daily picks skip what was seen today, then take questions answered wrong
+  first, then unseen ones, then the ones seen longest ago.
+
 ## Running locally
 
 Serve this folder over HTTP, e.g. `python -m http.server 8000`, then open `http://localhost:8000`.

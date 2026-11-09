@@ -1,6 +1,6 @@
 (()=>{const B=window.TEF_BANK=window.TEF_BANK||{};B.grammarPlus=Object.assign(B.grammarPlus||{},{
   g1:{
-    intro: "Les expressions de quantité reviennent sans cesse au TEF : décrire un quartier ou un problème à l’écrit A, chiffrer un argument à l’écrit B, demander « combien de… » à l’oral A. Une erreur sur « beaucoup de » se remarque immédiatement.",
+    intro: "Les expressions de quantité reviennent sans cesse au TEF : donner de ses nouvelles à l’écrit A (« j’ai beaucoup de travail et peu de temps »), chiffrer un argument à l’écrit B, demander « combien de… » à l’oral A. Une erreur sur « beaucoup de » se remarque immédiatement.",
     rule: [
       "Sans quantité précise, on emploie l’article partitif ou indéfini : du pain, de la patience, de l’eau, des légumes. Après une expression de quantité, il ne reste que de : beaucoup de pain, un kilo de légumes.",
       "Adverbe de quantité (beaucoup, peu, assez, trop, tant, autant, plus, moins, combien) + de + nom, sans article : beaucoup de travail, peu de place.",
@@ -63,7 +63,7 @@
     ]
   },
   g2:{
-    intro: "Les contractions (au, aux, du, des) sont partout : lettre à la mairie à l’écrit A, description d’un quartier à l’écrit B, questions à l’oral A. « De les » ou « à le » devant un nom sont des fautes très visibles pour le correcteur.",
+    intro: "Les contractions (au, aux, du, des) sont partout : message à un ami à l’écrit A, texte de motivation à l’écrit B (« je participe aux activités du quartier »), questions à l’oral A. « De les » ou « à le » devant un nom sont des fautes très visibles pour le correcteur.",
     rule: [
       "à + le → au ; à + les → aux : aller au marché, écrire aux services sociaux.",
       "de + le → du ; de + les → des : la sortie du métro, la liste des pièces justificatives.",
@@ -124,7 +124,7 @@
     ]
   },
   g3:{
-    intro: "Exprimer un but est indispensable dans les lettres formelles de l’écrit A, à l’écrit B (proposer, convaincre) et à l’oral A (« Je vous appelle pour que… »). Le subjonctif après « pour que » est un marqueur clair du niveau B2.",
+    intro: "Exprimer un but est indispensable à l’écrit B (expliquer ses motivations, convaincre), dans le message de l’écrit A et à l’oral A (« Je vous appelle pour que… »). Le subjonctif après « pour que » est un marqueur clair du niveau B2.",
     rule: [
       "Deux sujets différents → pour que + subjonctif : Je parle lentement pour que tu comprennes.",
       "Même sujet → pour + infinitif : J’économise pour acheter une voiture.",
@@ -340,7 +340,7 @@
     ]
   },
   g6:{
-    intro: "Raconter un événement passé est au cœur de l’écrit A (suite d’un article) et de nombreux échanges oraux ; les épreuves de compréhension jouent aussi sur ces nuances. Bien choisir entre passé composé et imparfait rend le récit clair.",
+    intro: "Raconter un événement passé est au cœur de l’écrit A (donner de ses nouvelles : « j’ai déménagé en mars, c’était épuisant ») et de nombreux échanges oraux ; les épreuves de compréhension jouent aussi sur ces nuances. Bien choisir entre passé composé et imparfait rend le récit clair.",
     rule: [
       "Formation de l’imparfait : radical de nous au présent + -ais, -ais, -ait, -ions, -iez, -aient (nous finissons → je finissais ; nous faisons → je faisais). Seule exception : être → j’étais. Orthographe : je mangeais, je commençais ; nous étudiions.",
       "Passé composé : action ponctuelle, terminée, datée ou comptée : Hier, j’ai déposé mon dossier.",

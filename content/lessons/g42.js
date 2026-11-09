@@ -16,11 +16,11 @@
 B.grammarPlus=Object.assign(B.grammarPlus||{},{g42:{
   intro:"La nominalisation est une marque du niveau B2 à l’écrit : elle résume une idée en quelques mots (titres, notes, introduction d’un argument) et elle est partout dans les articles de presse et les documents administratifs du TEF : « En raison de la fermeture du bureau… », « Suite à la hausse des prix… ».",
   rule:[
-    "Principe : verbe ou adjectif → nom ; le sujet devient un complément avec de et le verbe conjugué disparaît : Les prix augmentent → l’augmentation des prix ; le service est rapide → la rapidité du service.",
+    "Principe : verbe ou adjectif → nom ; le sujet devient un complément avec de et le verbe conjugué disparaît : Les prix augmentent → l’augmentation des prix ; le service est rapide → la rapidité du service. Le COD devient lui aussi « de + nom » (on construit un pont → la construction d’un pont) et un pronom sujet devient un possessif (il part → son départ).",
     "Verbes → noms en -tion, -sion, -ation (féminin) : augmenter → l’augmentation, réduire → la réduction, décider → la décision, inscrire → l’inscription.",
     "Verbes → noms en -ment (masculin) : changer → le changement, payer → le paiement, rembourser → le remboursement, déménager → le déménagement.",
     "Verbes → noms en -age (masculin), -ure, -ée, -ance / -ence (féminin) : nettoyer → le nettoyage, ouvrir → l’ouverture, fermer → la fermeture, arriver → l’arrivée, naître → la naissance, préférer → la préférence.",
-    "Noms sans suffixe : partir → le départ, refuser → le refus, choisir → le choix, envoyer → l’envoi, baisser → la baisse, vendre → la vente, perdre → la perte, aider → l’aide.",
+    "Noms sans suffixe : partir → le départ, refuser → le refus, choisir → le choix, envoyer → l’envoi, baisser → la baisse, vendre → la vente, perdre → la perte, aider → l’aide, échouer → l’échec.",
     "Adjectifs → noms (souvent féminins) : -té / -ité (rapide → la rapidité, propre → la propreté, gratuit → la gratuité), -esse (jeune → la jeunesse, faible → la faiblesse), -eur (long → la longueur, chaud → la chaleur), -ence (violent → la violence).",
     "Emplois : titres (Fermeture exceptionnelle de la médiathèque) ; préposition + nom au lieu d’une proposition (après réception de…, avant son départ, en raison de la fermeture) ; plan et introduction d’un texte argumentatif."
   ],
@@ -61,7 +61,7 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g42:{
     {type:"mcq", lvl:1, prompt:"« Le train part » → « Le ___ du train ».", choices:["départ","partie","partement"], answer:0, explain:"Partir → le départ (une partie = a part)."},
     {type:"fill", lvl:1, prompt:"« On vend la maison » → « La ___ de la maison ».", answers:["vente"], explain:"Vendre → la vente."},
     {type:"fill", lvl:1, prompt:"« Il est jeune » → « Sa ___ ».", answers:["jeunesse"], explain:"Jeune → la jeunesse (-esse)."},
-    {type:"order", lvl:1, words:["La","inquiète","prix","hausse","des","les","habitants"], answers:["La hausse des prix inquiète les habitants."], explain:"Hausser → la hausse ; le sujet devient « des prix »."},
+    {type:"order", lvl:1, words:["La","inquiète","prix","hausse","des","les","habitants"], answers:["La hausse des prix inquiète les habitants."], explain:"« Les prix augmentent » → la hausse des prix : le sujet devient « des prix »."},
     {type:"transform", lvl:2, instruction:"Transformez la phrase en titre avec un nom.", prompt:"La piscine municipale ferme.", answers:["Fermeture de la piscine municipale","La fermeture de la piscine municipale"], explain:"Fermer → la fermeture ; pas de verbe conjugué dans un titre."},
     {type:"transform", lvl:2, instruction:"Remplacez la proposition par « après » + nom.", prompt:"Après que vous aurez payé, vous recevrez une facture.", answers:["Après paiement, vous recevrez une facture.","Après le paiement, vous recevrez une facture.","Après votre paiement, vous recevrez une facture."], explain:"Payer → le paiement."},
     {type:"fix", lvl:2, prompt:"Le changation d’horaire est prévu lundi.", answers:["Le changement d’horaire est prévu lundi."], explain:"Changer → le changement (-ment)."},
@@ -72,13 +72,13 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g42:{
   ]
 }});
 B.grammarMore=Object.assign(B.grammarMore||{},{g42:[
-  {type:"mcq", lvl:1, prompt:"« Je paie » → « Le ___ ».", choices:["paiement","payage","payation"], answer:0, explain:"Payer → le paiement (-ment)."},
+  {type:"mcq", lvl:1, prompt:"« Je paie » → « Mon ___ ».", choices:["paiement","payage","payation"], answer:0, explain:"Payer → le paiement (-ment) ; je → mon."},
   {type:"mcq", lvl:1, prompt:"« On construit un pont » → « La ___ d’un pont ».", choices:["construction","construisure","construisement"], answer:0, explain:"Construire → la construction."},
   {type:"mcq", lvl:1, prompt:"« Les invités arrivent » → « L’___ des invités ».", choices:["arrivée","arrivage","arrivement"], answer:0, explain:"Arriver → l’arrivée (un arrivage = une livraison de marchandises)."},
   {type:"mcq", lvl:1, prompt:"« Il fait chaud » → « La ___ ».", choices:["chaleur","chaudesse","chaudité"], answer:0, explain:"Chaud → la chaleur (-eur)."},
   {type:"fill", lvl:1, prompt:"« Nous déménageons » → « Notre ___ ».", answers:["déménagement"], explain:"Déménager → le déménagement (-ment)."},
   {type:"fill", lvl:1, prompt:"« Elle est gentille » → « Sa ___ ».", answers:["gentillesse"], explain:"Gentil → la gentillesse (-esse)."},
-  {type:"fill", lvl:1, prompt:"« On nettoie les rues » → « Le ___ des rues ».", answers:["nettoyage"], explain:"Nettoyer → le nettoyage (-age)."},
+  {type:"fill", lvl:1, prompt:"« On nettoie les rues » → « Le ___ des rues ».", answers:["nettoyage","nettoiement"], explain:"Nettoyer → le nettoyage (-age) ; le nettoiement se dit aussi pour les rues."},
   {type:"fix", lvl:1, prompt:"Le fermement du magasin est à 20 heures.", answers:["La fermeture du magasin est à 20 heures."], explain:"Fermer → la fermeture (féminin)."},
   {type:"fix", lvl:1, prompt:"L’inscriptement est obligatoire.", answers:["L’inscription est obligatoire."], explain:"Inscrire → l’inscription."},
   {type:"transform", lvl:1, instruction:"Transformez en titre avec un nom.", prompt:"Les transports sont gratuits le dimanche.", answers:["Gratuité des transports le dimanche","La gratuité des transports le dimanche"], explain:"Gratuit → la gratuité (-ité)."},
@@ -91,14 +91,14 @@ B.grammarMore=Object.assign(B.grammarMore||{},{g42:[
   {type:"fill", lvl:2, prompt:"« Il est faible » → « Sa ___ ».", answers:["faiblesse"], explain:"Faible → la faiblesse (-esse)."},
   {type:"fix", lvl:2, prompt:"Le choisissement du logement est difficile.", answers:["Le choix du logement est difficile."], explain:"Choisir → le choix, sans suffixe."},
   {type:"fix", lvl:2, prompt:"Après le reçu de votre courrier, nous avons contacté le service.", answers:["Après réception de votre courrier, nous avons contacté le service.","Après la réception de votre courrier, nous avons contacté le service."], explain:"Recevoir → la réception (un reçu = a receipt)."},
-  {type:"transform", lvl:2, instruction:"Remplacez la proposition par « avant » + nom.", prompt:"Avant qu’il parte, il a rangé son bureau.", answers:["Avant son départ, il a rangé son bureau."], explain:"Partir → le départ ; avant + nom."},
+  {type:"transform", lvl:2, instruction:"Remplacez la proposition par « avant » + nom.", prompt:"Avant qu’il parte, nous avons organisé une fête.", answers:["Avant son départ, nous avons organisé une fête."], explain:"Partir → le départ ; avant + nom (il → son)."},
   {type:"transform", lvl:2, instruction:"Remplacez « parce que les prix augmentent » par « en raison de » + nom.", prompt:"Les ventes baissent parce que les prix augmentent.", answers:["Les ventes baissent en raison de l’augmentation des prix.","Les ventes baissent en raison de la hausse des prix."], explain:"En raison de + nom (l’augmentation, la hausse)."},
-  {type:"order", lvl:2, words:["Suite","votre","à","demande","envoyons","nous","dossier","le"], answers:["Suite à votre demande, nous envoyons le dossier.","Nous envoyons le dossier suite à votre demande."], explain:"Suite à + nom (formule administrative)."},
-  {type:"mcq", lvl:3, prompt:"« Le gouvernement décide » → « La ___ du gouvernement ».", choices:["décision","décidation","décidement"], answer:0, explain:"Décider → la décision (-sion)."},
+  {type:"order", lvl:2, words:["Suite","votre","à","demande","envoyons","nous","vous","dossier","le"], answers:["Suite à votre demande, nous vous envoyons le dossier.","Nous vous envoyons le dossier suite à votre demande."], explain:"Suite à + nom (formule administrative ; plus soigné : à la suite de)."},
+  {type:"mcq", lvl:3, prompt:"« Le projet a échoué » → « L’___ du projet ».", choices:["échec","échouage","échouation"], answer:0, explain:"Échouer → l’échec, sans suffixe (l’échouage, c’est un bateau qui touche le fond)."},
   {type:"fill", lvl:3, prompt:"« On envoie le colis » → « L’___ du colis ».", answers:["envoi"], explain:"Envoyer → l’envoi (masculin, sans suffixe)."},
   {type:"fill", lvl:3, prompt:"« Les jeunes sont violents » → « La ___ des jeunes ».", answers:["violence"], explain:"Violent → la violence (-ence)."},
   {type:"fix", lvl:3, prompt:"La diminuation du chômage se confirme.", answers:["La diminution du chômage se confirme."], explain:"Diminuer → la diminution."},
-  {type:"transform", lvl:3, instruction:"Transformez en titre de presse avec un nom.", prompt:"Le maire a démissionné hier.", answers:["Démission du maire","La démission du maire","Démission du maire hier"], explain:"Démissionner → la démission ; pas de verbe conjugué dans un titre."},
+  {type:"transform", lvl:3, instruction:"Transformez en titre de presse avec un nom.", prompt:"Le maire a démissionné hier.", answers:["Démission du maire","La démission du maire","Démission du maire hier","La démission du maire hier"], explain:"Démissionner → la démission ; pas de verbe conjugué dans un titre."},
   {type:"order", lvl:3, words:["des","horaires","Modification","d’ouverture"], answers:["Modification des horaires d’ouverture"], explain:"Titre : nom + complément, sans verbe."}
 ]});
 })();
