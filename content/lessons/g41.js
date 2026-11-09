@@ -3,17 +3,17 @@
 (B.grammar=B.grammar||[]).push({
   id:"g41", section:"Les temps", order:82, title:"Le passé simple : le reconnaître dans les textes", status:"untested",
   short:"Le temps du récit écrit (romans, histoire, presse) : il parla, il finit, il fut, il eut, ils firent. À reconnaître, surtout à la 3e personne.",
-  details:"Le passé simple est le temps du récit à l’écrit (romans, biographies, articles historiques). À l’oral et dans vos productions, on emploie le passé composé. Il faut surtout le reconnaître à la 3e personne : verbes en -er → -a, -èrent (il parla, ils parlèrent) ; verbes en -ir et beaucoup de verbes en -re → -it, -irent (il finit, ils prirent) ; d’autres → -ut, -urent (il fut, il eut, il put, ils voulurent) ; venir et tenir → il vint, ils vinrent.",
+  details:"Le passé simple est le temps du récit à l’écrit (romans, biographies, articles historiques). À l’oral et dans vos productions, on emploie le passé composé. Il faut surtout le reconnaître à la 3e personne : verbes en -er → -a, -èrent (il parla, ils parlèrent) ; la plupart des verbes en -ir, beaucoup de verbes en -re et voir → -it, -irent (il finit, ils prirent, il vit) ; d’autres → -ut, -urent (il fut, il eut, il put, ils voulurent, il mourut) ; venir et tenir → il vint, ils vinrent.",
   examples:["Victor Hugo naquit à Besançon en 1802.","Elle ouvrit la porte et entra.","Ils furent surpris par la nouvelle.","Le roi mourut sans héritier."],
   mistakes:[
-    {wrong:"Hier, je fus au cinéma avec mes amis.", right:"Hier, je suis allé au cinéma avec mes amis.", why:"À l’oral et dans une lettre, on emploie le passé composé, pas le passé simple."},
+    {wrong:"Hier, j’allai au cinéma avec mes amis.", right:"Hier, je suis allé au cinéma avec mes amis.", why:"À l’oral et dans un message, surtout avec « hier », on emploie le passé composé, pas le passé simple."},
     {wrong:"Il finissa son travail.", right:"Il finit son travail.", why:"Verbes en -ir : il finit, ils finirent (-a seulement pour les verbes en -er)."},
     {wrong:"Ils parlirent longtemps.", right:"Ils parlèrent longtemps.", why:"Verbes en -er : ils parlèrent."}
   ],
   drill:{prompt:"« Il fut » est le passé simple de quel verbe ?", choices:["être","faire","falloir","fuir"], answer:0}
 });
 B.grammarPlus=Object.assign(B.grammarPlus||{},{g41:{
-  intro:"Au TEF, le passé simple apparaît dans les textes de compréhension écrite (extraits littéraires, biographies, articles historiques). Vous n’avez pas besoin de l’employer, mais vous devez le reconnaître immédiatement pour comprendre qui a fait quoi : « il fit », « ils vinrent », « elle sut ».",
+  intro:"Au TEF, le passé simple peut apparaître dans les textes de compréhension écrite (récits, biographies, articles historiques). Vous n’avez pas besoin de l’employer, mais vous devez le reconnaître immédiatement pour comprendre qui a fait quoi : « il fit », « ils vinrent », « elle sut ».",
   rule:[
     "Emploi : le récit écrit au passé (littérature, histoire, presse). Même valeur que le passé composé (action terminée) ; il alterne avec l’imparfait (décor, description). À l’oral et dans vos courriels, utilisez le passé composé.",
     "Verbes en -er (et aller) : -ai, -as, -a, -âmes, -âtes, -èrent : il parla, elle alla, ils arrivèrent.",

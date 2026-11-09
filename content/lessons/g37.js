@@ -16,12 +16,13 @@
 B.grammarPlus=Object.assign(B.grammarPlus||{},{g37:{
   intro:"Les verbes suivis d’un infinitif sont partout dans vos productions (« j’ai décidé de… », « je n’arrive pas à… », « je vous demande de… »). La préposition ne se devine pas : il faut l’apprendre avec le verbe, comme un bloc. C’est une erreur très fréquente, même au niveau B2.",
   rule:[
-    "Sans préposition : verbes modaux, de volonté, de goût et de mouvement : vouloir, pouvoir, devoir, savoir, falloir (il faut), aimer, adorer, préférer, détester, espérer, souhaiter, compter, aller, venir, partir, laisser, faire, sembler, oser : Je voudrais réserver ; j’espère vous revoir.",
+    "Sans préposition : verbes modaux, de volonté, de goût, de mouvement et de perception : vouloir, pouvoir, devoir, savoir, falloir (il faut), il vaut mieux, aimer, adorer, préférer, détester, espérer, souhaiter, compter, aller, venir, partir, laisser, faire, sembler, oser, voir, entendre, regarder, écouter : Je voudrais réserver ; j’espère vous revoir ; je l’ai entendu partir.",
     "Verbe + à + infinitif : commencer à, continuer à, réussir à, arriver à, apprendre à, chercher à, hésiter à, s’habituer à, se mettre à, tenir à, avoir du mal à, passer du temps à : J’ai du mal à dormir ; il a réussi à trouver.",
     "Verbe + de + infinitif (le cas le plus fréquent) : décider de, essayer de, finir de, arrêter de, oublier de, accepter de, refuser de, éviter de, choisir de, se dépêcher de, regretter de, rêver de, avoir besoin de, avoir envie de, avoir peur de, avoir le droit de, être content de : J’ai envie de partir.",
     "Verbe + à quelqu’un + de + infinitif : demander, dire, conseiller, permettre, interdire, proposer, promettre, rappeler à quelqu’un de… : Le médecin m’a conseillé de me reposer ; je leur ai demandé d’attendre.",
-    "Verbe + quelqu’un + à / de + infinitif : aider, inviter, encourager, autoriser quelqu’un à… ; empêcher, remercier, féliciter quelqu’un de… : Il m’a aidé à remplir le dossier ; je vous remercie de m’avoir répondu.",
-    "Devant une voyelle, de devient d’ (essayer d’arriver). Pour une action antérieure, infinitif passé : Je vous remercie de m’avoir aidé ; je regrette de ne pas être venu.",
+    "Verbe + quelqu’un + à / de + infinitif : aider, inviter, encourager, autoriser, obliger quelqu’un à… (mais être obligé de) ; empêcher, remercier, féliciter, prier, convaincre quelqu’un de… : Il m’a aidé à remplir le dossier ; je vous remercie de m’avoir répondu.",
+    "Devant une voyelle, de devient d’ (essayer d’arriver). De ne se contracte pas avec le pronom le / les : J’ai essayé de le joindre (pas « du joindre »). Pour une action antérieure, infinitif passé : Je vous remercie de m’avoir aidé ; je regrette de ne pas être venu.",
+    "La préposition peut changer le sens : venir faire (= se déplacer pour) / venir de faire (= passé récent : je viens de rentrer) ; finir de faire (= terminer) / finir par faire (= en fin de compte) ; commencer à faire / commencer par faire (= d’abord) ; demander à quelqu’un de faire / demander à faire (= demander la permission : il demande à parler au directeur).",
     "La construction peut changer devant un nom : décider quelque chose / décider de faire ; mais avoir besoin de quelque chose / avoir besoin de faire."
   ],
   table:{head:["Sans préposition","+ à","+ de"],rows:[
@@ -35,15 +36,15 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g37:{
   tables:[
     {title:"Avec une personne", head:["Construction","Verbes","Exemple"], rows:[
       ["à quelqu’un de + infinitif","demander, dire, conseiller, permettre, interdire, proposer, promettre","Je lui ai conseillé de patienter."],
-      ["quelqu’un à + infinitif","aider, inviter, encourager, autoriser","Il m’a aidé à remplir le dossier."],
-      ["quelqu’un de + infinitif","empêcher, remercier, féliciter","Je vous remercie de m’avoir répondu."]
+      ["quelqu’un à + infinitif","aider, inviter, encourager, autoriser, obliger","Il m’a aidé à remplir le dossier."],
+      ["quelqu’un de + infinitif","empêcher, remercier, féliciter, prier, convaincre","Je vous remercie de m’avoir répondu."]
     ]}
   ],
   tips:[
     "Apprenez chaque verbe avec sa préposition, comme un bloc : « décider de », « réussir à », « vouloir + infinitif ».",
     "Piège de l’anglais « to » : I decided to go → j’ai décidé de partir ; I want to go → je veux partir ; I managed to go → j’ai réussi à partir.",
     "Formules utiles à l’écrit : « Je vous prie de bien vouloir… », « Je me permets de vous écrire… », « Je vous remercie de m’avoir répondu ».",
-    "Commencer et continuer acceptent à et de ; à est le plus courant."
+    "Continuer à et continuer de sont tous les deux courants ; commencer de est littéraire : dites commencer à."
   ],
   examples:[
     {fr:"J’ai décidé de suivre une formation en comptabilité.", en:"I’ve decided to take an accounting course."},
@@ -91,12 +92,12 @@ B.grammarMore=Object.assign(B.grammarMore||{},{g37:[
   {type:"mcq", lvl:2, prompt:"Je tiens ___ vous remercier personnellement.", choices:["à","de","pour"], answer:0, explain:"Tenir à + infinitif (= vouloir absolument)."},
   {type:"mcq", lvl:2, prompt:"Le directeur nous a permis ___ partir plus tôt.", choices:["de","à","pour"], answer:0, explain:"Permettre à quelqu’un de + infinitif."},
   {type:"mcq", lvl:2, prompt:"Il m’a invité ___ dîner samedi.", choices:["à","de","pour"], answer:0, explain:"Inviter quelqu’un à + infinitif."},
-  {type:"fill", lvl:2, prompt:"Je me suis dépêché ___ finir le rapport.", answers:["de"], explain:"Se dépêcher de + infinitif."},
+  {type:"fill", lvl:2, prompt:"Je me suis dépêché ___ finir le rapport.", answers:["de","pour"], explain:"Se dépêcher de + infinitif (pour + infinitif, qui exprime le but, est aussi correct ici)."},
   {type:"fill", lvl:2, prompt:"Tu t’habitues ___ vivre à Paris ?", answers:["à"], explain:"S’habituer à + infinitif."},
   {type:"fill", lvl:2, prompt:"Elle a peur ___ prendre l’avion.", answers:["de"], explain:"Avoir peur de + infinitif."},
   {type:"fix", lvl:2, prompt:"Il m’a promis à rappeler demain.", answers:["Il m’a promis de rappeler demain.","Il m’a promis de me rappeler demain."], explain:"Promettre à quelqu’un de + infinitif."},
   {type:"fix", lvl:2, prompt:"Nous cherchons de trouver une solution.", answers:["Nous cherchons à trouver une solution."], explain:"Chercher à + infinitif (= essayer de)."},
-  {type:"transform", lvl:2, instruction:"Reformulez avec « demander à quelqu’un de ».", prompt:"J’ai dit à mon voisin : « Baissez la musique, s’il vous plaît. »", answers:["J’ai demandé à mon voisin de baisser la musique."], explain:"Demander à quelqu’un de + infinitif."},
+  {type:"transform", lvl:2, instruction:"Reformulez avec « demander à quelqu’un de ».", prompt:"J’ai dit à mon voisin : « Baissez la musique, s’il vous plaît. »", answers:["J’ai demandé à mon voisin de baisser la musique.","J’ai demandé à mon voisin de baisser sa musique."], explain:"Demander à quelqu’un de + infinitif."},
   {type:"transform", lvl:2, instruction:"Reformulez avec « avoir du mal à ».", prompt:"Je trouve difficilement un emploi.", answers:["J’ai du mal à trouver un emploi."], explain:"Avoir du mal à + infinitif."},
   {type:"order", lvl:2, words:["les","Je","aidés","ai","à","déménager"], answers:["Je les ai aidés à déménager."], explain:"Aider quelqu’un à + infinitif ; accord avec le COD les placé avant."},
   {type:"mcq", lvl:3, prompt:"Je me permets ___ vous relancer au sujet de ma candidature.", choices:["de","à","pour"], answer:0, explain:"Se permettre de + infinitif (formule de lettre)."},
