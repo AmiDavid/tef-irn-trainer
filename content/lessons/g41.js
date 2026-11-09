@@ -18,9 +18,9 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g41:{
     "Emploi : le récit écrit au passé (littérature, histoire, presse). Même valeur que le passé composé (action terminée) ; il alterne avec l’imparfait (décor, description). À l’oral et dans vos courriels, utilisez le passé composé.",
     "Verbes en -er (et aller) : -ai, -as, -a, -âmes, -âtes, -èrent : il parla, elle alla, ils arrivèrent.",
     "La plupart des verbes en -ir (finir, partir, ouvrir), beaucoup de verbes en -re (prendre, mettre, dire, faire, écrire) et voir, s’asseoir : -is, -is, -it, -îmes, -îtes, -irent : il finit, il prit, elle mit, il dit, ils firent, elle écrivit, il vit, elle s’assit.",
-    "Les autres verbes en -oir (avoir, pouvoir, vouloir, savoir, devoir, recevoir) et quelques autres (être, courir, mourir, lire, connaître, vivre…) : -us, -us, -ut, -ûmes, -ûtes, -urent : il fut (être), il eut (avoir), il put, il voulut, il sut, il dut, il reçut, il lut, il connut, il vécut, il courut, il mourut.",
+    "Les autres verbes en -oir (avoir, pouvoir, vouloir, savoir, devoir, recevoir) et quelques autres (être, courir, mourir, lire, connaître, vivre…) : -us, -us, -ut, -ûmes, -ûtes, -urent : il fut (être), il eut (avoir), il put, il voulut, il sut, il dut, il reçut, il fallut (falloir), il lut, il connut, il vécut, il courut, il mourut.",
     "Venir, tenir et leurs composés : -ins, -ins, -int, -înmes, -întes, -inrent : il vint, ils revinrent, elle obtint. Naître : il naquit.",
-    "Pièges de lecture : il fit (faire) ≠ il fut (être) ; il vit (voir) ≠ il vécut (vivre), mais au présent, il vit vient de vivre ; il finit, il dit ont la même forme au présent (le contexte dit le temps)."
+    "Pièges de lecture : il fit (faire) ≠ il fut (être) ; il vit (voir) ≠ il vécut (vivre), mais au présent, il vit vient de vivre ; il finit, il dit ont la même forme au présent (le contexte dit le temps) ; il y eut = il y a eu."
   ],
   table:{head:["Infinitif","il / elle","ils / elles"],rows:[
     ["parler","il parla","ils parlèrent"],

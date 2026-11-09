@@ -81,7 +81,7 @@ B.grammarMore=Object.assign(B.grammarMore||{},{g38:[
   {type:"fill", lvl:1, prompt:"Je prends le bus ___ les jours.", answers:["tous"], explain:"Les jours : masculin pluriel → tous les."},
   {type:"fill", lvl:1, prompt:"Il n’y a ___ dans la salle.", answers:["personne"], hint:"aucune personne", explain:"Aucune personne : ne… personne."},
   {type:"fill", lvl:1, prompt:"J’ai lu ___ le livre en un week-end.", answers:["tout"], hint:"tout", explain:"Le livre : masculin singulier → tout le."},
-  {type:"fix", lvl:1, prompt:"Chaque semaines, je vais à la piscine.", answers:["Chaque semaine, je vais à la piscine."], explain:"Chaque + nom singulier."},
+  {type:"fix", lvl:1, prompt:"Chaque semaines, je vais à la piscine.", answers:["Chaque semaine, je vais à la piscine.","Toutes les semaines, je vais à la piscine."], explain:"Chaque + nom singulier (ou toutes les + pluriel)."},
   {type:"fix", lvl:1, prompt:"Tout les magasins sont fermés.", answers:["Tous les magasins sont fermés."], explain:"Les magasins : masculin pluriel → tous."},
   {type:"transform", lvl:1, instruction:"Remplacez « chaque jour » par « tous les… ».", prompt:"Je lis le journal chaque jour.", answers:["Je lis le journal tous les jours."], explain:"Chaque jour = tous les jours."},
   {type:"order", lvl:1, words:["quelques","dans","Il","jours","arrive"], answers:["Il arrive dans quelques jours.","Dans quelques jours, il arrive."], explain:"Quelques + nom pluriel = a few."},
@@ -101,6 +101,6 @@ B.grammarMore=Object.assign(B.grammarMore||{},{g38:[
   {type:"fill", lvl:3, prompt:"___ les deux jours, je change les draps.", answers:["Tous"], explain:"Fréquence : tous les deux jours."},
   {type:"fix", lvl:3, prompt:"Je n’ai aucuns problèmes avec mes voisins.", answers:["Je n’ai aucun problème avec mes voisins."], explain:"Aucun(e) + nom singulier : aucun problème."},
   {type:"transform", lvl:3, instruction:"Remplacez « à l’heure que vous voulez » par « n’importe quel » + nom.", prompt:"Vous pouvez venir à l’heure que vous voulez.", answers:["Vous pouvez venir à n’importe quelle heure."], explain:"N’importe quel s’accorde avec le nom : n’importe quelle heure (féminin)."},
-  {type:"order", lvl:3, words:["n’importe","Vous","m’appeler","quand","pouvez"], answers:["Vous pouvez m’appeler n’importe quand."], explain:"N’importe quand = any time."}
+  {type:"order", lvl:3, words:["n’importe","Vous","m’appeler","quand","pouvez"], answers:["Vous pouvez m’appeler n’importe quand.","N’importe quand, vous pouvez m’appeler."], explain:"N’importe quand = any time."}
 ]});
 })();
