@@ -244,7 +244,8 @@
     examples:["J’ai trouvé ce travail en lisant les petites annonces.","En prenant le train, tu arriveras plus vite.","Elle prépare le dîner en écoutant la radio.","Tout en reconnaissant les avantages du projet, je reste prudent."],
     mistakes:[
       {wrong:"En faisant du sport, ma santé s’est améliorée.", right:"En faisant du sport, j’ai amélioré ma santé.", why:"Le sujet du gérondif doit être celui du verbe principal : ce n’est pas « ma santé » qui fait du sport."},
-      {wrong:"J’ai appris le français par regarder des films.", right:"J’ai appris le français en regardant des films.", why:"Pour exprimer le moyen avec un verbe, on utilise en + participe présent, et non par + infinitif."}
+      {wrong:"J’ai appris le français par regarder des films.", right:"J’ai appris le français en regardant des films.", why:"Pour exprimer le moyen avec un verbe, on utilise en + participe présent, et non par + infinitif."},
+      {wrong:"Il a réussi en avant beaucoup travaillé.", right:"Il a réussi en ayant beaucoup travaillé.", why:"Le participe présent d’avoir est ayant (en ayant), pas « avant »."}
     ],
     drill:{prompt:"Complète : J’ai amélioré mon français ___ la radio tous les jours.", choices:["en écoutant","par écouter","en écouté","écoutant de"], answer:0},
     drills:[

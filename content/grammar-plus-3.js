@@ -18,7 +18,13 @@
       ["vouloir","veuille, veuilles, veuille","voulions, vouliez","veuillent"],
       ["prendre","prenne, prennes, prenne","prenions, preniez","prennent"],
       ["venir","vienne, viennes, vienne","venions, veniez","viennent"],
-      ["devoir","doive, doives, doive","devions, deviez","doivent"]
+      ["devoir","doive, doives, doive","devions, deviez","doivent"],
+      ["parler (régulier)", "parle, parles, parle", "parlions, parliez", "parlent"],
+      ["finir", "finisse, finisses, finisse", "finissions, finissiez", "finissent"],
+      ["boire", "boive, boives, boive", "buvions, buviez", "boivent"],
+      ["recevoir", "reçoive, reçoives, reçoive", "recevions, receviez", "reçoivent"],
+      ["voir (croire)", "voie, voies, voie", "voyions, voyiez", "voient"],
+      ["falloir / pleuvoir", "qu’il faille / qu’il pleuve", "—", "—"]
     ]},
     tips:[
       "Pour les verbes en -er, je, tu, il et ils ont la même forme qu’à l’indicatif (que je parle) : seuls nous et vous changent (que nous parlions). Les irréguliers sont donc tes meilleurs « marqueurs » de niveau.",
@@ -73,13 +79,19 @@
       ["il est possible que","il est probable que"],
       ["avant que","après que"],
       ["pour que, afin que","parce que, puisque"],
-      ["bien que","même si, alors que"]
+      ["bien que","même si, alors que"],
+      ["je suis content que, je regrette que, c’est dommage que", "je sais que, je constate que"],
+      ["j’ai peur que, je crains que", "je suis sûr(e) que, je suis convaincu(e) que"],
+      ["il vaut mieux que, il est temps que", "il paraît que"],
+      ["à moins que, sans que", "sauf si"],
+      ["jusqu’à ce que", "pendant que, tant que"]
     ]},
     tips:[
       "Souhaiter → subjonctif, espérer → indicatif : je souhaite qu’il vienne / j’espère qu’il viendra.",
       "« Il est possible que » + subjonctif, mais « il est probable que » + indicatif : la forte probabilité se rapproche de la certitude.",
       "Après avant que, à moins que ou de peur que, l’écrit soutenu ajoute souvent un « ne » explétif (avant qu’il ne parte) : ce n’est pas une négation.",
-      "« I want you to come » se dit « je veux que tu viennes », jamais « je veux toi venir » ; et « je veux que je… » est impossible : dis « je veux + infinitif »."
+      "« I want you to come » se dit « je veux que tu viennes », jamais « je veux toi venir » ; et « je veux que je… » est impossible : dis « je veux + infinitif ».",
+      "Après un superlatif ou après le seul, le premier, le dernier + qui / que, l’écrit soigné emploie souvent le subjonctif : C’est le meilleur film que j’aie vu."
     ],
     examples:[
       {fr:"Je souhaiterais que vous m’envoyiez la liste des pièces à fournir.",en:"I would like you to send me the list of documents required.",note:"souhait → subjonctif"},
@@ -173,7 +185,9 @@
       "Conjugue être au temps du verbe actif : a arrêté → a été arrêté ; arrêtera → sera arrêté ; arrête → est arrêté.",
       "Ajoute le participe passé et accorde-le avec le nouveau sujet : la voleuse a été arrêtée.",
       "L’ancien sujet devient complément d’agent avec par (action) ou de (sentiment, état : aimé de, connu de, entouré de) ; supprime-le si c’est « on » ou s’il est évident.",
-      "Seuls les verbes avec un COD se mettent au passif : on ne dit pas « j’ai été téléphoné » mais « on m’a téléphoné »."
+      "Seuls les verbes avec un COD se mettent au passif : on ne dit pas « j’ai été téléphoné » mais « on m’a téléphoné ».",
+      "Avec un verbe modal ou le futur proche, être reste à l’infinitif : Le formulaire doit être signé ; la salle va être rénovée ; le dossier peut être envoyé en ligne.",
+      "Se faire + infinitif quand le sujet subit l’action (souvent négative) : Il s’est fait voler son portefeuille ; elle s’est fait opérer du genou (fait reste invariable)."
     ],
     table:{head:["Temps","Actif","Passif"],rows:[
       ["présent","On nettoie la salle.","La salle est nettoyée."],
@@ -181,7 +195,10 @@
       ["imparfait","On nettoyait la salle.","La salle était nettoyée."],
       ["futur","On nettoiera la salle.","La salle sera nettoyée."],
       ["plus-que-parfait","On avait nettoyé la salle.","La salle avait été nettoyée."],
-      ["conditionnel","On nettoierait la salle.","La salle serait nettoyée."]
+      ["conditionnel","On nettoierait la salle.","La salle serait nettoyée."],
+      ["futur proche", "On va nettoyer la salle.", "La salle va être nettoyée."],
+      ["avec devoir", "On doit nettoyer la salle.", "La salle doit être nettoyée."],
+      ["subjonctif", "Il faut qu’on nettoie la salle.", "Il faut que la salle soit nettoyée."]
     ]},
     tips:[
       "Au passif, le temps se lit sur être : « est construit » = présent, « a été construit » = passé composé.",
@@ -229,7 +246,8 @@
       "S’il est au passé : présent → imparfait, passé composé → plus-que-parfait, futur → conditionnel présent, futur antérieur → conditionnel passé ; imparfait, plus-que-parfait et conditionnel ne changent pas.",
       "Questions : question fermée → si ; qu’est-ce que → ce que ; qu’est-ce qui → ce qui ; où, quand, pourquoi, comment se gardent, sans inversion ni est-ce que.",
       "Impératif → de + infinitif : « Fermez la porte » → Il m’a demandé de fermer la porte.",
-      "Adapte les repères : aujourd’hui → ce jour-là, demain → le lendemain, hier → la veille, ici → là."
+      "Adapte les repères : aujourd’hui → ce jour-là, demain → le lendemain, hier → la veille, ici → là.",
+      "Futur proche et passé récent : « Je vais partir » → il a dit qu’il allait partir ; « Je viens de rentrer » → il a dit qu’il venait de rentrer."
     ],
     table:{head:["Discours direct","Discours indirect (verbe au passé)"],rows:[
       ["« Je travaille. »","qu’il travaillait"],
@@ -239,7 +257,12 @@
       ["« Qu’est-ce que tu veux ? »","ce que je voulais"],
       ["« Qu’est-ce qui se passe ? »","ce qui se passait"],
       ["« Viens ! »","de venir"],
-      ["demain / hier / aujourd’hui","le lendemain / la veille / ce jour-là"]
+      ["demain / hier / aujourd’hui","le lendemain / la veille / ce jour-là"],
+      ["« Je vais partir. »", "qu’il allait partir"],
+      ["« Je viens de rentrer. »", "qu’il venait de rentrer"],
+      ["la semaine prochaine / dernière", "la semaine suivante / précédente"],
+      ["dans deux jours / il y a deux jours", "deux jours plus tard / deux jours plus tôt"],
+      ["maintenant / ce matin", "à ce moment-là / ce matin-là"]
     ]},
     tips:[
       "Si + il → s’il ; mais si + elle ne s’élide jamais : elle m’a demandé si elle pouvait entrer.",
@@ -286,7 +309,8 @@
       "Retiens les trois irréguliers : être → en étant, avoir → en ayant, savoir → en sachant.",
       "Vérifie que le sujet du gérondif est le même que celui du verbe principal.",
       "Choisis le sens : simultanéité, moyen ou manière, condition, cause ; tout en ajoute une idée d’opposition.",
-      "Pour la négation, encadre le participe : en ne disant rien, en n’ayant pas vu."
+      "Pour la négation, encadre le participe : en ne disant rien, en n’ayant pas vu.",
+      "Sans en, le participe présent remplace « qui + verbe », surtout dans les textes administratifs : les personnes souhaitant s’inscrire (= qui souhaitent s’inscrire). Il est invariable."
     ],
     table:{head:["Sens","Exemple","Équivalent"],rows:[
       ["simultanéité","Il téléphone en conduisant.","pendant qu’il conduit"],
@@ -299,7 +323,8 @@
       "Le gérondif est invariable : jamais de -e ni de -s (elles sont parties en courant).",
       "« By doing » = en faisant ; « while doing » = en faisant ou tout en faisant ; « on arriving » = en arrivant. Jamais « par faisant ».",
       "Attention à l’orthographe des irréguliers : en ayant (pas « en avant »), en sachant (pas « en savant »).",
-      "Commence un récit par un gérondif pour gagner en fluidité : « En sortant du travail, j’ai remarqué… »."
+      "Commence un récit par un gérondif pour gagner en fluidité : « En sortant du travail, j’ai remarqué… ».",
+      "Participe présent ou adjectif ? fatiguant (verbe) / fatigant (adjectif), convainquant / convaincant, négligeant / négligent : un travail fatigant, en se fatiguant."
     ],
     examples:[
       {fr:"En m’inscrivant à France Travail, j’ai pu suivre une formation gratuite.",en:"By registering with France Travail, I was able to take a free training course.",note:"verbe pronominal : en m’inscrivant"},
@@ -339,7 +364,9 @@
       "Cause + nom : grâce à (résultat positif), à cause de (résultat négatif), en raison de (neutre, administratif), faute de (manque), à force de (répétition).",
       "Conséquence + proposition : donc, alors, c’est pourquoi, par conséquent, si bien que, de sorte que + indicatif.",
       "Intensité + conséquence : si / tellement + adjectif ou adverbe + que ; tant de / tellement de + nom + que.",
-      "Autres moyens : entraîner, provoquer, causer + nom ; d’où + nom (d’où mon retard)."
+      "Autres moyens : entraîner, provoquer, causer + nom ; d’où + nom (d’où mon retard).",
+      "Autres façons d’exprimer la cause : en effet (justifie la phrase précédente : Je ne peux pas venir ; en effet, j’ai un rendez-vous) ; du fait de + nom, du fait que + indicatif ; sous prétexte que + indicatif (cause contestée) ; pour + infinitif passé (Il a été sanctionné pour avoir menti).",
+      "Autres façons d’exprimer la conséquence : ainsi, de ce fait, c’est la raison pour laquelle ; trop / assez + adjectif + pour + infinitif (Il est trop tard pour annuler)."
     ],
     table:{head:["Connecteur","Construction","Exemple"],rows:[
       ["comme","+ proposition, en tête","Comme le bureau était fermé, je suis revenu le lendemain."],
@@ -348,7 +375,10 @@
       ["à force de","+ infinitif ou nom","À force de travailler, il a réussi."],
       ["par conséquent","entre deux phrases","Le dossier est incomplet ; par conséquent, il est refusé."],
       ["d’où","+ nom","Il y avait des travaux, d’où le retard."],
-      ["tellement de… que","+ nom","Il y avait tellement de monde que nous sommes partis."]
+      ["tellement de… que","+ nom","Il y avait tellement de monde que nous sommes partis."],
+      ["en effet", "entre deux phrases (justifie)", "Je ne peux pas venir ; en effet, je suis malade."],
+      ["sous prétexte que", "+ indicatif (cause contestée)", "Il est parti sous prétexte qu’il était fatigué."],
+      ["si bien que", "+ indicatif", "Il a beaucoup neigé, si bien que les écoles sont fermées."]
     ]},
     tips:[
       "Car ne commence jamais une phrase et ne répond pas à « pourquoi ? » : « Pourquoi ? — Parce que… ».",
@@ -394,7 +424,9 @@
       "Malgré, en dépit de + nom : malgré la fatigue, en dépit des difficultés.",
       "Même si + indicatif (jamais futur ni conditionnel juste après si) ; alors que, tandis que + indicatif pour opposer deux faits.",
       "Entre deux phrases : pourtant, cependant, néanmoins, toutefois ; en revanche pour un contraste (par contre est plus oral).",
-      "Avoir beau + infinitif : avoir se conjugue, beau ne change pas (J’ai beau essayer, je n’y arrive pas)."
+      "Avoir beau + infinitif : avoir se conjugue, beau ne change pas (J’ai beau essayer, je n’y arrive pas).",
+      "Autres façons d’opposer : au lieu de + infinitif ou nom (Au lieu de se plaindre, il agit) ; contrairement à + nom (Contrairement à l’an dernier, les prix ont baissé) ; par contre (oral) / en revanche (écrit).",
+      "Dans une argumentation, concédez avant de contredire : certes…, mais… ; il est vrai que…, mais… ; à l’oral, quand même / tout de même (Il pleuvait, mais nous sommes quand même sortis)."
     ],
     table:{head:["Connecteur","Suivi de","Exemple"],rows:[
       ["bien que / quoique","subjonctif","Bien qu’il soit cher, ce logement me plaît."],
@@ -403,7 +435,10 @@
       ["alors que / tandis que","indicatif","Il est cher, alors que l’autre est abordable."],
       ["pourtant / cependant","phrase","Il est cher ; pourtant, il me plaît."],
       ["avoir beau","infinitif","J’ai beau chercher, je ne trouve rien de moins cher."],
-      ["en revanche","phrase (contraste)","Le loyer est élevé ; en revanche, les charges sont comprises."]
+      ["en revanche","phrase (contraste)","Le loyer est élevé ; en revanche, les charges sont comprises."],
+      ["au lieu de", "+ infinitif ou nom", "Au lieu de louer, il a acheté."],
+      ["contrairement à", "+ nom", "Contrairement à l’autre, ce logement est calme."],
+      ["certes… mais", "deux propositions", "Certes, il est cher, mais il est bien situé."]
     ]},
     tips:[
       "Trio à retenir : bien que + subjonctif, malgré + nom, même si + indicatif — trois façons d’exprimer la même idée.",
@@ -450,7 +485,10 @@
       "Nom : plus de / moins de / autant de + nom + que ; verbe : verbe + plus / moins / autant + que.",
       "Irréguliers : bon → meilleur (s’accorde), bien → mieux (invariable), mauvais → pire ou plus mauvais.",
       "Superlatif : le / la / les + plus / moins + adjectif ; complément introduit par de (le plus cher de la ville). Si l’adjectif suit le nom, on répète l’article : le quartier le plus calme.",
-      "Avec un verbe ou un nom : verbe + le plus / le moins (c’est lui qui travaille le plus) ; le plus de + nom (c’est ici qu’il y a le plus de commerces)."
+      "Avec un verbe ou un nom : verbe + le plus / le moins (c’est lui qui travaille le plus) ; le plus de + nom (c’est ici qu’il y a le plus de commerces).",
+      "Évolution : de plus en plus, de moins en moins + adjectif ou adverbe ; de plus en plus de + nom : Les loyers sont de plus en plus chers ; il y a de moins en moins de commerces.",
+      "Proportion : plus…, plus… ; moins…, moins… ; plus…, moins… : Plus on pratique, plus on progresse.",
+      "Pour renforcer : beaucoup plus, bien plus, beaucoup moins, bien meilleur (jamais « très plus ») ; deux fois plus cher que, trois fois moins que."
     ],
     table:{head:["Base","Comparatif","Superlatif"],rows:[
       ["bon(ne)","meilleur(e) que","le / la meilleur(e)"],
@@ -465,7 +503,9 @@
       "« C’est mieux de réserver » (= c’est préférable) est correct : avec c’est + infinitif, on utilise mieux.",
       "« Plus pire » est toujours fautif : pire est déjà un comparatif.",
       "Le complément du superlatif est introduit par de, jamais par dans ou en : le plus grand parc de Paris.",
-      "Devant un nombre, on dit plus de / moins de : plus de vingt personnes (et non « plus que vingt personnes »)."
+      "Devant un nombre, on dit plus de / moins de : plus de vingt personnes (et non « plus que vingt personnes »).",
+      "Le plus… possible : le plus vite possible, le plus tôt possible — formule utile dans une lettre.",
+      "Égalité ou ressemblance : le même… que, la même… que (Elle a le même âge que moi) ; comme (Il travaille comme moi)."
     ],
     examples:[
       {fr:"Le loyer est moins élevé en banlieue qu’en centre-ville.",en:"Rent is lower in the suburbs than in the city centre.",note:"comparatif d’infériorité"},

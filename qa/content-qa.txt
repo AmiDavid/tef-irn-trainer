@@ -199,6 +199,17 @@ for(const g of D.grammar){
   for(const k of ["rule","tips","examples","summary","practice"]) assert.ok(Array.isArray(p[k])&&p[k].length>=3,g.id+" needs "+k);
   for(const e of p.examples){assert.ok(nonempty(e.fr),"example fr "+g.id);safe(e.fr,g.id+" example")}
   [...p.rule,...p.tips,...p.summary].forEach((t,i)=>safe(t,g.id+" text "+i));
+  /* Lesson tables (the main one and any extra, titled ones) are copied by hand: every row must fill every column. */
+  const tables=[p.table,...(p.tables||[])].filter(Boolean);
+  assert.ok(tables.length>=1,g.id+" needs a table");
+  tables.forEach((t,ti)=>{
+    assert.ok(Array.isArray(t.head)&&t.head.length>=2&&t.rows.length>=2,g.id+" table "+ti);
+    if(ti>0)assert.ok(nonempty(t.title),g.id+" extra table "+ti+" needs a title");
+    t.rows.forEach((r,ri)=>{assert.equal(r.length,t.head.length,g.id+" table "+ti+" row "+ri+" columns");r.forEach(c=>{assert.ok(nonempty(c),g.id+" table "+ti+" row "+ri+" empty cell");safe(c,g.id+" table")})});
+  });
+  /* Every lesson has an « Attention aux erreurs » section in the notebook. */
+  assert.ok(Array.isArray(g.mistakes)&&g.mistakes.length>=3,g.id+" needs 3 typical mistakes");
+  g.mistakes.forEach((m,i)=>{assert.ok(nonempty(m.wrong)&&nonempty(m.right)&&nonempty(m.why),g.id+" mistake "+i);assert.notEqual(qnorm(m.wrong),qnorm(m.right),g.id+" mistake "+i+" unchanged")});
   assert.ok(p.practice.length>=12,g.id+" needs 12 exercises");
   for(const t of TYPES) assert.ok(p.practice.filter(x=>x.type===t).length>=2,g.id+" needs 2 "+t);
   const checkEx=(x,id)=>{
