@@ -236,12 +236,23 @@
     ],
     table: { head:["Terminaison","Genre le plus fréquent","Exemples"], rows:[
       ["-tion, -sion","féminin","la situation, la décision"],
+      ["-ance, -ence","féminin","la naissance, l’assurance, l’expérience, la résidence (mais le silence m.)"],
       ["-té","féminin","la santé, la société (mais le côté, l’été m.)"],
       ["-ure","féminin","la voiture, la facture"],
+      ["-ée","féminin","l’entrée, l’année, la journée (mais le musée, le lycée m.)"],
+      ["-ie","féminin","la boulangerie, la pharmacie (mais l’incendie, le parapluie m.)"],
+      ["-ette","féminin","la recette, la serviette (mais le squelette m.)"],
+      ["-ade","féminin","la salade, la promenade (mais le stade m.)"],
+      ["-esse, -tude","féminin","l’adresse, la jeunesse, l’habitude, la solitude"],
       ["-ment","masculin","le logement, le document"],
       ["-age","masculin","le chômage, le garage (mais la page, la plage, l’image f.)"],
       ["-eau","masculin","le bureau, le tableau (mais l’eau f., la peau)"],
-      ["-isme","masculin","le tourisme, le racisme"]
+      ["-isme","masculin","le tourisme, le racisme"],
+      ["-oir","masculin","le trottoir, le devoir, l’espoir"],
+      ["-ier","masculin","le quartier, le dossier, le métier"],
+      ["-et","masculin","le billet, le projet, le budget"],
+      ["-al, -ail","masculin","le journal, l’hôpital, le travail, le détail"],
+      ["-ème","masculin","le problème, le système (mais la crème f.)"]
     ]},
     tips: [
       "Pièges fréquents : le problème, le système, le programme sont masculins ; la personne est toujours féminin, même pour un homme.",
