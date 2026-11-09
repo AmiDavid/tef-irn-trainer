@@ -2,8 +2,8 @@
 (()=>{const B=window.TEF_BANK=window.TEF_BANK||{};
 (B.grammar=B.grammar||[]).push({
   id:"g32", section:"Les temps", order:11, title:"Les verbes pronominaux : se lever, se souvenir, s’en aller", status:"untested",
-  short:"Je me, tu te, il se, nous nous, vous vous, ils se ; être au passé composé ; sens réfléchi, réciproque, passif ou propre.",
-  details:"Un verbe pronominal se conjugue avec un pronom de la même personne que le sujet : je me lève, nous nous levons. Le pronom se place devant le verbe (ou l’auxiliaire), y compris à la négation (je ne me lève pas) et devant un infinitif (je vais me lever). Au passé composé, l’auxiliaire est être : je me suis levé(e). Le sens peut être réfléchi (se laver), réciproque (se téléphoner), passif (ce plat se mange froid) ou propre au verbe (se souvenir, s’en aller).",
+  short:"Je me, tu te, il se, nous nous, vous vous, ils se ; être au passé composé ; sens réfléchi, réciproque, passif ou idiomatique.",
+  details:"Un verbe pronominal se conjugue avec un pronom de la même personne que le sujet : je me lève, nous nous levons. Le pronom se place devant le verbe (ou l’auxiliaire), y compris à la négation (je ne me lève pas) et devant un infinitif (je vais me lever) ; seule exception : l’impératif affirmatif (lève-toi). Au passé composé, l’auxiliaire est être : je me suis levé(e). Le sens peut être réfléchi (se laver), réciproque (se téléphoner), passif (ce plat se mange froid) ou idiomatique (se souvenir, s’en aller).",
   examples:["Je me lève à six heures en semaine.","Nous nous voyons le vendredi.","Elle s’est inscrite à la salle de sport.","Je ne me souviens pas de son nom."],
   mistakes:[
     {wrong:"Je lève à sept heures.", right:"Je me lève à sept heures.", why:"Se lever est pronominal : le pronom me est obligatoire."},
@@ -17,11 +17,12 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g32:{
   intro:"Les verbes pronominaux sont partout dans la vie quotidienne (se lever, s’inscrire, s’occuper de, se renseigner) et dans les textes administratifs (« le dossier se compose de… »). Un pronom oublié ou à la mauvaise personne (« nous se… ») est une erreur très visible, à l’écrit comme à l’oral.",
   rule:[
     "Le pronom change avec le sujet : je me, tu te, il / elle / on se, nous nous, vous vous, ils / elles se. Me, te, se deviennent m’, t’, s’ devant une voyelle ou un h muet : je m’habille, il s’inscrit.",
-    "Place : devant le verbe conjugué, y compris à la négation (Je ne me souviens pas). Devant un infinitif, le pronom correspond au sujet : Je vais me coucher ; nous devons nous inscrire.",
+    "Place : devant le verbe conjugué ou l’auxiliaire, y compris à la négation (Je ne me souviens pas ; je ne me suis pas réveillé). Devant un infinitif, le pronom correspond au sujet : Je vais me coucher ; nous devons nous inscrire. À l’inversion : Vous souvenez-vous… ? Vous êtes-vous inscrit ?",
     "Aux temps composés, toujours être : je me suis levé(e), ils se sont inscrits. Le participe s’accorde avec le sujet si le pronom est COD (elle s’est levée), pas s’il est COI ou si un COD suit (ils se sont parlé ; elle s’est lavé les mains).",
+    "Donc pas d’accord avec se parler, se téléphoner, se dire, s’écrire, se sourire, se plaire (on parle à quelqu’un : COI). Les verbes toujours pronominaux ou de sens idiomatique s’accordent avec le sujet (elles se sont souvenues, ils se sont plaints), sauf se rendre compte, où compte est un COD placé après : elle s’est rendu compte.",
     "Impératif : Lève-toi ! Asseyez-vous ! ; à la forme négative : Ne te lève pas ! Ne vous asseyez pas !",
     "Quatre sens : réfléchi, l’action revient sur le sujet (je me lave) ; réciproque, les uns les autres (ils se téléphonent) ; passif, avec une chose pour sujet (ce plat se mange froid ; ça ne se fait pas) ; verbes qui n’existent qu’au pronominal ou changent de sens (se souvenir de, s’en aller, se rendre compte de, s’occuper de, se tromper).",
-    "Parties du corps : l’article défini suffit : Je me brosse les dents ; il s’est cassé la jambe (pas « ses dents »)."
+    "Parties du corps : l’article défini suffit : Je me brosse les dents ; il s’est cassé la jambe (pas « mes dents », « sa jambe »)."
   ],
   table:{head:["Personne","Présent","Passé composé"],rows:[
     ["je","je me lève","je me suis levé(e)"],
@@ -48,7 +49,7 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g32:{
   tips:[
     "Le pronom et le sujet vont ensemble : nous nous, vous vous. « Nous se… » est toujours faux.",
     "Avec on, le pronom est se : On se voit demain ? On s’appelle ce soir.",
-    "S’en aller : je m’en vais, va-t’en !, allez-vous-en ! ; au passé composé : je m’en suis allé(e).",
+    "S’en aller : je m’en vais ; à l’impératif, va-t’en ! allez-vous-en ! ; au passé composé : je m’en suis allé(e).",
     "Le sens passif est fréquent dans les consignes et les médias : « Ce médicament se prend le matin », « Le formulaire se télécharge en ligne »."
   ],
   examples:[
@@ -65,14 +66,14 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g32:{
     "Je me, tu te, il se, nous nous, vous vous, ils se (m’, t’, s’ devant une voyelle).",
     "Négation et infinitif : je ne me… pas ; je vais me…",
     "Passé composé avec être : accord avec le sujet, sauf COI ou COD placé après.",
-    "Réfléchi, réciproque, passif, ou sens propre (se souvenir, s’en aller)."
+    "Réfléchi, réciproque, passif, ou idiomatique (se souvenir, s’en aller)."
   ],
   practice:[
     {type:"mcq", lvl:1, prompt:"Tu ___ à quelle heure le matin ?", choices:["te lèves","se lèves","lèves"], answer:0, explain:"Avec tu, le pronom est te : tu te lèves."},
     {type:"mcq", lvl:1, prompt:"Mes parents et moi, nous ___ tous les dimanches.", choices:["nous appelons","se appelons","appelons-nous"], answer:0, explain:"Réciproque avec nous : nous nous appelons."},
     {type:"fill", lvl:1, prompt:"Je ___ appelle Sophie.", answers:["m’"], hint:"s’appeler, je", explain:"me devient m’ devant une voyelle : je m’appelle."},
     {type:"fill", lvl:1, prompt:"Vous ___ reposez ce week-end ?", answers:["vous"], explain:"Avec vous, le pronom est vous : vous vous reposez."},
-    {type:"transform", lvl:1, instruction:"Mettez la phrase à la forme négative.", prompt:"Je me souviens de son adresse.", answers:["Je ne me souviens pas de son adresse."], explain:"Le pronom reste collé au verbe : ne me souviens pas."},
+    {type:"transform", lvl:1, instruction:"Mettez la phrase à la forme négative avec « ne… pas ».", prompt:"Je me souviens de son adresse.", answers:["Je ne me souviens pas de son adresse."], explain:"Le pronom reste collé au verbe : ne me souviens pas."},
     {type:"order", lvl:1, words:["nous","Nous","demain","voyons"], answers:["Nous nous voyons demain.","Demain, nous nous voyons."], explain:"Sujet nous + pronom nous + verbe."},
     {type:"fix", lvl:2, prompt:"Elle s’a inscrite au club.", answers:["Elle s’est inscrite au club."], explain:"Les verbes pronominaux se conjuguent avec être : elle s’est inscrite."},
     {type:"fix", lvl:2, prompt:"Nous allons se renseigner demain.", answers:["Nous allons nous renseigner demain."], explain:"Devant l’infinitif, le pronom correspond au sujet : nous allons nous…"},
@@ -92,10 +93,10 @@ B.grammarMore=Object.assign(B.grammarMore||{},{g32:[
   {type:"fill", lvl:1, prompt:"Je ___ intéresse à la politique locale.", answers:["m’"], explain:"me devient m’ devant une voyelle : je m’intéresse."},
   {type:"fix", lvl:1, prompt:"Je promène le dimanche.", answers:["Je me promène le dimanche."], explain:"Sans complément, on dit se promener : je me promène."},
   {type:"fix", lvl:1, prompt:"Vous se levez tôt ?", answers:["Vous vous levez tôt ?"], explain:"Avec vous, le pronom est vous : vous vous levez."},
-  {type:"transform", lvl:1, instruction:"Mettez la phrase à la forme négative.", prompt:"Il se rase le matin.", answers:["Il ne se rase pas le matin."], explain:"ne + pronom + verbe + pas."},
+  {type:"transform", lvl:1, instruction:"Mettez la phrase à la forme négative avec « ne… pas ».", prompt:"Il se rase le matin.", answers:["Il ne se rase pas le matin."], explain:"ne + pronom + verbe + pas."},
   {type:"order", lvl:1, words:["me","Je","dépêche","toujours"], answers:["Je me dépêche toujours."], explain:"Sujet + pronom + verbe : je me dépêche."},
   {type:"mcq", lvl:2, prompt:"Elle s’est ___ à huit heures.", choices:["réveillée","réveillé","réveillés"], answer:0, explain:"Le pronom est COD (réveiller quelqu’un) : accord avec elle."},
-  {type:"mcq", lvl:2, prompt:"Nous allons ___ inscrire à la crèche.", choices:["nous","se","vous"], answer:0, explain:"Devant l’infinitif, le pronom correspond au sujet nous."},
+  {type:"mcq", lvl:2, prompt:"Nous allons ___ souvenir longtemps de ce voyage.", choices:["nous","se","vous"], answer:0, explain:"Devant l’infinitif, le pronom correspond au sujet nous."},
   {type:"mcq", lvl:2, prompt:"Cette expression ne ___ plus.", choices:["s’utilise","utilise","s’utilisent"], answer:0, explain:"Sens passif, sujet singulier : cette expression s’utilise."},
   {type:"fill", lvl:2, prompt:"Je ne ___ rends pas compte du temps qui passe.", answers:["me"], explain:"Se rendre compte, avec je : je ne me rends pas compte."},
   {type:"fill", lvl:2, prompt:"Ma voisine s’occupe ___ mon chat pendant les vacances.", answers:["de"], explain:"S’occuper de quelqu’un ou de quelque chose."},
@@ -108,7 +109,7 @@ B.grammarMore=Object.assign(B.grammarMore||{},{g32:[
   {type:"mcq", lvl:3, prompt:"Les deux ministres se sont ___ la main.", choices:["serré","serrés","serrées"], answer:0, explain:"Le COD (la main) est placé après : pas d’accord."},
   {type:"fill", lvl:3, prompt:"Va-t’___ ! Tu vas être en retard.", answers:["en"], explain:"S’en aller à l’impératif : va-t’en."},
   {type:"fill", lvl:3, prompt:"Elle s’est rendu ___ de son erreur trop tard.", answers:["compte"], explain:"Se rendre compte de : compte est le COD, placé après, donc rendu ne s’accorde pas."},
-  {type:"fix", lvl:3, prompt:"Les étudiants se sont plaint du bruit.", answers:["Les étudiants se sont plaints du bruit."], explain:"Se plaindre n’existe qu’au pronominal : accord avec le sujet."},
+  {type:"fix", lvl:3, prompt:"Les étudiants se sont plaint du bruit.", answers:["Les étudiants se sont plaints du bruit."], explain:"Se plaindre (= protester) est un pronominal de sens idiomatique (plaindre quelqu’un = avoir pitié de lui) : accord avec le sujet."},
   {type:"transform", lvl:3, instruction:"Remplacez « on » par une forme pronominale de sens passif.", prompt:"On vend ce produit en pharmacie.", answers:["Ce produit se vend en pharmacie."], explain:"Sens passif : la chose devient sujet + se + verbe."},
   {type:"order", lvl:3, words:["vous","Ne","pas","asseyez","ici"], answers:["Ne vous asseyez pas ici."], explain:"Impératif négatif : ne + vous + verbe + pas."}
 ]});

@@ -16,19 +16,19 @@
 B.grammarPlus=Object.assign(B.grammarPlus||{},{g33:{
   intro:"Les prépositions de lieu sont dans presque toutes les phrases de la vie quotidienne : prendre rendez-vous chez le médecin, expliquer un trajet, dire où l’on habite. À l’oral A du TEF, vous demandez souvent où se trouve un lieu et comment y aller ; à l’écrit, une préposition fausse (« au médecin », « en pied ») se remarque immédiatement.",
   rule:[
-    "Villes et lieux : à (à Paris, à la mairie, à l’hôpital, au marché). Pays et régions : en + féminin ou voyelle (en France, en Iran, en Bretagne), au + masculin (au Canada), aux + pluriel (aux États-Unis). Origine : de / d’ / du / des (je viens de Lyon, d’Italie, du Maroc, des États-Unis).",
-    "Chez + personne, nom de professionnel ou pronom : chez mes parents, chez le coiffeur, chez moi. Mais à + le lieu : à la boulangerie / chez le boulanger.",
-    "Dans + un espace fermé ou délimité (dans la cuisine, dans le tiroir), et pour la rue, le quartier, un livre ou un journal : dans la rue, dans mon quartier, dans le journal.",
+    "Villes et lieux : à (à Paris, à la mairie, à l’hôpital, au marché). Pays et régions : en + féminin ou voyelle (en France, en Iran, en Bretagne), au + masculin (au Canada), aux + pluriel (aux États-Unis). Les pays en -e sont presque tous féminins, sauf le Mexique, le Cambodge, le Mozambique (au Mexique). Origine : de / d’ / du / des (je viens de Lyon, d’Italie, du Maroc, des États-Unis).",
+    "Chez + personne, nom de professionnel, pronom ou entreprise : chez mes parents, chez le coiffeur, chez moi, il travaille chez Renault. Mais à + le lieu : à la boulangerie / chez le boulanger.",
+    "Dans + un espace fermé ou délimité (dans la cuisine, dans le tiroir), et pour la rue, le quartier, un livre ou un journal : dans la rue, dans mon quartier, dans le journal (mais sur la place, sur le boulevard).",
     "Sur + une surface (sur la table, sur le mur), un réseau ou un écran : sur internet, sur le site, sur les réseaux sociaux, sur mon téléphone. Mais à la radio, à la télévision.",
-    "Transports : en quand on est à l’intérieur (en bus, en voiture, en train, en avion, en métro) ; à quand on est dessus ou à pied (à pied, à vélo, à moto, à cheval). Avec un article, on dit dans ou sur : dans le bus de 8 heures, sur mon vélo.",
-    "Position : devant, derrière, entre… et… (sans de) ; à côté de, en face de, près de, loin de, au bout de, au coin de (avec de) : devant la gare, en face de la gare, à côté du métro.",
+    "Transports : en quand on est à l’intérieur (en bus, en voiture, en train, en avion, en métro) ; à quand on est dessus ou à pied (à pied, à vélo, à moto, à cheval). Avec un déterminant, on dit dans ou sur : dans le bus de 8 heures, sur mon vélo. À l’oral, on entend souvent en vélo, en moto ; à l’écrit, préférez à vélo, à moto.",
+    "Position : devant, derrière, entre… et… (sans de) ; à côté de, en face de, près de, loin de, à droite de, à gauche de, au bout de, au coin de (avec de) : devant la gare, en face de la gare, à côté du métro.",
     "Avec un verbe de mouvement : aller à / en / chez (destination) ; venir de, sortir de, rentrer de (provenance) : Je rentre du travail ; je sors de chez le médecin."
   ],
   table:{head:["Préposition","Emploi","Exemple"],rows:[
     ["à","ville, lieu ; à pied, à vélo","à Lille, à la poste, à pied"],
-    ["en","pays féminin ; véhicule dans lequel on monte","en Espagne, en train"],
+    ["en","pays féminin ou à voyelle ; véhicule dans lequel on monte","en Espagne, en Iran, en train"],
     ["au / aux","pays masculin / pluriel","au Portugal, aux Pays-Bas"],
-    ["chez","personne, professionnel, pronom","chez le dentiste, chez moi"],
+    ["chez","personne, professionnel, pronom, entreprise","chez le dentiste, chez moi, chez Renault"],
     ["dans","espace fermé, rue, quartier, journal","dans la salle, dans la rue"],
     ["sur","surface, internet, site, application","sur la table, sur internet"]
   ]},
@@ -63,7 +63,7 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g33:{
     "En bus, en voiture, en train ; à pied, à vélo."
   ],
   practice:[
-    {type:"mcq", lvl:1, prompt:"Ma sœur habite ___ Bordeaux.", choices:["à","en","dans"], answer:0, explain:"Devant une ville : à."},
+    {type:"mcq", lvl:1, prompt:"Ma sœur habite ___ Bordeaux.", choices:["à","en","au"], answer:0, explain:"Devant une ville : à."},
     {type:"mcq", lvl:1, prompt:"Ce soir, on dîne ___ mes beaux-parents.", choices:["chez","à","dans"], answer:0, explain:"Pour des personnes : chez."},
     {type:"fill", lvl:1, prompt:"Je vais au bureau ___ métro.", answers:["en"], explain:"On est à l’intérieur du métro : en métro."},
     {type:"fill", lvl:1, prompt:"Ils partent en vacances ___ Portugal.", answers:["au"], explain:"Pays masculin : au."},
@@ -72,8 +72,8 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g33:{
     {type:"fix", lvl:2, prompt:"J’ai un rendez-vous au dentiste.", answers:["J’ai un rendez-vous chez le dentiste."], explain:"Pour un professionnel : chez le dentiste."},
     {type:"fix", lvl:2, prompt:"Nous sommes allés en Canada l’été dernier.", answers:["Nous sommes allés au Canada l’été dernier."], explain:"Canada est masculin : au Canada."},
     {type:"transform", lvl:2, instruction:"Remplacez « Espagne » par « Mexique ».", prompt:"Elle travaille en Espagne.", answers:["Elle travaille au Mexique."], explain:"Mexique est masculin, malgré le -e final : au Mexique."},
-    {type:"order", lvl:2, words:["de","en","pharmacie","face","La","est","gare","la"], answers:["La pharmacie est en face de la gare."], explain:"en face de + nom."},
-    {type:"mcq", lvl:3, prompt:"J’ai lu cette information ___ un forum.", choices:["sur","dans","à"], answer:0, explain:"Sur + forum, site, internet."},
+    {type:"order", lvl:2, words:["de","en","pharmacie","face","La","est","gare","la"], answers:["La pharmacie est en face de la gare.","La gare est en face de la pharmacie."], explain:"en face de + nom."},
+    {type:"mcq", lvl:3, prompt:"J’ai lu cette information ___ un réseau social.", choices:["sur","dans","à"], answer:0, explain:"Sur + réseau social, forum, site, internet."},
     {type:"fill", lvl:3, prompt:"Il sort ___ chez le médecin avec une ordonnance.", answers:["de"], explain:"Provenance : de + chez (de chez le médecin)."}
   ]
 }});
@@ -88,15 +88,15 @@ B.grammarMore=Object.assign(B.grammarMore||{},{g33:[
   {type:"fix", lvl:1, prompt:"Je vais en pied au travail.", answers:["Je vais à pied au travail.","Je vais au travail à pied."], explain:"On dit à pied."},
   {type:"fix", lvl:1, prompt:"Elle est née en Maroc.", answers:["Elle est née au Maroc."], explain:"Maroc est masculin : au Maroc."},
   {type:"transform", lvl:1, instruction:"Remplacez « mes parents » par « moi ».", prompt:"Ce soir, je reste chez mes parents.", answers:["Ce soir, je reste chez moi."], explain:"Chez + pronom tonique : chez moi."},
-  {type:"order", lvl:1, words:["Japon","au","part","Il","demain"], answers:["Il part au Japon demain.","Demain, il part au Japon."], explain:"Pays masculin : au Japon."},
+  {type:"order", lvl:1, words:["Japon","au","part","Il","demain"], answers:["Il part au Japon demain.","Demain, il part au Japon.","Il part demain au Japon."], explain:"Pays masculin : au Japon."},
   {type:"mcq", lvl:2, prompt:"On se retrouve ___ la poste ?", choices:["devant","en face","à côté"], answer:0, explain:"Devant + nom, sans de ; mais en face de, à côté de."},
   {type:"mcq", lvl:2, prompt:"Il y a des travaux ___ ma rue.", choices:["dans","sur","à"], answer:0, explain:"Pour la rue : dans la rue."},
   {type:"mcq", lvl:2, prompt:"J’ai entendu l’interview ___ radio.", choices:["à la","sur la","dans la"], answer:0, explain:"À la radio, à la télévision."},
   {type:"fill", lvl:2, prompt:"Le bus 38 ? Je suis déjà ___ le bus.", answers:["dans"], explain:"Avec un article : dans le bus (en bus = le moyen de transport)."},
   {type:"fill", lvl:2, prompt:"Elle revient ___ Japon la semaine prochaine.", answers:["du"], explain:"Provenance d’un pays masculin : du."},
-  {type:"fill", lvl:2, prompt:"Il y a une boulangerie au ___ de la rue.", answers:["coin","bout"], explain:"Au coin de la rue, au bout de la rue."},
+  {type:"fill", lvl:2, prompt:"Il y a une boulangerie au ___ de la rue.", answers:["coin"], hint:"à l’angle", explain:"Au coin de la rue = à l’angle (au bout de la rue = à l’autre extrémité)."},
   {type:"fix", lvl:2, prompt:"J’ai vu l’annonce dans le site de la mairie.", answers:["J’ai vu l’annonce sur le site de la mairie."], explain:"Un site internet : sur."},
-  {type:"fix", lvl:2, prompt:"Il travaille chez la banque.", answers:["Il travaille à la banque.","Il travaille dans une banque."], explain:"Un lieu : à la banque ; chez s’emploie avec une personne ou un nom d’entreprise (chez Renault)."},
+  {type:"fix", lvl:2, prompt:"Il travaille chez la banque.", answers:["Il travaille à la banque.","Il travaille dans une banque.","Il travaille dans la banque."], explain:"Un lieu : à la banque (dans la banque = dans le secteur bancaire) ; chez s’emploie avec une personne ou un nom d’entreprise (chez Renault)."},
   {type:"transform", lvl:2, instruction:"Remplacez « en voiture » par le vélo.", prompt:"Je vais au travail en voiture.", answers:["Je vais au travail à vélo."], explain:"On est sur le vélo : à vélo."},
   {type:"transform", lvl:2, instruction:"Indiquez la provenance : remplacez « Je vais » par « Je reviens ».", prompt:"Je vais chez le pharmacien.", answers:["Je reviens de chez le pharmacien."], explain:"Provenance : de + chez."},
   {type:"order", lvl:2, words:["côté","à","du","musée","J’habite"], answers:["J’habite à côté du musée."], explain:"À côté de + le → à côté du."},

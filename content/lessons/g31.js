@@ -11,16 +11,16 @@
     {wrong:"Lève-te tôt demain.", right:"Lève-toi tôt demain.", why:"À l’impératif affirmatif, te devient toi après le verbe."},
     {wrong:"Ne regarde-le pas.", right:"Ne le regarde pas.", why:"À la forme négative, le pronom revient devant le verbe, sans trait d’union."}
   ],
-  drill:{prompt:"Complète : ___ la porte, s’il te plaît.", choices:["Fermes","Ferme","Tu fermes","Fermé"], answer:1}
+  drill:{prompt:"Complète : ___ la porte, s’il te plaît.", choices:["Fermes","Ferme","Fermez","Fermé"], answer:1}
 });
 B.grammarPlus=Object.assign(B.grammarPlus||{},{g31:{
   intro:"L’impératif est partout dans les documents du TEF (consignes, règlements, notices, affiches : « Veuillez présenter votre carte ») et dans vos productions : donner un conseil à un ami, une consigne, une invitation. À l’oral B, il aide à convaincre : « Pense à… », « Imagine… ».",
   rule:[
     "Trois personnes, sans sujet : tu, nous, vous. On part du présent : tu prends → Prends ! ; nous prenons → Prenons ! ; vous prenez → Prenez !",
-    "Verbes en -er (et aller, ouvrir, offrir) : pas de s avec tu : tu parles → Parle ! ; tu vas → Va ! ; tu ouvres → Ouvre ! Mais le s revient devant y et en : Vas-y ! Parles-en !",
+    "Verbes en -er (et aller, ouvrir, offrir) : pas de s avec tu : tu parles → Parle ! ; tu vas → Va ! ; tu ouvres → Ouvre ! Mais le s revient devant les pronoms y et en : Vas-y ! Parles-en !",
     "Quatre irréguliers : être → sois, soyons, soyez ; avoir → aie, ayons, ayez ; savoir → sache, sachons, sachez ; vouloir → veuille, veuillons, veuillez (surtout « Veuillez + infinitif » dans les lettres et les consignes).",
     "Forme négative : ne + verbe + pas : Ne fume pas ! N’oubliez pas vos papiers.",
-    "Pronoms à l’impératif affirmatif : après le verbe, avec un trait d’union ; me et te deviennent moi et toi : Appelle-moi ! Donnez-le-lui ! À la forme négative, ils reviennent devant le verbe : Ne m’appelle pas.",
+    "Pronoms à l’impératif affirmatif : après le verbe, avec un trait d’union ; me et te deviennent moi et toi : Appelle-moi ! Avec deux pronoms : verbe-COD-COI (Donnez-le-lui ! Donne-le-moi !) ; devant en, moi devient m’ (Donne-m’en). À la forme négative, ils reviennent devant le verbe, dans l’ordre habituel : Ne m’appelle pas ; ne me le donne pas.",
     "Verbes pronominaux : Lève-toi ! Levons-nous ! Levez-vous ! → Ne te lève pas ! Ne nous levons pas ! Ne vous levez pas !",
     "Pour adoucir : s’il te plaît / s’il vous plaît, ou une autre forme : Pourriez-vous… ? Merci de + infinitif (Merci de fermer la porte) ; Veuillez + infinitif (Veuillez patienter). Dans les recettes et les notices, on trouve aussi l’infinitif : Ne pas jeter sur la voie publique."
   ],
@@ -50,7 +50,7 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g31:{
     ]}
   ],
   tips:[
-    "Test du s : infinitif en -er (ou aller, ouvrir, offrir) → pas de s avec tu : Mange ! Va ! Ouvre ! Les autres gardent le s : Finis ! Prends ! Fais !",
+    "Test du s : infinitif en -er (ou aller, ouvrir, offrir) → pas de s avec tu : Mange ! Va ! Ouvre ! Les autres gardent la forme du présent : Finis ! Prends ! Fais ! (sauf les irréguliers aie, sache, veuille).",
     "Veuillez + infinitif = formule polie de l’écrit : « Veuillez trouver ci-joint mon CV », « Veuillez agréer, Madame, Monsieur… ».",
     "Avec nous, l’impératif propose : Allons-y ! Faisons une pause. C’est l’équivalent de « Let’s… ».",
     "À l’oral B, l’impératif rend un conseil plus direct : « Prends le temps de comparer », « Pense à ton budget »."
@@ -72,7 +72,7 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g31:{
     "Affirmatif : appelle-moi, lève-toi ; négatif : ne m’appelle pas, ne te lève pas."
   ],
   practice:[
-    {type:"mcq", lvl:1, prompt:"___ tes devoirs avant de jouer.", choices:["Fais","Fait","Tu fais"], answer:0, explain:"Faire, tu : fais, sans sujet."},
+    {type:"mcq", lvl:1, prompt:"___ tes devoirs avant de jouer.", choices:["Fais","Fait","Faites"], answer:0, explain:"Tes devoirs → on parle à tu : fais, sans sujet (faites = vous)."},
     {type:"mcq", lvl:1, prompt:"___ à droite après la boulangerie.", choices:["Tournes","Tourne","Tourné"], answer:1, explain:"Verbe en -er : pas de s avec tu à l’impératif."},
     {type:"fill", lvl:1, prompt:"___ patients, le médecin arrive.", answers:["Soyez"], hint:"être, vous", explain:"Être à l’impératif : sois, soyons, soyez."},
     {type:"fill", lvl:1, prompt:"N’___ pas tes clés !", answers:["oublie"], hint:"oublier, tu", explain:"Verbe en -er : pas de s avec tu ; ne + verbe + pas."},
@@ -80,16 +80,16 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g31:{
     {type:"order", lvl:1, words:["pour","Ne","t’inquiète","moi","pas"], answers:["Ne t’inquiète pas pour moi."], explain:"Pronominal négatif : ne + te + verbe + pas."},
     {type:"fix", lvl:2, prompt:"Vas à la poste avant midi.", answers:["Va à la poste avant midi."], explain:"Aller, tu : va, sans s (sauf devant y : vas-y)."},
     {type:"fix", lvl:2, prompt:"Ne le dis-lui pas.", answers:["Ne le lui dis pas."], explain:"À la forme négative, les pronoms reviennent devant le verbe : le + lui."},
-    {type:"transform", lvl:2, instruction:"Mettez la phrase à la forme négative.", prompt:"Assieds-toi ici.", answers:["Ne t’assieds pas ici."], explain:"Négatif : ne + te (t’) + verbe + pas."},
-    {type:"order", lvl:2, words:["Donne-moi","s’il","plaît","ton","numéro","te"], answers:["Donne-moi ton numéro, s’il te plaît."], explain:"Affirmatif : moi après le verbe, avec un trait d’union."},
+    {type:"transform", lvl:2, instruction:"Mettez la phrase à la forme négative avec « ne… pas ».", prompt:"Assieds-toi ici.", answers:["Ne t’assieds pas ici.","Ne t’assois pas ici."], explain:"Négatif : ne + te (t’) + verbe + pas."},
+    {type:"order", lvl:2, words:["Donne-moi","s’il","plaît","ton","numéro","te"], answers:["Donne-moi ton numéro, s’il te plaît.","S’il te plaît, donne-moi ton numéro."], explain:"Affirmatif : moi après le verbe, avec un trait d’union."},
     {type:"mcq", lvl:3, prompt:"___ agréer, Madame, l’expression de mes salutations distinguées.", choices:["Veuillez","Voulez","Vouliez"], answer:0, explain:"Formule de lettre : Veuillez + infinitif (vouloir à l’impératif)."},
     {type:"fill", lvl:3, prompt:"___-y, ils t’attendent !", answers:["Vas"], hint:"aller, tu", explain:"Devant y, va reprend un s : vas-y."}
   ]
 }});
 B.grammarMore=Object.assign(B.grammarMore||{},{g31:[
   {type:"mcq", lvl:1, prompt:"___ ton manteau, il fait froid !", choices:["Mets","Met","Mettes"], answer:0, explain:"Mettre : tu mets → Mets !"},
-  {type:"mcq", lvl:1, prompt:"___ ensemble ce soir !", choices:["Dînons","Dînez-nous","Nous dînons"], answer:0, explain:"Avec nous, l’impératif propose, sans sujet : Dînons !"},
-  {type:"mcq", lvl:1, prompt:"S’il vous plaît, ___ votre ticket.", choices:["gardez","gardes","garder"], answer:0, explain:"Vous : gardez."},
+  {type:"mcq", lvl:1, prompt:"___ ensemble ce soir !", choices:["Dînons","Dînons-nous","Dînions"], answer:0, explain:"Avec nous, l’impératif propose, sans sujet ni pronom (dîner n’est pas pronominal) : Dînons !"},
+  {type:"mcq", lvl:1, prompt:"S’il vous plaît, ___ votre ticket.", choices:["gardez","gardes","gardé"], answer:0, explain:"Vous : gardez (gardes = tu ; gardé = participe passé)."},
   {type:"mcq", lvl:1, prompt:"___ tranquille, tout va bien.", choices:["Sois","Soit","Es"], answer:0, explain:"Être, tu : sois."},
   {type:"fill", lvl:1, prompt:"___ la fenêtre, s’il te plaît !", answers:["Ouvre"], hint:"ouvrir, tu", explain:"Ouvrir se conjugue comme un verbe en -er : ouvre, sans s."},
   {type:"fill", lvl:1, prompt:"___ vite, le bus arrive !", answers:["Viens"], hint:"venir, tu", explain:"Venir, tu : viens."},
@@ -98,7 +98,7 @@ B.grammarMore=Object.assign(B.grammarMore||{},{g31:[
   {type:"fix", lvl:1, prompt:"Écoutes bien la consigne.", answers:["Écoute bien la consigne."], explain:"Verbe en -er : pas de s avec tu à l’impératif."},
   {type:"transform", lvl:1, instruction:"Mettez la phrase à l’impératif (tu).", prompt:"Tu attends ici.", answers:["Attends ici."], explain:"Attendre, tu : attends (le s reste)."},
   {type:"order", lvl:1, words:["la","Lève-toi","lumière","et","allume"], answers:["Lève-toi et allume la lumière.","Allume la lumière et lève-toi."], explain:"Verbe pronominal à l’impératif : lève-toi."},
-  {type:"mcq", lvl:2, prompt:"Ce gâteau est délicieux, ___ !", choices:["goûtes-en","goûte-en","goûtes-y"], answer:0, explain:"Devant en, l’impératif en -er reprend un s : goûtes-en."},
+  {type:"mcq", lvl:2, prompt:"Ce gâteau est délicieux, ___ !", choices:["goûtes-en","goûte-en","en goûte"], answer:0, explain:"Devant en, l’impératif en -er reprend un s : goûtes-en ; à l’affirmatif, le pronom suit le verbe."},
   {type:"mcq", lvl:2, prompt:"Ne ___ pas, nous avons le temps.", choices:["te dépêche","dépêche-toi","te dépêches"], answer:0, explain:"Négatif : ne + te + verbe + pas, sans s avec tu."},
   {type:"mcq", lvl:2, prompt:"Votre dossier ? ___ avant vendredi.", choices:["Envoyez-le-nous","Envoyez-nous-le","Nous l’envoyez"], answer:0, explain:"Impératif affirmatif : verbe-COD-COI (envoyez-le-nous)."},
   {type:"fill", lvl:2, prompt:"Ne ___ dérangez pas, je suis en réunion.", answers:["me"], hint:"pronom : moi", explain:"À la forme négative, le pronom revient devant le verbe : ne me dérangez pas."},
@@ -106,11 +106,11 @@ B.grammarMore=Object.assign(B.grammarMore||{},{g31:[
   {type:"fill", lvl:2, prompt:"Ces papiers ? Range-___ dans le tiroir.", answers:["les"], explain:"Impératif affirmatif : le pronom COD suit le verbe (range-les)."},
   {type:"fix", lvl:2, prompt:"Ne te lève-toi pas trop tard.", answers:["Ne te lève pas trop tard."], explain:"À la forme négative : ne + te + verbe + pas, sans toi."},
   {type:"fix", lvl:2, prompt:"Donne-me ton adresse.", answers:["Donne-moi ton adresse."], explain:"Après le verbe, me devient moi."},
-  {type:"transform", lvl:2, instruction:"Mettez la phrase à la forme affirmative.", prompt:"Ne vous asseyez pas.", answers:["Asseyez-vous."], explain:"Affirmatif : le pronom passe après le verbe, avec un trait d’union."},
+  {type:"transform", lvl:2, instruction:"Mettez la phrase à la forme affirmative.", prompt:"Ne vous asseyez pas.", answers:["Asseyez-vous.","Assoyez-vous."], explain:"Affirmatif : le pronom passe après le verbe, avec un trait d’union."},
   {type:"transform", lvl:2, instruction:"Remplacez « à ton frère » par un pronom.", prompt:"Téléphone à ton frère.", answers:["Téléphone-lui."], explain:"Téléphoner à quelqu’un → lui, après le verbe à l’affirmatif."},
-  {type:"order", lvl:2, words:["N’y","pas","va","seul","nuit","la"], answers:["N’y va pas seul la nuit.","La nuit, n’y va pas seul."], explain:"Négatif : ne + y + verbe + pas (pas de s sans y après le verbe)."},
+  {type:"order", lvl:2, words:["N’y","pas","va","seul","nuit","la"], answers:["N’y va pas seul la nuit.","La nuit, n’y va pas seul."], explain:"Négatif : ne + y + verbe + pas ; pas de s à va, car y n’est plus après le verbe."},
   {type:"mcq", lvl:3, prompt:"___ trouver ci-joint mon curriculum vitae.", choices:["Veuillez","Veuillez-vous","Voulez"], answer:0, explain:"Formule de lettre : Veuillez + infinitif."},
-  {type:"fill", lvl:3, prompt:"Merci de ne ___ stationner devant l’entrée.", answers:["pas"], explain:"Merci de + infinitif négatif : ne pas + infinitif, ensemble."},
+  {type:"fill", lvl:3, prompt:"Merci de ne ___ stationner devant l’entrée.", answers:["pas","plus","jamais"], explain:"Merci de + infinitif négatif : ne pas (ne plus, ne jamais) + infinitif, ensemble."},
   {type:"fill", lvl:3, prompt:"Ayons confiance et ___ prudents.", answers:["soyons"], hint:"être, nous", explain:"Être, nous : soyons (sans i)."},
   {type:"fix", lvl:3, prompt:"Veuillez nous contacter-nous rapidement.", answers:["Veuillez nous contacter rapidement."], explain:"Veuillez + infinitif : le pronom se place une seule fois, devant l’infinitif."},
   {type:"transform", lvl:3, instruction:"Rendez la consigne plus polie avec « Veuillez ».", prompt:"Patientez quelques minutes.", answers:["Veuillez patienter quelques minutes."], explain:"Veuillez + infinitif : formule polie des consignes écrites."},
