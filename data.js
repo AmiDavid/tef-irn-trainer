@@ -70,60 +70,116 @@ window.TEF_DATA = {
       id:'g1', section:'Les déterminants et accords', order:12, title:'Quantité + de', status:'weak', short:'Après beaucoup, peu, assez, trop, combien : de + nom.',
       details:'On emploie généralement de après une expression de quantité : beaucoup de commerces, peu de temps, assez d’argent, trop de voitures. Devant une voyelle, de devient d’ : beaucoup d’idées. On ne met pas automatiquement des après beaucoup.',
       examples:['beaucoup de magasins','assez de temps','trop d’erreurs','beaucoup d’idées'],
+      mistakes:[
+        {wrong:"Il y a beaucoup des gens.", right:"Il y a beaucoup de gens.", why:"Après une expression de quantité : de + nom, sans article."},
+        {wrong:"J’ai plusieurs de questions.", right:"J’ai plusieurs questions.", why:"Plusieurs et quelques se placent directement devant le nom, sans de."},
+        {wrong:"Il faut un peu de jours.", right:"Il faut quelques jours.", why:"Un peu de s’emploie avec un nom non comptable ; avec un nom comptable pluriel, on dit quelques."},
+        {wrong:"La plupart des gens pense que c’est cher.", right:"La plupart des gens pensent que c’est cher.", why:"Après la plupart des + nom pluriel, le verbe est au pluriel."}
+      ],
       drill:{prompt:'Complète : Il y a ___ commerces dans ce quartier.', choices:['beaucoup des','beaucoup de','beaucoup les'], answer:1}
     },
     {
       id:'g2', section:'Les déterminants et accords', order:15, title:'De + les = des', status:'weak', short:'La contraction de + les devient des.',
       details:'Certaines prépositions et certains articles se contractent. de + le = du, de + les = des, à + le = au, à + les = aux. On dit l’opinion des habitants, l’accès au métro, parler aux voisins.',
       examples:['l’opinion des habitants','près du métro','accéder au centre','parler aux voisins'],
+      mistakes:[
+        {wrong:"Je vais à le marché.", right:"Je vais au marché.", why:"À + le (article) se contracte toujours en au."},
+        {wrong:"le bureau de le directeur", right:"le bureau du directeur", why:"De + le (article) se contracte toujours en du."},
+        {wrong:"J’habite à la France.", right:"J’habite en France.", why:"Devant un pays féminin, on emploie en (et de pour la provenance)."},
+        {wrong:"J’ai besoin des conseils pour mon CV.", right:"J’ai besoin de conseils pour mon CV.", why:"Après avoir besoin de, un pluriel indéfini perd des : de + des → de."}
+      ],
       drill:{prompt:'Choisis : l’avis ___ habitants.', choices:['de les','des','du'], answer:1}
     },
     {
       id:'g3', section:'Les modes', order:54, title:'Pour que + subjonctif', status:'weak', short:'Après pour que, le verbe se met au subjonctif.',
       details:'Pour exprimer un but avec deux sujets différents, on utilise pour que + subjonctif : Je vous écris pour que vous preniez ma demande en compte. Si le sujet est le même, on préfère pour + infinitif : Je travaille pour réussir.',
       examples:['pour que vous preniez','pour qu’il puisse venir','pour que nous trouvions une solution'],
+      mistakes:[
+        {wrong:"Je parle lentement pour que tu comprends.", right:"Je parle lentement pour que tu comprennes.", why:"Pour que est toujours suivi du subjonctif."},
+        {wrong:"Je travaille dur pour que je réussisse.", right:"Je travaille dur pour réussir.", why:"Même sujet dans les deux parties : pour + infinitif."},
+        {wrong:"Je vous écris pour que vous pouvez m’aider.", right:"Je vous écris pour que vous puissiez m’aider.", why:"Pouvoir au subjonctif : que vous puissiez."}
+      ],
       drill:{prompt:'Complète : Je vous écris pour que vous ___ ma demande.', choices:['prenez','prendre','preniez'], answer:2}
     },
     {
       id:'g4', section:'La phrase complexe', order:9, title:'Négation : ne…pas', status:'learning', short:'À l’oral courant, « ne » est souvent omis ; à l’écrit soigné, garde-le.',
       details:'En français standard écrit : sujet + ne/n’ + verbe + pas. Il n’est pas assez bien desservi. Je ne comprends pas. À l’oral familier, on entend souvent « je sais pas », mais évite cette forme dans la production écrite du TEF.',
       examples:['Je ne suis pas disponible.','Le quartier n’est pas bien desservi.','Nous n’avons pas assez de temps.'],
+      mistakes:[
+        {wrong:"Je n’ai vu pas personne.", right:"Je n’ai vu personne.", why:"Personne remplace pas et se place après le participe."},
+        {wrong:"Il n’a pas une voiture.", right:"Il n’a pas de voiture.", why:"Après une négation, un / une / des deviennent de (sauf avec être)."},
+        {wrong:"Merci de ne fumer pas.", right:"Merci de ne pas fumer.", why:"Devant un infinitif, ne pas se place en bloc avant le verbe."},
+        {wrong:"J’ai pas reçu le colis.", right:"Je n’ai pas reçu le colis.", why:"À l’écrit, le ne est obligatoire."}
+      ],
       drill:{prompt:'Version écrite correcte : “Le quartier est pas pratique.”', choices:['Le quartier ne pas est pratique.','Le quartier n’est pas pratique.','Le quartier n’est pratique pas.'], answer:1}
     },
     {
       id:'g5', section:'Les déterminants et accords', order:3, title:'Genre et accord', status:'weak', short:'Déterminant, nom et adjectif doivent s’accorder.',
       details:'Repère le genre du nom, puis accorde les éléments qui dépendent de lui. « semaine » est féminin : la semaine dernière. « travail » est masculin : un nouveau travail. Les erreurs de genre sont particulièrement visibles dans une production courte.',
       examples:['la semaine dernière','un nouveau travail','une solution équilibrée','des transports publics'],
+      mistakes:[
+        {wrong:"une problème", right:"un problème", why:"Problème, système, programme : noms masculins malgré le -e final."},
+        {wrong:"un nouveau appartement", right:"un nouvel appartement", why:"Devant une voyelle ou un h muet : nouvel, bel, vieil."},
+        {wrong:"ma amie", right:"mon amie", why:"Devant une voyelle, ma devient mon, même pour un nom féminin."},
+        {wrong:"Les factures sont cher.", right:"Les factures sont chères.", why:"Après être, l’adjectif s’accorde avec le sujet (féminin pluriel)."}
+      ],
       drill:{prompt:'Choisis la bonne forme : ___ travail intéressant.', choices:['une nouvelle','un nouveau','un nouvelle'], answer:1}
     },
     {
       id:'g6', section:'Les temps', order:21, title:'Passé composé ou imparfait', status:'untested', short:'Action terminée vs contexte/habitude dans le passé.',
       details:'Le passé composé présente généralement un événement borné : J’ai commencé un nouveau travail lundi. L’imparfait décrit un état, une habitude ou un arrière-plan : Quand j’habitais à Lyon, je prenais le tram tous les jours.',
       examples:['J’ai commencé lundi.','Je travaillais souvent le soir.','Il pleuvait quand je suis sorti.'],
+      mistakes:[
+        {wrong:"Quand j’étais petit, je suis allé à l’école à pied tous les jours.", right:"Quand j’étais petit, j’allais à l’école à pied tous les jours.", why:"Une habitude passée (tous les jours) se met à l’imparfait."},
+        {wrong:"Je lisais quand le téléphone sonnait.", right:"Je lisais quand le téléphone a sonné.", why:"L’événement qui interrompt une action en cours est au passé composé."},
+        {wrong:"J’habitais à Lyon pendant cinq ans.", right:"J’ai habité à Lyon pendant cinq ans.", why:"Une durée limitée et terminée se met au passé composé."}
+      ],
       drill:{prompt:'Quand j’___ à Paris, je prenais souvent le métro.', choices:['ai habité','habitais','habiterai'], answer:1}
     },
     {
       id:'g7', section:'Les modes', order:42, title:'Hypothèse avec si', status:'untested', short:'Si + imparfait → conditionnel présent pour une hypothèse.',
       details:'Pour une situation hypothétique au présent : si + imparfait, conditionnel présent. Si j’avais plus de temps, je suivrais deux cours. Pour une condition réelle ou possible : si + présent, puis présent, futur ou impératif selon le sens.',
       examples:['Si j’avais le temps, je viendrais.','Si je peux, je viendrai.'],
+      mistakes:[
+        {wrong:"Si j’aurais le temps, je viendrais.", right:"Si j’avais le temps, je viendrais.", why:"Jamais de conditionnel après le si de condition : si + imparfait."},
+        {wrong:"Si tu viendras, je serai content.", right:"Si tu viens, je serai content.", why:"Jamais de futur après le si de condition : si + présent → futur."},
+        {wrong:"Si il pleut, on reste à la maison.", right:"S’il pleut, on reste à la maison.", why:"Si + il → s’il (mais si elle, si on)."}
+      ],
       drill:{prompt:'Si j’___ plus de temps, je suivrais deux cours.', choices:['aurais','avais','ai'], answer:1}
     },
     {
       id:'g8', section:'Argumenter', order:63, title:'Connecteurs B2', status:'learning', short:'Relie les idées avec précision, sans empiler les connecteurs.',
       details:'Cependant introduit une opposition ou une nuance ; pourtant marque une contradiction ou une concession ; en revanche met deux éléments en contraste ; en effet apporte une explication ou une justification ; par conséquent introduit une conséquence ; d’ailleurs ajoute un argument ou une précision. Au B2, le but est surtout de choisir le lien logique qui correspond exactement au rapport entre les idées.',
       examples:['C’est pratique. Cependant, c’est cher.','Il n’y a pas de métro ; par conséquent, beaucoup prennent la voiture.','Le projet est utile. D’ailleurs, il réduit le bruit.'],
+      mistakes:[
+        {wrong:"Le loyer est élevé, mais cependant l’appartement est grand.", right:"Le loyer est élevé ; cependant, l’appartement est grand.", why:"Un seul connecteur par lien logique : mais ou cependant, pas les deux."},
+        {wrong:"Je pensais que c’était gratuit. En effet, c’est payant.", right:"Je pensais que c’était gratuit. En fait, c’est payant.", why:"En fait corrige une idée (= actually) ; en effet confirme ce qui précède."},
+        {wrong:"D’un côté, c’est pratique ; d’autre part, c’est cher.", right:"D’un côté, c’est pratique ; de l’autre, c’est cher.", why:"Les paires sont fixes : d’un côté… de l’autre ; d’une part… d’autre part."}
+      ],
       drill:{prompt:'Il n’y a pas de métro ; ___, beaucoup prennent la voiture.', choices:['par conséquent','cependant','tandis que'], answer:0}
     },
     {
       id:'g9', section:'Les pronoms', order:33, title:'Pronoms relatifs : qui, que, dont, où', status:'untested', short:'Choisis le pronom selon sa fonction dans la proposition.',
       details:'« qui » est sujet ; « que » est complément d’objet direct ; « dont » remplace un complément introduit par « de » ; « où » renvoie à un lieu ou à un moment. Avec « à », on peut employer « auquel / à laquelle / auxquels / auxquelles » pour une chose, ou « à qui » pour une personne : C’est l’examen auquel je me prépare.',
       examples:['Le livre qui est ici','Le livre que je lis','Le sujet dont je parle','La ville où j’habite','L’examen auquel je me prépare'],
+      mistakes:[
+        {wrong:"le formulaire qui j’ai rempli", right:"le formulaire que j’ai rempli", why:"Le formulaire est le COD de remplir : que."},
+        {wrong:"le document que j’ai besoin", right:"le document dont j’ai besoin", why:"Avoir besoin de → dont."},
+        {wrong:"le jour que je suis arrivé", right:"le jour où je suis arrivé", why:"Pour un moment, on emploie où."},
+        {wrong:"C’est moi qui a payé.", right:"C’est moi qui ai payé.", why:"Après moi qui, le verbe se conjugue avec je."}
+      ],
       drill:{prompt:'Le sujet ___ je parle est important.', choices:['que','dont','qui'], answer:1}
     },
     {
       id:'g10', section:'Les pronoms', order:27, title:'Y et en', status:'untested', short:'« y » remplace souvent un lieu ou « à + chose » ; « en » remplace souvent « de + chose » ou une quantité.',
       details:'« y » remplace souvent un complément de lieu ou un complément introduit par « à » lorsqu’il s’agit d’une chose : J’y vais ; j’y pense. « en » remplace souvent un complément introduit par « de » ou une quantité : J’en parle ; j’en voudrais deux. Pour des personnes, on emploie généralement un pronom adapté à la construction du verbe.',
       examples:['J’y vais demain.','J’en ai besoin.','J’en voudrais deux.'],
+      mistakes:[
+        {wrong:"Des billets ? J’ai trois.", right:"Des billets ? J’en ai trois.", why:"Quand le nom n’est pas répété après une quantité, en est obligatoire."},
+        {wrong:"Il en y a encore.", right:"Il y en a encore.", why:"Y se place toujours avant en."},
+        {wrong:"Va-y !", right:"Vas-y !", why:"Devant y et en, l’impératif des verbes en -er (et d’aller) reprend un s."},
+        {wrong:"Mon frère ? J’y pense souvent.", right:"Mon frère ? Je pense souvent à lui.", why:"Pour une personne, on n’emploie pas y : à lui, à elle."}
+      ],
       drill:{prompt:'J’ai parlé de ce problème. → J’___ ai parlé.', choices:['y','en','lui'], answer:1}
     }
   ],

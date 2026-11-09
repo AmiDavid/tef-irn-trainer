@@ -42,7 +42,7 @@ export default async function handler(req,res){cors(req,res);if(req.method==="OP
   if(!t.title)return json(res,400,{error:"topic missing"});
   const n=Math.max(4,Math.min(12,parseInt(b.n,10)||10));
   const level=[1,2,3].includes(b.level)?`all at level ${b.level}`:"mixed levels (about 40% level 1, 40% level 2, 20% level 3)";
-  const topicText=`Topic: ${t.title} — ${t.short||""}\nRule:\n${(t.rule||[]).slice(0,8).map(r=>"- "+r).join("\n")}\nTypical mistakes:\n${(t.mistakes||[]).slice(0,4).map(m=>"- "+m).join("\n")}`;
+  const topicText=`Topic: ${t.title} — ${t.short||""}\nRule:\n${(t.rule||[]).slice(0,14).map(r=>"- "+r).join("\n")}\nTypical mistakes:\n${(t.mistakes||[]).slice(0,4).map(m=>"- "+m).join("\n")}`;
   const avoid=(b.avoid||[]).slice(0,80).map(s=>String(s).slice(0,160));
   const instructions=`You write French grammar exercises for an adult learner preparing the TEF IRN (target B2). ${SPEC}
 Write exactly ${n} NEW exercises on the topic below, ${level}, using at least 4 different types. Level 1 = basic application, 2 = intermediate with a typical trap, 3 = B2 nuance.

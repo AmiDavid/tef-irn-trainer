@@ -410,3 +410,19 @@ body[data-view="today"] .city-bg{display:none}
 .flag-btn{display:block;margin-top:8px;font-weight:600}
 .ex-cue{color:var(--muted);font-style:italic;font-size:.92em}
 .nw{white-space:nowrap}
+/* Notebook updates: what was added to a lesson after the learner copied it */
+.nb-update{display:flex;flex-direction:column;gap:6px;margin:0 0 14px;padding:12px 14px;border-radius:14px;background:rgba(255,214,10,.14);border:1px solid rgba(255,214,10,.55)}
+.nb-update span{font-size:.92em;opacity:.9}
+.nb-update .btn{align-self:flex-start}
+.notebook .nb-new{background:rgba(255,214,10,.45);box-shadow:0 0 0 3px rgba(255,214,10,.45);border-radius:2px}
+.notebook li.nb-new::after,.notebook h3.nb-new::after{content:" ✱ nouveau";font-size:.72em;font-weight:700;color:#a15c00;white-space:nowrap}
+.notebook tr.nb-new td,.notebook tr.nb-new th{background:rgba(255,214,10,.45)}
+.notebook tr.nb-new{box-shadow:none}
+.table-title{font-size:1rem;margin:22px 0 8px}
+.nb-update-mini{display:inline-block;margin:8px 0 0;padding:6px 12px;border-radius:999px;border:1px solid rgba(255,214,10,.6);background:rgba(255,214,10,.12);color:inherit;font:inherit;font-size:.9em;cursor:pointer}
+.ld-updates{display:flex;flex-direction:column;gap:6px;margin:10px 0;padding:10px 12px;border-radius:12px;background:rgba(255,214,10,.1);border:1px solid rgba(255,214,10,.45)}
+.ld-updates span{font-size:.9em;opacity:.85}
+.ld-upd-list{display:flex;flex-wrap:wrap;gap:6px}
+.chip-btn{padding:5px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.06);color:inherit;font:inherit;font-size:.85em;cursor:pointer}
+@media print{.notebook .nb-new,.notebook tr.nb-new td,.notebook tr.nb-new th{background:none!important;box-shadow:none!important}.notebook li.nb-new::after,.notebook h3.nb-new::after{content:none}}
+.notebook h3.table-title{font-family:Manrope,system-ui,sans-serif;font-size:15px;font-weight:800;color:var(--ink);line-height:32px;margin:32px 0 0}

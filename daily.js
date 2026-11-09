@@ -184,9 +184,11 @@ function render(){
   const root=$('#lessonDay');if(!root||!window.TEF_TOPIC)return;
   const c=C(),d=ensureDay(),P=path(),total=P.length,doneN=c.seq.length,st=streak(),sz=size();
   const mapHTML=`<details class="course-map"><summary>Mon parcours : ${doneN}/${total} sujets</summary><ol class="course-list">${P.map(id=>{const g=card(id),dn=c.done[id],cur=d.topicId===id&&!d.complete;return `<li class="${dn?'is-done':cur?'is-today':''}"><span class="cl-title">${esc(g.title)}</span><span class="cl-meta">${dn?`✓ ${esc(frDate(dn.date))}`:cur?'aujourd’hui':`<button class="link-btn" data-choose="${id}">Faire ce sujet</button>`}</span></li>`}).join('')}</ol></details>`;
+  const upd=window.TEF_TOPIC?.notebookUpdates?.()||[];
+  const updHTML=upd.length?`<div class="ld-updates"><strong>📌 À ajouter dans ton cahier</strong><span>Ces leçons, que tu as déjà recopiées, ont été complétées :</span><div class="ld-upd-list">${upd.map(u=>`<button class="chip-btn" data-upd="${u.id}">${esc(u.title)} · ${u.n}</button>`).join('')}</div></div>`:'';
   const sizeHTML=`<div class="ld-size"><span>Questions par jour</span><div class="seg" role="group" aria-label="Questions par jour">${Object.keys(SIZES).map(k=>`<button class="seg-btn ${+k===c.size?'active':''}" data-size="${k}" aria-pressed="${+k===c.size}">${k}</button>`).join('')}</div><span class="muted">+ ${sz.r} de révision</span></div>`;
   if(d.finishedCourse){
-    root.innerHTML=`<div class="ld-head"><div class="plaque"><span class="plaque-top">Parcours terminé</span><span class="plaque-name">Les ${total} sujets</span></div></div><p>Tu as fait tous les sujets de grammaire. Continue chaque jour avec une révision mélangée.</p><div class="button-row"><button class="btn" id="ldReview">Révision du jour</button></div>${sizeHTML}${mapHTML}`;
+    root.innerHTML=`<div class="ld-head"><div class="plaque"><span class="plaque-top">Parcours terminé</span><span class="plaque-name">Les ${total} sujets</span></div></div>${updHTML}<p>Tu as fait tous les sujets de grammaire. Continue chaque jour avec une révision mélangée.</p><div class="button-row"><button class="btn" id="ldReview">Révision du jour</button></div>${sizeHTML}${mapHTML}`;
     $('#ldReview').onclick=()=>start('daily-review');bindCommon(root);return;
   }
   const g=card(d.topicId),idx=P.indexOf(d.topicId)+1,rev=hasReview(d),bank=items(d.topicId).length;
@@ -205,6 +207,7 @@ function render(){
       <div class="ld-meta">${st?`<span class="chip">🔥 ${st} jour${st>1?'s':''} d’affilée</span>`:''}<span class="chip">${doneN}/${total} sujets faits</span></div>
     </div>
     <p class="ld-short">${esc(g.short)}</p>
+    ${updHTML}
     ${d.carried&&!d.complete?'<p class="ld-carry">On reprend la leçon d’hier : termine les étapes qui restent avant de passer au sujet suivant.</p>':''}
     ${d.complete?`<div class="ld-done"><strong>✓ Leçon du jour terminée</strong><span>${d.practice?`Questions de base ${d.practice.ok}/${d.practice.total}`:''}${d.review?` · Révision ${d.review.ok}/${d.review.total}`:''}</span>${next?`<span>Demain : <b>${esc(card(next).title)}</b></span>`:'<span>C’était le dernier sujet du parcours.</span>'}</div>`:''}
     <ol class="ld-steps">${steps.map((s,i)=>`<li class="ld-step ${s.done?'done':''} ${i===curIdx?'current':''}"><span class="ld-num" aria-hidden="true">${s.done?'✓':i+1}</span><div class="ld-text"><strong>${s.t}</strong><span>${esc(s.s)}</span></div><button class="btn ${i===curIdx?'':'ghost'} small" data-step="${s.k}">${s.done?s.again:s.cta}</button></li>`).join('')}</ol>
@@ -218,6 +221,7 @@ function render(){
 function bindCommon(root){
   $$('[data-choose]',root).forEach(b=>b.onclick=()=>{advance(b.dataset.choose);window.scrollTo(0,0)});
   $$('[data-size]',root).forEach(b=>b.onclick=()=>setSize(+b.dataset.size));
+  $$('[data-upd]',root).forEach(b=>b.onclick=()=>TEF_TOPIC.copy(b.dataset.upd));
 }
 
 function init(){render()}

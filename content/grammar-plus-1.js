@@ -2,11 +2,15 @@
   g1:{
     intro: "Les expressions de quantité reviennent sans cesse au TEF : décrire un quartier ou un problème à l’écrit A, chiffrer un argument à l’écrit B, demander « combien de… » à l’oral A. Une erreur sur « beaucoup de » se remarque immédiatement.",
     rule: [
+      "Sans quantité précise, on emploie l’article partitif ou indéfini : du pain, de la patience, de l’eau, des légumes. Après une expression de quantité, il ne reste que de : beaucoup de pain, un kilo de légumes.",
       "Adverbe de quantité (beaucoup, peu, assez, trop, tant, autant, plus, moins, combien) + de + nom, sans article : beaucoup de travail, peu de place.",
       "Devant une voyelle ou un h muet, de devient d’ : peu d’habitants, trop d’heures supplémentaires.",
       "Les noms de quantité se construisent aussi avec de : un kilo de pommes, une bouteille d’eau, un paquet de riz.",
       "Exceptions : la plupart des + nom pluriel et bien des + nom pluriel (la plupart des gens) ; le verbe s’accorde alors au pluriel.",
-      "Si le nom est précisé (par une relative ou un complément), on peut garder l’article défini : beaucoup des candidats que j’ai rencontrés (= many of the candidates)."
+      "Si le nom est précisé (par une relative ou un complément), on peut garder l’article défini : beaucoup des candidats que j’ai rencontrés (= many of the candidates).",
+      "Plusieurs, quelques, certains et différents se placent directement devant le nom, sans de : plusieurs fois, quelques jours, certaines personnes.",
+      "Fractions et pourcentages : la moitié, la majorité, un tiers, 20 % + de + article défini pour un ensemble précis (la moitié des habitants, 30 % du budget, la majorité de la population) ; avec un nom pluriel, le verbe peut être au singulier ou au pluriel (la majorité des Français pense / pensent).",
+      "Devant un adjectif ou un adverbe, et après un verbe, pas de de : trop cher, assez vite, je travaille beaucoup."
     ],
     table: { head:["Expression","Exemple"], rows:[
       ["beaucoup de / d’","beaucoup de monde"],
@@ -16,7 +20,10 @@
       ["combien de / d’","combien de documents ?"],
       ["un peu de (non comptable)","un peu de patience"],
       ["un kilo, un litre, une boîte de","une boîte de conserve"],
-      ["la plupart des (exception)","la plupart des salariés"]
+      ["la plupart des (exception)","la plupart des salariés"],
+      ["plusieurs, quelques (sans de)", "plusieurs fois, quelques jours"],
+      ["la moitié des, la majorité des, 20 % des", "la moitié des habitants"],
+      ["une dizaine de, une centaine de", "une vingtaine de personnes"]
     ]},
     tips: [
       "Piège anglophone : « many people » se dit « beaucoup de gens », pas « beaucoup des gens ». « Of the » ne se traduit par « des » que si le nom est précisé.",
@@ -62,7 +69,9 @@
       "de + le → du ; de + les → des : la sortie du métro, la liste des pièces justificatives.",
       "Aucune contraction avec la ni avec l’ : à la gare, à l’hôpital, de la mairie, de l’école.",
       "Pas de contraction quand le / les est un pronom COD devant un infinitif : J’ai oublié de les appeler.",
-      "Les noms de pays masculins suivent la même règle : au Canada, aux États-Unis, du Maroc, des Pays-Bas."
+      "Pays et villes : en / de + pays féminin ou commençant par une voyelle (en France, de France ; en Iran, d’Iran) ; au / du + pays masculin (au Canada, du Maroc) ; aux / des + pays pluriel (aux États-Unis, des Pays-Bas) ; à / de + ville (à Lyon, de Lyon).",
+      "Ne confondez pas des = de + les (la liste des documents) et des = article indéfini pluriel (j’ai des documents). Après une négation ou une quantité, l’article indéfini devient de, mais la contraction reste : je n’ai pas de documents / je ne parle pas des documents (= the documents).",
+      "De + des → de : après un verbe ou une expression avec de, un nom pluriel indéfini perd des : j’ai besoin de conseils, il parle de problèmes graves (mais j’ai besoin des conseils de mon avocat : de + les conseils de mon avocat)."
     ],
     table: { head:["Préposition + article","Forme","Exemple"], rows:[
       ["à + le","au","Je vais au guichet."],
@@ -72,13 +81,16 @@
       ["de + le","du","le bureau du directeur"],
       ["de + la","de la","la sortie de la gare"],
       ["de + l’","de l’","l’entrée de l’immeuble"],
-      ["de + les","des","la liste des documents"]
+      ["de + les","des","la liste des documents"],
+      ["à + pays féminin", "en", "Je vais en Italie."],
+      ["de + pays féminin", "de / d’", "Il revient d’Espagne."]
     ]},
     tips: [
       "Test rapide à la relecture : « à le », « à les », « de le », « de les » suivis d’un nom = erreur à corriger.",
       "Exception légitime : devant un infinitif, le / les sont des pronoms, donc pas de contraction (Il a décidé de le vendre).",
       "En anglais, « of the » et « to the » restent deux mots ; en français, la fusion est obligatoire.",
-      "Avec un h aspiré, il n’y a pas d’élision, donc la contraction se fait : au Havre, du haut de l’immeuble."
+      "Avec un h aspiré, il n’y a pas d’élision, donc la contraction se fait : au Havre, du haut de l’immeuble.",
+      "Jouer à + sport ou jeu (jouer au football, aux cartes) ; jouer de + instrument (jouer du piano, de la guitare)."
     ],
     examples: [
       {fr:"J’ai rendez-vous au service des étrangers de la préfecture.", en:"I have an appointment at the prefecture’s foreigners’ department.", note:"au = à + le ; des = de + les."},
@@ -119,7 +131,8 @@
       "Formation : radical de « ils » au présent + -e, -es, -e, -ions, -iez, -ent (ils prennent → que je prenne, que nous prenions).",
       "Irréguliers fréquents : être (soit), avoir (ait), aller (aille), faire (fasse), pouvoir (puisse), savoir (sache), vouloir (veuille).",
       "Même construction avec afin que (plus soutenu) et de peur que ; afin de / de peur de + infinitif si le sujet est le même.",
-      "Négation : pour ne pas + infinitif ; pour que + sujet + ne + subjonctif + pas."
+      "Négation : pour ne pas + infinitif ; pour que + sujet + ne + subjonctif + pas.",
+      "Autres expressions du but : de façon à / de manière à + infinitif ; de façon que / de sorte que + subjonctif ; dans le but de, en vue de + infinitif (en vue de + nom : en vue de l’examen)."
     ],
     table: { head:["Infinitif","que je…","que vous…"], rows:[
       ["prendre","prenne","preniez"],
@@ -174,9 +187,10 @@
       "Structure de base : sujet + ne/n’ + verbe conjugué + pas : Je ne travaille pas le lundi.",
       "Temps composés : ne + auxiliaire + pas + participe : Je n’ai pas reçu le courrier. Mais personne, aucun et que se placent après le participe : Je n’ai vu personne.",
       "Les pronoms compléments restent entre ne et le verbe : Je ne le connais pas ; il ne m’a pas répondu.",
-      "Avec un infinitif, ne pas se place ensemble devant l’infinitif : Merci de ne pas fumer.",
+      "Avec un infinitif, ne pas se place ensemble devant l’infinitif : Merci de ne pas fumer. De même ne plus, ne jamais, ne rien (Je préfère ne rien dire) ; mais personne et aucun se placent après l’infinitif (Je préfère ne voir personne).",
       "Après une négation, un / une / des / du / de la deviennent de / d’ (sauf avec être) : Je n’ai pas de voiture, mais ce n’est pas un problème.",
-      "Rien, personne, jamais, plus, aucun remplacent pas : on ne les combine jamais avec pas."
+      "Rien, personne, jamais, plus, aucun remplacent pas : on ne les combine jamais avec pas.",
+      "Plus, jamais, rien et personne se combinent entre eux, jamais avec pas : Je ne vois plus personne ; il ne dit jamais rien ; il n’y a plus rien."
     ],
     table: { head:["Négation","Sens","Exemple"], rows:[
       ["ne… pas","not","Je ne fume pas."],
@@ -185,13 +199,19 @@
       ["ne… rien","nothing","Je n’ai rien signé."],
       ["ne… personne","nobody","Je n’ai vu personne."],
       ["ne… aucun(e)","not any","Il n’y a aucune place."],
-      ["ne… que","only","Je n’ai que dix euros."]
+      ["ne… que","only","Je n’ai que dix euros."],
+      ["ne… pas encore", "not yet", "Je n’ai pas encore signé."],
+      ["ne… nulle part", "nowhere", "Je ne trouve mon badge nulle part."],
+      ["ne… ni… ni…", "neither… nor", "Je n’ai ni voiture ni vélo."],
+      ["ne… guère (écrit)", "hardly", "Il ne sort guère."]
     ]},
     tips: [
       "À la relecture, vérifiez chaque « pas », « plus », « jamais » : il leur faut un « ne » avant le verbe.",
       "« Ne… que » n’est pas une vraie négation mais une restriction (= seulement) : on garde l’article (Je ne bois que de l’eau).",
       "Rien et personne peuvent être sujets : Personne n’est venu. Rien ne marche. (sans pas !)",
-      "Les formes orales « j’sais pas », « y a pas » sont à comprendre en compréhension orale, jamais à écrire."
+      "Les formes orales « j’sais pas », « y a pas » sont à comprendre en compréhension orale, jamais à écrire.",
+      "Pour répondre oui à une question négative, dites si : Vous n’avez pas reçu le courrier ? — Si, je l’ai reçu.",
+      "Moi aussi répond à une phrase affirmative, moi non plus à une phrase négative : Je n’aime pas ça. — Moi non plus."
     ],
     examples: [
       {fr:"Je n’ai pas encore reçu ma carte Vitale.", en:"I haven’t received my health insurance card yet.", note:"Temps composé : ne + auxiliaire + pas."},
@@ -232,7 +252,11 @@
       "L’adjectif s’accorde en genre et en nombre : un loyer élevé, des charges élevées.",
       "Devant une voyelle ou un h muet : ma / ta / sa → mon / ton / son (mon adresse) ; beau / nouveau / vieux → bel / nouvel / vieil (un nouvel appartement).",
       "Un adjectif qui qualifie un nom masculin et un nom féminin se met au masculin pluriel : une cuisine et un salon lumineux.",
-      "Avec être, l’adjectif et le participe s’accordent avec le sujet : La salle est fermée ; les dossiers sont complets."
+      "Avec être, l’adjectif et le participe s’accordent avec le sujet : La salle est fermée ; les dossiers sont complets.",
+      "Féminin des adjectifs : en général + e (grand → grande) ; un adjectif déjà terminé par -e ne change pas (jeune, facile). Les autres modèles sont dans le tableau « Féminin des adjectifs ».",
+      "Pluriel : en général + s ; les mots en -s, -x, -z ne changent pas (le prix → les prix) ; -eau et -eu prennent un x (des bureaux, des jeux) ; -al devient -aux (un journal → des journaux, social → sociaux). Voir le tableau « Pluriel des noms et des adjectifs ».",
+      "Place de l’adjectif : en général après le nom (un loyer élevé, une voiture rouge) ; avant le nom pour quelques adjectifs courts et très fréquents : beau, joli, bon, mauvais, grand, petit, gros, jeune, vieux, nouveau, autre (un bon salaire, une petite cuisine).",
+      "À l’écrit, des devient de devant un adjectif placé avant un nom pluriel : de nouveaux voisins, de bons résultats (mais des voisins sympathiques ; et des grands-parents, des petits pois, qui sont des noms composés)."
     ],
     table: { head:["Terminaison","Genre le plus fréquent","Exemples"], rows:[
       ["-tion, -sion","féminin","la situation, la décision"],
@@ -254,11 +278,35 @@
       ["-al, -ail","masculin","le journal, l’hôpital, le travail, le détail"],
       ["-ème","masculin","le problème, le système (mais la crème f.)"]
     ]},
+    tables:[
+      {title:"Féminin des adjectifs", head:["Masculin", "Féminin", "Exemples"], rows:[
+        ["-e", "-e (pas de changement)", "jeune, facile, rapide, malade"],
+        ["la plupart des adjectifs", "+ e", "grand → grande, fatigué → fatiguée, gris → grise"],
+        ["-er", "-ère", "cher → chère, premier → première, étranger → étrangère"],
+        ["-f", "-ve", "actif → active, neuf → neuve"],
+        ["-x", "-se", "heureux → heureuse, sérieux → sérieuse, jaloux → jalouse"],
+        ["-eur", "-euse ou -rice", "travailleur → travailleuse, conservateur → conservatrice (mais meilleur → meilleure, supérieur → supérieure, extérieur → extérieure)"],
+        ["-el, -eil", "-elle, -eille", "professionnel → professionnelle, pareil → pareille"],
+        ["-en, -on", "-enne, -onne", "ancien → ancienne, bon → bonne"],
+        ["-et", "-ette (parfois -ète)", "muet → muette ; complet → complète, inquiet → inquiète"],
+        ["irréguliers", "à apprendre", "beau → belle, nouveau → nouvelle, vieux → vieille, gros → grosse, blanc → blanche, frais → fraîche, long → longue, gentil → gentille, faux → fausse, doux → douce, public → publique, sec → sèche"]
+      ]},
+      {title:"Pluriel des noms et des adjectifs", head:["Singulier", "Pluriel", "Exemples"], rows:[
+        ["cas général", "+ s", "un dossier complet → des dossiers complets"],
+        ["-s, -x, -z", "pas de changement", "le prix → les prix, un choix → des choix, le nez → les nez"],
+        ["-eau, -au, -eu", "+ x", "un bureau → des bureaux, un tuyau → des tuyaux, un jeu → des jeux (mais des pneus, bleu → bleus)"],
+        ["-al", "-aux", "un journal → des journaux, social → sociaux (mais des festivals ; banal → banals)"],
+        ["-ail", "+ s", "un détail → des détails (mais le travail → les travaux, un bail → des baux)"],
+        ["-ou", "+ s", "un trou → des trous (mais bijou, caillou, chou, genou, hibou, joujou, pou → -oux)"],
+        ["irréguliers", "à apprendre", "un œil → des yeux, monsieur → messieurs, madame → mesdames"]
+      ]}
+    ],
     tips: [
       "Pièges fréquents : le problème, le système, le programme sont masculins ; la personne est toujours féminin, même pour un homme.",
       "Relisez chaque groupe nominal de gauche à droite : déterminant, nom et adjectif doivent avoir le même genre et le même nombre.",
       "À l’oral, l’accord s’entend sur beaucoup d’adjectifs (grand / grande, nouveau / nouvelle) : prononcez-les distinctement.",
-      "En cas de doute à l’écrit, choisissez un autre mot dont vous êtes sûr du genre."
+      "En cas de doute à l’écrit, choisissez un autre mot dont vous êtes sûr du genre.",
+      "Le sens change parfois avec la place : un ancien collègue (= former) / un immeuble ancien (= old) ; mon propre bureau (= own) / un bureau propre (= clean) ; un grand homme (= great) / un homme grand (= tall) ; un cher ami (= dear) / un loyer cher (= expensive)."
     ],
     examples: [
       {fr:"J’ai trouvé un nouvel appartement près de mon lieu de travail.", en:"I’ve found a new flat near my workplace.", note:"nouvel devant une voyelle."},
@@ -294,12 +342,14 @@
   g6:{
     intro: "Raconter un événement passé est au cœur de l’écrit A (suite d’un article) et de nombreux échanges oraux ; les épreuves de compréhension jouent aussi sur ces nuances. Bien choisir entre passé composé et imparfait rend le récit clair.",
     rule: [
+      "Formation de l’imparfait : radical de nous au présent + -ais, -ais, -ait, -ions, -iez, -aient (nous finissons → je finissais ; nous faisons → je faisais). Seule exception : être → j’étais. Orthographe : je mangeais, je commençais ; nous étudiions.",
       "Passé composé : action ponctuelle, terminée, datée ou comptée : Hier, j’ai déposé mon dossier.",
       "Imparfait : décor, description, état (âge, météo, sentiments) : Il faisait froid et j’étais fatigué.",
       "Imparfait : habitude passée (souvent, tous les jours, d’habitude) : Je prenais le bus chaque matin.",
       "Action en cours (imparfait) interrompue par un événement (passé composé) : Je remplissais le formulaire quand le téléphone a sonné.",
       "Durée limitée et terminée → passé composé, même si elle est longue : J’ai vécu dix ans à Marseille.",
-      "Succession d’actions → passé composé : Je suis arrivé, j’ai pris un ticket et j’ai attendu."
+      "Succession d’actions → passé composé : Je suis arrivé, j’ai pris un ticket et j’ai attendu.",
+      "Venir de et être en train de se mettent à l’imparfait dans un récit : Je venais d’arriver quand il a appelé ; j’étais en train de cuisiner."
     ],
     table: { head:["Imparfait","Passé composé"], rows:[
       ["description, décor","événement principal"],
@@ -312,7 +362,9 @@
       "L’anglais « was …ing » et « used to » correspondent presque toujours à l’imparfait.",
       "« Pendant + durée » avec une action terminée → passé composé : J’ai travaillé pendant trois ans chez eux.",
       "Les verbes d’état (être, avoir, savoir) sont souvent à l’imparfait ; au passé composé, ils marquent un changement ponctuel : J’ai eu peur.",
-      "N’oubliez pas l’auxiliaire être avec les verbes de mouvement et les verbes pronominaux : je suis allé(e), je me suis inscrit(e)."
+      "N’oubliez pas l’auxiliaire être avec les verbes de mouvement et les verbes pronominaux : je suis allé(e), je me suis inscrit(e).",
+      "Sens différent selon le temps : je savais (I knew) / j’ai su (I found out) ; je connaissais (I knew) / j’ai connu (I met) ; je pouvais (I could) / j’ai pu (I managed to) ; je devais (I was supposed to) / j’ai dû (I had to).",
+      "Repères : il y a + durée (= ago) avec un temps du passé (je suis arrivé il y a deux ans) ; depuis + durée avec le présent pour une situation qui continue (j’habite ici depuis deux ans)."
     ],
     examples: [
       {fr:"Quand je suis arrivé en France, je ne parlais pas bien français.", en:"When I arrived in France, I didn’t speak French well.", note:"Arrivée = événement ; niveau de langue = état."},
@@ -353,19 +405,22 @@
       "Hypothèse sur le passé (irréel du passé) : si + plus-que-parfait → conditionnel passé : Si j’avais su, je serais venu.",
       "Jamais de futur ni de conditionnel directement après le si de condition.",
       "si + il / ils → s’il / s’ils ; mais si elle, si on ne s’élident pas.",
-      "La proposition avec si peut venir avant ou après la principale : Je viendrais si j’avais le temps."
+      "La proposition avec si peut venir avant ou après la principale : Je viendrais si j’avais le temps.",
+      "Autres façons d’exprimer une condition : au cas où + conditionnel (au cas où il pleuvrait) ; à condition que + subjonctif, à condition de + infinitif ; en cas de + nom (en cas de retard) ; sinon (= otherwise) : Pars maintenant, sinon tu vas rater ton train."
     ],
     table: { head:["Proposition avec si","Principale","Exemple"], rows:[
       ["si + présent","présent / futur / impératif","Si tu veux, je t’aiderai."],
       ["si + imparfait","conditionnel présent","Si je gagnais plus, je déménagerais."],
       ["si + plus-que-parfait","conditionnel passé","Si j’étais parti plus tôt, j’aurais eu mon train."],
-      ["si + plus-que-parfait","conditionnel présent (conséquence actuelle)","Si j’avais fait médecine, je serais médecin aujourd’hui."]
+      ["si + plus-que-parfait","conditionnel présent (conséquence actuelle)","Si j’avais fait médecine, je serais médecin aujourd’hui."],
+      ["si + imparfait", "conditionnel passé (état permanent → conséquence passée)", "Si j’étais plus organisé, je n’aurais pas oublié le rendez-vous."]
     ]},
     tips: [
       "Moyen mnémotechnique : « Les si n’aiment pas les -rais. »",
       "Le conditionnel = radical du futur + terminaisons de l’imparfait : je pourrais, il faudrait, nous serions.",
       "Ne confondez pas -ais (imparfait) et -rais (conditionnel) : je pouvais / je pourrais. À l’oral, le « r » fait la différence.",
-      "Le si interrogatif (= whether) accepte le futur : Je ne sais pas s’il viendra. Ce n’est pas un si de condition."
+      "Le si interrogatif (= whether) accepte le futur : Je ne sais pas s’il viendra. Ce n’est pas un si de condition.",
+      "Si + imparfait seul sert aussi à proposer : Et si on allait au cinéma ?"
     ],
     examples: [
       {fr:"Si vous perdez votre titre de séjour, déclarez-le immédiatement.", en:"If you lose your residence permit, report it immediately.", note:"Condition réelle → impératif."},
@@ -406,7 +461,8 @@
       "Conjonctions (bien que, alors que, puisque, même si) : elles relient deux propositions dans la même phrase ; bien que + subjonctif, même si + indicatif.",
       "Prépositions (grâce à, à cause de, malgré, en raison de) : elles sont suivies d’un nom, pas d’une proposition.",
       "« En effet » confirme ou justifie ce qui précède ; « en fait » corrige ou précise (= actually).",
-      "Un seul connecteur par lien logique : n’empilez pas « mais cependant » ou « donc par conséquent »."
+      "Un seul connecteur par lien logique : n’empilez pas « mais cependant » ou « donc par conséquent ».",
+      "Plan d’une argumentation (écrit B, oral B) : annoncez les idées (d’abord, ensuite, enfin), illustrez (par exemple, notamment), concédez (certes…, mais…), concluez (en somme, pour conclure)."
     ],
     table: { head:["Rapport","Connecteurs","Construction"], rows:[
       ["Addition","de plus, en outre, d’ailleurs","+ phrase"],
@@ -414,7 +470,14 @@
       ["Concession","bien que, même si, malgré","bien que + subjonctif ; malgré + nom"],
       ["Cause","puisque, étant donné que, grâce à, à cause de","grâce à / à cause de + nom"],
       ["Conséquence","donc, par conséquent, c’est pourquoi","+ phrase"],
-      ["Conclusion","en somme, en conclusion, en définitive","+ phrase"]
+      ["Conclusion","en somme, en conclusion, en définitive","+ phrase"],
+      ["Énumération", "d’abord, ensuite, enfin ; d’une part… d’autre part ; non seulement… mais aussi", "+ phrase"],
+      ["Illustration", "par exemple, notamment, ainsi, entre autres", "+ nom ou phrase"],
+      ["Reformulation", "c’est-à-dire, autrement dit, en d’autres termes", "+ phrase"],
+      ["But", "pour, afin de, afin que, dans le but de", "afin que + subjonctif"],
+      ["Condition", "si, à condition que, en cas de, au cas où", "à condition que + subjonctif ; au cas où + conditionnel"],
+      ["Point de vue", "à mon avis, selon moi, d’après…, personnellement", "+ phrase"],
+      ["Concession (argument)", "certes… mais, il est vrai que… cependant", "+ phrase"]
     ]},
     tips: [
       "Faux ami : « in fact » se dit souvent « en fait » ; « en effet » sert à justifier (= indeed).",
@@ -461,7 +524,8 @@
       "dont = complément introduit par de (verbe, adjectif ou nom) : le document dont j’ai besoin, le voisin dont le chien aboie.",
       "où = lieu ou moment : la ville où je travaille, le jour où je suis arrivé.",
       "Préposition + lequel / laquelle / lesquels / lesquelles pour une chose, préposition + qui pour une personne ; à + lequel → auquel, auxquels, auxquelles.",
-      "ce qui / ce que / ce dont = « what » : Ce qui me plaît, c’est le calme ; dites-moi ce dont vous avez besoin."
+      "ce qui / ce que / ce dont = « what » : Ce qui me plaît, c’est le calme ; dites-moi ce dont vous avez besoin.",
+      "Mise en relief : C’est… qui (sujet), C’est… que (autre élément) : C’est ma sœur qui m’a aidé ; c’est à Lyon que j’habite. Après moi qui, toi qui, nous qui, le verbe s’accorde avec ce pronom : c’est moi qui ai raison, c’est nous qui sommes en retard."
     ],
     table: { head:["Pronom","Fonction","Exemple"], rows:[
       ["qui","sujet","le médecin qui me suit"],
@@ -526,6 +590,18 @@
       ["du / de la / des + nom","en","Je bois du café → J’en bois."],
       ["quantité + nom","en + quantité","J’ai trois frères → J’en ai trois."]
     ]},
+    tables:[
+      {title:"Verbes fréquents", head:["à + chose → y", "de + chose → en"], rows:[
+        ["penser à", "avoir besoin de"],
+        ["s’habituer à", "se souvenir de"],
+        ["participer à", "s’occuper de"],
+        ["réfléchir à", "parler de"],
+        ["s’intéresser à", "profiter de"],
+        ["faire attention à", "avoir envie de"],
+        ["tenir à", "être sûr / content de"],
+        ["croire à", "se servir de"]
+      ]}
+    ],
     tips: [
       "Avec d’autres pronoms, y et en se placent en dernier : Il m’en a parlé ; Il y en a.",
       "« Il y en a » (there is / are some) est très fréquent à l’oral : Il y en a deux ; il n’y en a plus.",

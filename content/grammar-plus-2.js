@@ -7,7 +7,10 @@ g11:{
     "Pouvoir, vouloir et devoir ont trois radicaux : je peux / nous pouvons / ils peuvent ; je veux / nous voulons / ils veulent ; je dois / nous devons / ils doivent.",
     "Prendre et ses composés (apprendre, comprendre, reprendre) : je prends, nous prenons, ils prennent — un seul n avec nous et vous, deux n avec ils.",
     "Venir et tenir, avec leurs composés (devenir, revenir, obtenir, appartenir) : je viens, nous venons, ils viennent ; je tiens, nous tenons, ils tiennent.",
-    "Trois verbes seulement font -es avec vous : vous êtes, vous faites, vous dites. Tous les autres font -ez (vous prenez, vous pouvez, vous allez)."
+    "Trois verbes seulement font -es avec vous : vous êtes, vous faites, vous dites. Tous les autres font -ez (vous prenez, vous pouvez, vous allez).",
+    "Verbes réguliers : -er → -e, -es, -e, -ons, -ez, -ent (je parle, ils parlent) ; -ir type finir → -is, -is, -it, -issons, -issez, -issent (nous finissons) ; -re type attendre → -s, -s, rien, -ons, -ez, -ent (j’attends, il attend).",
+    "Verbes en -er à changement d’orthographe : nous mangeons, nous commençons (pour garder le son) ; j’achète, je préfère, j’appelle, je jette, mais nous achetons, nous préférons, nous appelons ; je paie (ou je paye), j’envoie, mais nous payons, nous envoyons.",
+    "Partir, sortir, dormir, servir, sentir : au singulier, le radical perd sa consonne finale (je pars, il part ; je dors, il dort) ; au pluriel, elle revient (nous partons, ils dorment). Ouvrir, offrir, découvrir et souffrir se conjuguent au présent comme parler : j’ouvre, il offre."
   ],
   table:{head:["Verbe","je","nous","ils / elles"],rows:[
     ["être","suis","sommes","sont"],
@@ -22,12 +25,44 @@ g11:{
     ["savoir","sais","savons","savent"],
     ["dire","dis","disons","disent"]
   ]},
+  tables:[
+    {title:"Les autres personnes : tu, il, vous", head:["Verbe", "tu", "il / elle", "vous"], rows:[
+      ["être", "es", "est", "êtes"],
+      ["avoir", "as", "a", "avez"],
+      ["aller", "vas", "va", "allez"],
+      ["faire", "fais", "fait", "faites"],
+      ["pouvoir", "peux", "peut", "pouvez"],
+      ["vouloir", "veux", "veut", "voulez"],
+      ["devoir", "dois", "doit", "devez"],
+      ["prendre", "prends", "prend", "prenez"],
+      ["venir", "viens", "vient", "venez"],
+      ["savoir", "sais", "sait", "savez"],
+      ["dire", "dis", "dit", "dites"]
+    ]},
+    {title:"Autres verbes fréquents", head:["Verbe", "je", "nous", "ils / elles"], rows:[
+      ["mettre (permettre, promettre)", "mets", "mettons", "mettent"],
+      ["voir", "vois", "voyons", "voient"],
+      ["croire", "crois", "croyons", "croient"],
+      ["connaître (reconnaître)", "connais (il connaît)", "connaissons", "connaissent"],
+      ["partir (sortir, dormir)", "pars", "partons", "partent"],
+      ["écrire (décrire, s’inscrire)", "écris", "écrivons", "écrivent"],
+      ["lire", "lis", "lisons", "lisent"],
+      ["boire", "bois", "buvons", "boivent"],
+      ["recevoir", "reçois", "recevons", "reçoivent"],
+      ["ouvrir (offrir, découvrir)", "ouvre", "ouvrons", "ouvrent"],
+      ["vivre", "vis", "vivons", "vivent"],
+      ["suivre", "suis", "suivons", "suivent"],
+      ["conduire (construire, traduire)", "conduis", "conduisons", "conduisent"],
+      ["courir", "cours", "courons", "courent"]
+    ]}
+  ],
   tips:[
     "Apprenez chaque verbe sous la forme « je / nous / ils » : avec ces trois formes, vous retrouvez presque tout le reste (tu et il se prononcent comme je ; vous suit nous avec -ez, sauf êtes, faites, dites).",
     "À l’oral, le pluriel s’entend : il prend / ils prennent, il vient / ils viennent, il doit / ils doivent. Prononcez bien la consonne finale du pluriel, l’examinateur l’entend.",
     "Ne confondez pas ils ont (avec la liaison en z : « ils‿ont ») et ils sont (son s) : avoir et être ne se distinguent à l’oral que par ce son.",
     "Je peux et je veux s’écrivent avec un x ; dans un courriel très formel, on peut écrire « Puis-je… ? » au lieu de « Est-ce que je peux… ? ».",
-    "Les composés suivent leur verbe de base : comprendre comme prendre, obtenir comme venir, refaire comme faire (vous refaites)."
+    "Les composés suivent leur verbe de base : comprendre comme prendre, obtenir comme venir, refaire comme faire (vous refaites).",
+    "Verbes impersonnels : il faut (falloir), il pleut (pleuvoir) — toujours avec il. Et attention : je suis = être ou suivre (je suis un cours)."
   ],
   examples:[
     {fr:"Je dois renouveler mon titre de séjour avant la fin du mois.",en:"I have to renew my residence permit before the end of the month.",note:"Devoir + infinitif : je dois."},
@@ -69,7 +104,8 @@ g12:{
     "Avec être, accordez le participe avec le sujet : elles sont arrivées, nous sommes partis.",
     "Avec avoir, n’accordez jamais avec le sujet ; accordez seulement avec un COD placé avant le verbe (que, le, la, les) : la voiture que j’ai achetée.",
     "Monter, descendre, sortir, rentrer, retourner et passer prennent avoir quand ils ont un COD : elle a descendu l’escalier, mais elle est descendue.",
-    "Pronominaux : accord avec le sujet si le pronom est COD (elle s’est lavée), pas d’accord si le pronom est COI ou si un COD suit (ils se sont parlé, elle s’est lavé les mains)."
+    "Pronominaux : accord avec le sujet si le pronom est COD (elle s’est lavée), pas d’accord si le pronom est COI ou si un COD suit (ils se sont parlé, elle s’est lavé les mains).",
+    "Les adverbes courts (déjà, bien, mal, beaucoup, toujours, encore, pas encore) se placent entre l’auxiliaire et le participe : j’ai déjà payé, il a bien compris, je n’ai pas encore reçu (mais : je suis arrivé tard, je l’ai vu hier)."
   ],
   table:{head:["Situation","Exemple","Accord ?"],rows:[
     ["Avoir, sans COD avant","Elle a signé le contrat.","Non"],
@@ -79,6 +115,18 @@ g12:{
     ["Pronominal + COD après","Elle s’est cassé la jambe.","Non"],
     ["Monter, sortir… + COD","Il a sorti la voiture du garage.","Non"]
   ]},
+  tables:[
+    {title:"Participes passés à connaître", head:["Terminaison", "Verbes"], rows:[
+      ["-é", "tous les verbes en -er (parlé, allé, envoyé) ; être → été, naître → né"],
+      ["-i", "finir → fini, choisir → choisi, partir → parti, sortir → sorti, dormir → dormi, suivre → suivi, rire → ri"],
+      ["-is", "prendre → pris, mettre → mis, s’asseoir → assis (apprendre → appris, permettre → permis)"],
+      ["-it", "faire → fait, dire → dit, écrire → écrit, conduire → conduit, traduire → traduit"],
+      ["-u", "avoir → eu, voir → vu, lire → lu, boire → bu, croire → cru, pouvoir → pu, vouloir → voulu, savoir → su, devoir → dû (due, dus, dues), recevoir → reçu, venir → venu, tenir → tenu, connaître → connu, vivre → vécu, attendre → attendu, répondre → répondu, courir → couru, falloir → fallu, pleuvoir → plu"],
+      ["-ert", "ouvrir → ouvert, offrir → offert, découvrir → découvert, souffrir → souffert"],
+      ["-int", "craindre → craint, peindre → peint, éteindre → éteint, rejoindre → rejoint"],
+      ["autres", "mourir → mort"]
+    ]}
+  ],
   tips:[
     "Mémo anglophone « DR & MRS VANDERTRAMP » : devenir, revenir, monter, rester, sortir, venir, aller, naître, descendre, entrer, rentrer, tomber, retourner, arriver, mourir, partir (+ passer) prennent être.",
     "Pour l’accord avec avoir, posez la question « quoi ? » : si la réponse (que, l’, les) est placée avant le verbe, accordez. En anglais rien ne change, d’où l’oubli fréquent.",
@@ -125,7 +173,8 @@ g13:{
     "Même choix d’auxiliaire et mêmes accords qu’au passé composé : elle était partie, les papiers que j’avais remplis.",
     "Emploi principal : une action terminée avant un autre moment du passé, souvent exprimé au passé composé ou à l’imparfait.",
     "Discours rapporté au passé : « J’ai déménagé. » → Il a dit qu’il avait déménagé.",
-    "Regret ou hypothèse sur le passé : Si seulement j’avais su ! ; si + plus-que-parfait → conditionnel passé."
+    "Regret ou hypothèse sur le passé : Si seulement j’avais su ! ; si + plus-que-parfait → conditionnel passé.",
+    "Pour une action qui venait juste de se terminer, employez venir de à l’imparfait : Il venait de partir quand je suis arrivé."
   ],
   table:{head:["Verbe","Passé composé","Plus-que-parfait"],rows:[
     ["finir","j’ai fini","j’avais fini"],
@@ -180,7 +229,8 @@ g14:{
     "Futur simple = infinitif + -ai, -as, -a, -ons, -ez, -ont ; les verbes en -re perdent leur e final : prendre → je prendrai.",
     "Apprenez les radicaux irréguliers : ser-, aur-, ir-, fer-, pourr-, voudr-, devr-, saur-, viendr-, verr-, enverr-, faudr-.",
     "Futur simple pour les prévisions, les promesses, les conséquences (si + présent → futur) et les textes formels (règlements, annonces).",
-    "Après quand, lorsque, dès que, aussitôt que : futur pour une action à venir (pas de présent comme en anglais) ; futur antérieur si l’action sera terminée avant (dès que j’aurai fini)."
+    "Après quand, lorsque, dès que, aussitôt que : futur pour une action à venir (pas de présent comme en anglais) ; futur antérieur si l’action sera terminée avant (dès que j’aurai fini).",
+    "Futur antérieur = avoir ou être au futur + participe passé (j’aurai fini, elle sera partie) : action terminée avant un moment du futur. Je vous appellerai quand j’aurai reçu les résultats."
   ],
   table:{head:["Infinitif","Radical","Exemple"],rows:[
     ["être","ser-","Je serai là à 9 heures."],
@@ -194,14 +244,20 @@ g14:{
     ["venir","viendr-","Elle viendra seule."],
     ["voir","verr-","On verra bien."],
     ["envoyer","enverr-","Je vous enverrai le devis."],
-    ["falloir","faudr-","Il faudra attendre."]
+    ["falloir","faudr-","Il faudra attendre."],
+    ["tenir", "tiendr-", "Je tiendrai parole."],
+    ["recevoir", "recevr-", "Vous recevrez un courriel."],
+    ["courir", "courr-", "Il courra le semi-marathon."],
+    ["mourir", "mourr-", "Sans eau, la plante mourra."],
+    ["pleuvoir", "pleuvr-", "Il pleuvra ce week-end."]
   ]},
   tips:[
     "Si + présent → futur : Si vous envoyez le dossier aujourd’hui, vous recevrez la réponse lundi. Jamais « si + futur ».",
     "Verbes en -er à changement de radical : j’achèterai, j’appellerai, je jetterai ; payer → je paierai (ou je payerai).",
     "Pour une évidence immédiate (Attention, tu vas tomber !), seul le futur proche est naturel ; pour un projet, les deux sont souvent possibles à l’oral.",
     "Ne confondez pas je serai (futur) et je serais (conditionnel), j’irai et j’irais : -ai = « will », -ais = « would ».",
-    "Au futur proche négatif, la négation entoure aller : Je ne vais pas venir."
+    "Au futur proche négatif, la négation entoure aller : Je ne vais pas venir.",
+    "Repères : dans + durée compte à partir de maintenant (dans trois jours) ; d’ici + date = avant cette date (d’ici vendredi)."
   ],
   examples:[
     {fr:"Je vais prendre rendez-vous chez le dentiste cet après-midi.",en:"I’m going to make a dentist appointment this afternoon.",note:"Décision déjà prise, action proche : futur proche."},
@@ -243,7 +299,8 @@ g15:{
     "COI de personne : lui (singulier, masculin ou féminin) et leur (pluriel, invariable). Me, te, nous, vous servent à la fois de COD et de COI.",
     "Place : devant le verbe conjugué (je la vois), devant l’auxiliaire (je lui ai parlé), devant l’infinitif dont il dépend (je vais leur écrire). Avec la négation : je ne lui ai pas répondu.",
     "Au passé composé, le participe s’accorde avec un COD placé avant (je les ai vues), jamais avec lui ou leur.",
-    "À l’impératif affirmatif, le pronom suit le verbe : Appelle-le ! Réponds-lui ! Au négatif, il revient devant : Ne lui réponds pas."
+    "À l’impératif affirmatif, le pronom suit le verbe : Appelle-le ! Réponds-lui ! Au négatif, il revient devant : Ne lui réponds pas.",
+    "Le pronom neutre le remplace une idée, une proposition ou un adjectif : Il va déménager ? — Oui, je le sais. Je vous l’avais dit. Fatiguée ? Je le suis un peu."
   ],
   table:{head:["Verbe + COD (le, la, les)","Verbe + à (lui, leur)"],rows:[
     ["aider quelqu’un","téléphoner à quelqu’un"],
@@ -253,8 +310,21 @@ g15:{
     ["remercier quelqu’un","demander à quelqu’un"],
     ["inviter quelqu’un","obéir à quelqu’un"],
     ["prévenir quelqu’un","plaire à quelqu’un"],
-    ["contacter quelqu’un","ressembler à quelqu’un"]
+    ["contacter quelqu’un","ressembler à quelqu’un"],
+    ["rencontrer quelqu’un", "dire à quelqu’un"],
+    ["rejoindre quelqu’un", "conseiller à quelqu’un de…"],
+    ["chercher quelqu’un", "permettre / interdire à quelqu’un de…"]
   ]},
+  tables:[
+    {title:"Les pronoms par personne", head:["Personne", "COD", "COI"], rows:[
+      ["je", "me (m’)", "me (m’)"],
+      ["tu", "te (t’)", "te (t’)"],
+      ["il / elle", "le / la (l’)", "lui"],
+      ["nous", "nous", "nous"],
+      ["vous", "vous", "vous"],
+      ["ils / elles", "les", "leur"]
+    ]}
+  ],
   tips:[
     "Les constructions ne correspondent pas à l’anglais : « to phone someone » et « to answer someone » sont directs en anglais, mais téléphoner à et répondre à donnent lui / leur.",
     "À l’inverse, écouter, attendre, chercher et regarder sont directs en français (pas de « to », « for », « at ») : je l’attends, je les cherche.",
@@ -412,7 +482,9 @@ g18:{
     "Souhait : j’aimerais, nous souhaiterions, ça me plairait de…",
     "Conseil : tu devrais, vous feriez mieux de, il vaudrait mieux, à ta place je…",
     "Information non confirmée (presse) : Le suspect serait en fuite.",
-    "Hypothèse : si + imparfait → conditionnel présent : Si j’avais plus de temps, je ferais du bénévolat."
+    "Hypothèse : si + imparfait → conditionnel présent : Si j’avais plus de temps, je ferais du bénévolat.",
+    "Futur dans le passé : après un verbe au passé, le conditionnel présent exprime ce qui était à venir : Il m’a dit qu’il viendrait (« Je viendrai »).",
+    "Au cas où + conditionnel (= in case) : Au cas où vous auriez besoin d’aide, appelez-moi."
   ],
   table:{head:["Infinitif","Futur (will)","Conditionnel (would)"],rows:[
     ["vouloir","je voudrai","je voudrais"],
@@ -422,7 +494,11 @@ g18:{
     ["faire","je ferai","je ferais"],
     ["devoir","je devrai","je devrais"],
     ["falloir","il faudra","il faudrait"],
-    ["aimer","j’aimerai","j’aimerais"]
+    ["aimer","j’aimerai","j’aimerais"],
+    ["aller", "j’irai", "j’irais"],
+    ["venir", "je viendrai", "je viendrais"],
+    ["savoir", "je saurai", "je saurais"],
+    ["voir", "je verrai", "je verrais"]
   ]},
   tips:[
     "-ai (futur) ou -ais (conditionnel) ? À l’oral la différence est faible ; à l’écrit, demandez-vous si l’anglais dirait « will » ou « would ».",

@@ -95,7 +95,8 @@ async function visible(page,selector){
       if(x.type==="fill"&&x.hint)assert.ok((await page.locator("#gpracticeBody .ex-cue").textContent()).includes(x.hint.trim().replace(/^\((.*)\)$/,"$1").replace(/\s*\(([^()]*)\)/g,", $1").replace(/^,\s*/,"").trim()),"a gap's hint is shown next to it");
       if(x.type==="mcq")await page.locator(`#gpracticeBody [data-ok='${wrong?0:1}']`).first().click();
       else if(x.type==="order"){
-        const target=x.answers[0].replace(/[.!?…]+$/,"").replace(/,/g,"").split(" ").filter(Boolean),used=new Set();
+        const words=x.answers[0].replace(/[.!?…]+$/,"").replace(/,/g,"").split(" ").filter(Boolean),used=new Set();
+        const target=wrong?[...words].reverse():words; // a reversed sentence is never an accepted answer
         for(const w of target){const toks=page.locator("#orderBank .token"),n=await toks.count();
           for(let k=0;k<n;k++){const t=toks.nth(k),id=await t.getAttribute("data-t");if(used.has(id))continue;if((await t.textContent()).toLocaleLowerCase("fr")===w.toLocaleLowerCase("fr")){await t.click();used.add(id);break}}}
         await page.locator("#exCheck").click();
@@ -234,6 +235,7 @@ async function visible(page,selector){
     assert.ok(await page.locator(".notebook .nb-rule li").count()>=3,"notebook rule list");
     await page.locator("#copyDone").click();
     await visible(page,"#view-today.active");
+    assert.ok(await page.evaluate(id=>!!TEF_APP.S.copied[id]&&TEF_TOPIC.updatesOf(id).length===0,firstId),"« J’ai tout recopié » remembers what was copied");
     await page.locator('#lessonDay [data-step="practice"]').click();
     await visible(page,"#view-gpractice.active .exercise");
     const basic=await page.evaluate(()=>TEF_TOPIC.current().items.map(o=>({key:o.tid+":"+o.i,lv:TEF_TOPIC.levelOf(o.tid,o.i)})));
@@ -268,6 +270,23 @@ async function visible(page,selector){
     course=await page.evaluate(()=>TEF_APP.S.course);
     assert.equal(course.day.n,2);assert.ok(course.day.carried);
     assert.ok((await page.locator("#lessonDay").textContent()).includes("On reprend la leçon d’hier"));
+    /* A lesson copied before build 19 (no record of what was copied): the lines added since are highlighted until acknowledged. */
+    await page.evaluate(()=>{TEF_APP.S.course.done.g4={date:"2026-11-08"};if(TEF_APP.S.copied)delete TEF_APP.S.copied.g4;TEF_DAILY.render()});
+    const g4new=await page.evaluate(()=>TEF_TOPIC.updatesOf("g4").length);
+    assert.ok(g4new>0,"lines added to g4 since build 17 are detected");
+    assert.ok(await page.locator('#lessonDay [data-upd="g4"]').count()===1,"the daily card lists the lesson to update");
+    await page.locator('#lessonDay [data-upd="g4"]').click();
+    await visible(page,"#view-gcopy.active #nbAck");
+    assert.equal(await page.locator("#gcopyBody .nb-new").count(),g4new,"every added line is highlighted once");
+    await page.locator("#nbAck").click();
+    await visible(page,"#view-gcopy.active .notebook");
+    assert.equal(await page.locator("#gcopyBody .nb-new").count(),0,"no highlight after « C’est fait »");
+    assert.equal(await page.evaluate(()=>TEF_TOPIC.updatesOf("g4").length),0);
+    /* Extra tables (titled) are shown on the lesson page and on the notebook page. */
+    await page.evaluate(()=>TEF_TOPIC.copy("g11"));
+    await visible(page,"#view-gcopy.active .notebook");
+    assert.equal(await page.locator("#gcopyBody table").count(),3,"g11 notebook shows its three tables");
+    assert.ok((await page.locator("#gcopyBody .table-title").allTextContents()).includes("Les autres personnes : tu, il, vous"));
     await page.evaluate(()=>{delete window.__TEF_TODAY__;delete TEF_APP.S.course;TEF_APP.save();TEF_DAILY.render()});
 
     assert.deepEqual(pageErrors,[],"runtime errors: "+pageErrors.join(" | "));

@@ -34,6 +34,16 @@ The app does not redistribute CCI/TEF audio. Official resources are linked separ
 - **« Signaler une erreur »** on every bank or AI question: the question never comes back, and the report is kept in
   `S.flags` (synced with the progress), keyed by the question's sentence, so it can be corrected in the content files.
 
+## Lessons and the notebook (build 19)
+
+- Each lesson (`content/grammar-plus-*.js`) has `rule`, a main `table`, optional extra titled `tables:[{title, head, rows}]`,
+  `examples`, `tips`, `summary`; the card (`data.js` / `content/grammar.js`) has at least three `mistakes`. The notebook page
+  (`#c/<id>`) shows all of it; `npm run qa:content` checks every table row and the mistakes.
+- **What was added after a page was copied**: « J’ai tout recopié » stores the page's lines in `S.copied[id]` (synced). Later
+  additions or corrections are highlighted on the notebook page and listed on the Today card until « C’est fait » is pressed.
+  Pages copied before build 19 are compared with `content/notebook-baseline.js` (the lessons at build 17). The line keys come
+  from `lessonLines()` in `topic.js` (between `lines:start` and `lines:end`).
+
 ## Running locally
 
 Serve this folder over HTTP, e.g. `python -m http.server 8000`, then open `http://localhost:8000`.

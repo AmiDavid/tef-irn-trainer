@@ -82,6 +82,7 @@ function renderLesson(id){
       <p>${esc(g.short)}</p>
       <div class="topic-meta"><span class="status ${stt}">${STATUS_LABEL[stt]||stt}${st?` · ${st.ok}/${st.n} justes`:''}</span>${best?`<span class="chip">Meilleur score : ${best.score}/${best.total}</span>`:''}</div>
       <div class="button-row"><button class="btn" data-practice>S’entraîner : ${Math.min(SERIES,count)} questions</button><button class="btn secondary" data-copy>📓 Version cahier</button></div>
+      ${(n=>n?`<button class="nb-update-mini" data-copy>📌 ${n} ${n>1?'ajouts':'ajout'} à recopier dans ton cahier</button>`:'')(updatesOf(id).length)}
       <p class="bank-line">${count} exercices sur ce sujet${seen?` · ${seen} déjà faits`:''}. Chaque série prend d’abord ceux que tu n’as pas encore faits ou que tu as ratés.</p>
       <div class="button-row more-row">${window.TEF_GEN?.has(id)?'<button class="btn ghost small" id="genBtn">♾️ Exercices illimités</button>':''}<button class="btn ghost small" id="aiBtn">✨ 10 nouvelles questions (IA)</button></div>
     </div>
@@ -89,7 +90,7 @@ function renderLesson(id){
     <section class="card topic-sec"><h2>La règle</h2>
       ${p.rule?.length?`<ol class="rule-list">${p.rule.map(r=>`<li>${esc(r)}</li>`).join('')}</ol>`:''}
       <details class="rule-more"${p.rule?.length?'':' open'}><summary>Explication complète</summary><p>${esc(g.details)}</p></details>
-      ${tableHTML(p.table,'topic-table')}
+      ${tablesOf(p).map(t=>tableHTML(t,'topic-table')).join('')}
     </section>
     ${p.tips?.length?`<section class="card topic-sec"><h2>Astuces</h2><ul class="tip-list">${p.tips.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></section>`:''}
     <section class="card topic-sec"><h2>Exemples</h2><div class="ex-list">${examplesOf(id).map((e,i)=>`<div class="ex"><button class="say" data-say="${i}" title="Écouter" aria-label="Écouter">🔊</button><div><div class="ex-fr">${esc(e.fr)}</div>${e.en?`<div class="ex-en">${esc(e.en)}</div>`:''}${e.note?`<div class="ex-note">${esc(e.note)}</div>`:''}</div></div>`).join('')}</div></section>
@@ -112,10 +113,41 @@ function renderLesson(id){
 }
 /* An ending such as « -ail » or « -ence » must never be split across two lines. */
 const keepEndings=h=>h.replace(/(^|[\s(])(-[^\s,;()]+)/g,'$1<span class="nw">$2</span>');
-function tableHTML(t,cls){
+const tablesOf=p=>[p.table,...(p.tables||[])].filter(t=>t?.head?.length);
+const clsAttr=c=>c.trim()?` class="${c.trim()}"`:'';
+/* mk(kind,text) returns ' nb-new' for a line added since the learner copied the page (notebook only). */
+function tableHTML(t,cls,mk){
   if(!t?.head?.length)return '';
-  return `<div class="table-wrap"><table class="${cls}"><thead><tr>${t.head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${t.rows.map(r=>`<tr>${r.map(c=>`<td>${keepEndings(esc(c))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  const m=mk||(()=>''),hc=m('thead',tableHead(t));
+  return `${t.title?`<h3 class="table-title${hc}">${esc(t.title)}</h3>`:''}<div class="table-wrap"><table class="${cls}"><thead><tr${clsAttr(hc)}>${t.head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${t.rows.map(r=>`<tr${clsAttr(m('row',r.join(' | ')))}>${r.map(c=>`<td>${keepEndings(esc(c))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 }
+
+/* lines:start — the notebook page as a list of lines, so the app can tell what was added after the learner copied it.
+   (scripts that build content/notebook-baseline.js run this exact block) */
+const lineText=t=>String(t??'').replace(/\s+/g,' ').trim();
+function fnv(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)}return (h>>>0).toString(36)}
+const lineKey=(k,t)=>k+':'+fnv(lineText(t));
+const tableHead=t=>(t.title?t.title+' : ':'')+t.head.join(' | ');
+function lessonLines(g,p){
+  const out=[],add=(k,t)=>{if(lineText(t))out.push({k,t:lineText(t),key:lineKey(k,t)})};
+  add('sub',g.short);
+  if(p.rule?.length)p.rule.forEach(r=>add('rule',r));else add('rule',g.details);
+  for(const t of [p.table,...(p.tables||[])]){if(!t?.head?.length)continue;add('thead',tableHead(t));t.rows.forEach(r=>add('row',r.join(' | ')))}
+  (p.examples?.length?p.examples.map(e=>e.fr):(g.examples||[])).forEach(e=>add('ex',e));
+  (g.mistakes||[]).forEach(m=>add('mist',m.wrong+' → '+m.right));
+  (p.tips||[]).forEach(t=>add('tip',t));
+  (p.summary||[]).forEach(s=>add('sum',s));
+  return out;
+}
+/* lines:end */
+
+/* What the learner copied: S.copied[id] = {t, keys} when « J’ai tout recopié » is pressed. Pages copied before that existed
+   (build 18 and earlier) are compared with the lessons as they were on 8 November (content/notebook-baseline.js). */
+const copiedBefore=id=>{const c=S().course||{};return !!((c.done||{})[id]||(c.day&&c.day.topicId===id&&c.day.copy))};
+function snapshot(id){const s=(S().copied||{})[id];if(s)return s;const b=(window.TEF_NOTEBOOK_BASELINE||{})[id];return b&&copiedBefore(id)?{t:null,keys:b}:null}
+function updatesOf(id){const s=snapshot(id);if(!s||!card(id))return [];const have=new Set(s.keys);return lessonLines(card(id),plus(id)).filter(l=>!have.has(l.key))}
+function markCopied(id){const st=S();st.copied=st.copied||{};st.copied[id]={t:Date.now(),keys:lessonLines(card(id),plus(id)).map(l=>l.key)};app().save()}
+const notebookUpdates=()=>D().grammar.map(g=>({id:g.id,title:g.title,n:updatesOf(g.id).length})).filter(u=>u.n);
 function myErrors(id){
   const g=card(id),list=(S().aiErrors||[]).filter(e=>e.category===`Grammaire : ${g.title}`).slice(-6);
   if(!list.length)return '';
@@ -130,24 +162,27 @@ function renderCopy(id){
   const date=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   const done=today&&daily()?.stepDone('copy');
   const root=$('#gcopyBody');
+  const news=updatesOf(id),nk=new Set(news.map(l=>l.key)),mk=(k,t)=>nk.has(lineKey(k,t))?' nb-new':'',li=(k,t,html)=>`<li${clsAttr(mk(k,t))}>${html}</li>`;
+  const snap=news.length?snapshot(id):null;
   root.innerHTML=`
     <div class="copy-tools no-print">
       <button class="back-link" data-back>‹ ${backLabel()}</button>
       <div class="copy-actions"><label class="copy-toggle"><input type="checkbox" id="copyEn" ${showEn?'checked':''}> Traductions</label><button class="btn ghost small" id="copyPrint">Imprimer</button></div>
     </div>
+    ${news.length?`<div class="nb-update no-print" role="status"><strong>📌 ${news.length} ${news.length>1?'nouveautés':'nouveauté'} depuis ta copie${snap.t?` du ${new Date(snap.t).toLocaleDateString('fr-FR',{day:'numeric',month:'long'})}`:''}</strong><span>Les passages surlignés en jaune sont nouveaux ou ont été complétés : ajoute-les dans ton cahier.</span><button class="btn small" id="nbAck">C’est fait, je les ai ajoutés ✓</button></div>`:''}
     ${today?`<div class="today-banner no-print"><strong>Leçon du jour · étape 2</strong><span>Recopie toute la page dans ton cahier, à la main. Écrire aide à retenir.</span></div>`:''}
     <article class="notebook" aria-label="Version cahier : ${esc(g.title)}">
       <div class="nb-date">${esc(date.charAt(0).toUpperCase()+date.slice(1))}</div>
       <h1 class="nb-title">${esc(g.title)}</h1>
-      <p class="nb-sub">${esc(g.short)}</p>
+      <p class="nb-sub${mk('sub',g.short)}">${esc(g.short)}</p>
       <h2>La règle</h2>
-      ${p.rule?.length?`<ol class="nb-rule">${p.rule.map(r=>`<li>${esc(r)}</li>`).join('')}</ol>`:`<p>${esc(g.details)}</p>`}
-      ${tableHTML(p.table,'nb-table')}
+      ${p.rule?.length?`<ol class="nb-rule">${p.rule.map(r=>li('rule',r,esc(r))).join('')}</ol>`:`<p${clsAttr(mk('rule',g.details))}>${esc(g.details)}</p>`}
+      ${tablesOf(p).map(t=>tableHTML(t,'nb-table',mk)).join('')}
       <h2>Exemples</h2>
-      <ul class="nb-ex">${examplesOf(id).map(e=>`<li>${esc(e.fr)}${showEn&&e.en?` <span class="nb-en">(${esc(e.en)})</span>`:''}</li>`).join('')}</ul>
-      ${g.mistakes?.length?`<h2>Attention aux erreurs</h2><ul class="nb-mist">${g.mistakes.map(m=>`<li><span class="nb-wrong">${esc(m.wrong)}</span> → <span class="nb-right">${esc(m.right)}</span></li>`).join('')}</ul>`:''}
-      ${p.tips?.length?`<h2>Astuces</h2><ul class="nb-tips">${p.tips.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`:''}
-      ${p.summary?.length?`<div class="nb-box"><h2>À retenir</h2><ul>${p.summary.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></div>`:''}
+      <ul class="nb-ex">${examplesOf(id).map(e=>li('ex',e.fr,`${esc(e.fr)}${showEn&&e.en?` <span class="nb-en">(${esc(e.en)})</span>`:''}`)).join('')}</ul>
+      ${g.mistakes?.length?`<h2>Attention aux erreurs</h2><ul class="nb-mist">${g.mistakes.map(m=>li('mist',m.wrong+' → '+m.right,`<span class="nb-wrong">${esc(m.wrong)}</span> → <span class="nb-right">${esc(m.right)}</span>`)).join('')}</ul>`:''}
+      ${p.tips?.length?`<h2>Astuces</h2><ul class="nb-tips">${p.tips.map(t=>li('tip',t,esc(t))).join('')}</ul>`:''}
+      ${p.summary?.length?`<div class="nb-box"><h2>À retenir</h2><ul>${p.summary.map(s=>li('sum',s,esc(s))).join('')}</ul></div>`:''}
     </article>
     <div class="topic-cta no-print">${today?(done?`<span class="chip">✓ Recopié</span><button class="btn" id="copyNext">Continuer : questions de base</button>`:`<button class="btn" id="copyDone">J’ai tout recopié ✓</button>`):''}<button class="btn ghost" id="copyLesson">Revoir la leçon</button></div>`;
   app().show('gcopy');window.scrollTo(0,0);
@@ -155,7 +190,8 @@ function renderCopy(id){
   $('#copyEn').onchange=e=>{S().copyEn=e.target.checked;app().save();renderCopy(id)};
   $('#copyPrint').onclick=()=>window.print();
   $('#copyLesson').onclick=()=>go('#g/'+id);
-  $('#copyDone')&&($('#copyDone').onclick=()=>{daily()?.mark('copy');backHome()});
+  $('#copyDone')&&($('#copyDone').onclick=()=>{markCopied(id);daily()?.mark('copy');backHome()});
+  $('#nbAck')&&($('#nbAck').onclick=()=>{markCopied(id);app().toast('Cahier à jour ✓');renderCopy(id)});
   $('#copyNext')&&($('#copyNext').onclick=()=>daily()?.start('daily-basic'));
 }
 
@@ -350,5 +386,5 @@ function init(){
   route();
 }
 window.TEF_TOPIC={init,open:(id,o)=>{origin=o||'grammar';go('#g/'+id)},copy:(id,o)=>{origin=o||'grammar';go('#c/'+id)},practice:id=>go('#gp/'+id),
-  session:(cfg)=>{origin='today';session(cfg,false)},check,norm,practiceItems,isFlagged,levelOf,invalidate,moreFor,unlimited,generateAI,route,current:()=>P&&{key:P.key,items:P.items.map(o=>({tid:o.tid,i:o.i,x:o.x})),idx:P.idx}};
+  session:(cfg)=>{origin='today';session(cfg,false)},check,norm,practiceItems,isFlagged,levelOf,lessonLines,updatesOf,markCopied,notebookUpdates,invalidate,moreFor,unlimited,generateAI,route,current:()=>P&&{key:P.key,items:P.items.map(o=>({tid:o.tid,i:o.i,x:o.x})),idx:P.idx}};
 })();
