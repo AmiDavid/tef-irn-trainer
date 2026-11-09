@@ -32,6 +32,8 @@ function variants(r,t,row){
     const agree=[[pp,f],[pp,f],[pp],[f],[mp,fp],[pp,f,mp,fp],[mp]][row];
     forms=agree.map(a=>prefix+' '+a);
   }
+  // Verbs in -ayer have two accepted spellings: je paie / je paye, je paierai / je payerai.
+  if(/ayer$/.test(r.infinitive))forms=[...forms,...forms.map(f=>f.replace(/ai(?=e)/g,'ay'))];
   const out=new Set();
   for(const f of forms){out.add(f);const noQue=f.replace(/^(que |qu’)/,'');out.add(noQue);out.add(noQue.replace(SUBJECT_RE,''))}
   return [...out].filter(Boolean);
@@ -61,6 +63,35 @@ function conjItem(inf,t,lvl){
 }
 function conjGen(tenses,pools){
   return n=>{const out=[];for(let g=0;out.length<n&&g<n*6;g++){const t=pick(tenses),pool=pick(pools);const x=conjItem(pick(pool),t,pool===V.regular?1:2);if(x&&!out.some(o=>o.prompt===x.prompt))out.push(x)}return out};
+}
+
+/* ---------- imperative (from the conjugation engine): tu / nous / vous, negative for pronominal verbs ---------- */
+const IMP=['parler','finir','prendre','faire','aller','venir','dire','être','avoir','savoir','mettre','attendre','écrire','lire','ouvrir','offrir','envoyer','acheter','appeler','remplir','choisir','répondre','boire','manger','commencer','payer','sortir','partir','dormir','courir','suivre','croire','descendre','tourner','se lever','se dépêcher','s’asseoir','s’inscrire','se reposer','s’habiller','se renseigner','s’installer','se coucher'];
+const IMP_P=['tu','nous','vous'];
+const IRREG_IMP={être:'sois, soyons, soyez',avoir:'aie, ayons, ayez',savoir:'sache, sachons, sachez',vouloir:'veuille, veuillons, veuillez'};
+function explainImp(r,row){
+  const inf=r.infinitive.replace(/^(se |s’)/,'');
+  if(IRREG_IMP[inf])return `Impératif irrégulier de « ${inf} » : ${IRREG_IMP[inf]}.`;
+  if(r.pronominal)return 'Verbe pronominal : à l’affirmatif, le pronom suit le verbe avec un trait d’union (toi, nous, vous).';
+  if(row===0&&/(er|ouvrir|offrir)$/.test(inf))return 'Verbes en -er (et aller, ouvrir, offrir) : pas de s avec tu à l’impératif.';
+  return 'Impératif : la forme du présent, sans sujet.';
+}
+function imperItem(){
+  const r=C()?.conjugate(pick(IMP));if(!r||r.impersonal)return null;
+  const forms=r.tenses.imperatif;if(!forms||!forms[0])return null;
+  const row=Math.floor(Math.random()*3),aff=forms[row];
+  if(r.pronominal&&Math.random()<.5){ // negative: ne te lève pas / ne t’assieds pas / ne vous levez pas
+    const verb=aff.split('-')[0],pron=['te','nous','vous'][row];
+    const ans=`ne ${pron==='te'&&/^[aeiouyhéèêâîôû]/i.test(verb)?'t’':pron+' '}${verb} pas`;
+    return {type:'fill',lvl:2,gen:true,prompt:`Impératif négatif de « ${r.infinitive} » — ${IMP_P[row]} : ___`,answers:[ans],explain:`À la forme négative, le pronom revient devant le verbe : ${ans}.`};
+  }
+  const presTu=String(r.tenses.present[1]||'').replace(/^tu /,'');
+  if(row===0&&!r.pronominal&&presTu&&presTu!==aff&&Math.random()<.5){ // the classic trap: parles / parle
+    const choices=shuffle([aff,presTu,r.infinitive]);
+    if(new Set(choices).size===3)return {type:'mcq',lvl:1,gen:true,prompt:`Impératif de « ${r.infinitive} » — tu : ___ !`,choices,answer:choices.indexOf(aff),explain:explainImp(r,row)};
+  }
+  const answers=/ayer$/.test(r.infinitive)?[...new Set([aff,aff.replace(/ai(?=e)/g,'ay')])]:[aff];
+  return {type:'fill',lvl:1,gen:true,prompt:`Impératif de « ${r.infinitive} » — ${IMP_P[row]} : ___`,answers,explain:explainImp(r,row)};
 }
 
 /* ---------- vocabulary-based drills ---------- */
@@ -107,6 +138,7 @@ const GEN={
   g18:conjGen(['conditionnel'],[V.irregular,V.regular]),
   g19:conjGen(['conditionnelPasse'],[V.compoundAvoir,V.compoundEtre,V.compoundPron]),
   g20:conjGen(['subjonctif'],[V.subj]),
+  g31:n=>{const out=[];for(let g=0;out.length<n&&g<n*8;g++){const x=imperItem();if(x&&!out.some(o=>o.prompt===x.prompt))out.push(x)}return out},
 };
 window.TEF_GEN={
   has:tid=>!!GEN[tid]&&!!C(),
