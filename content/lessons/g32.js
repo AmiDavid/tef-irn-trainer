@@ -21,7 +21,7 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g32:{
     "Aux temps composés, toujours être : je me suis levé(e), ils se sont inscrits. Le participe s’accorde avec le sujet si le pronom est COD (elle s’est levée), pas s’il est COI ou si un COD suit (ils se sont parlé ; elle s’est lavé les mains).",
     "Donc pas d’accord avec se parler, se téléphoner, se dire, s’écrire, se sourire, se plaire (on parle à quelqu’un : COI). Les verbes toujours pronominaux ou de sens idiomatique s’accordent avec le sujet (elles se sont souvenues, ils se sont plaints), sauf se rendre compte, où compte est un COD placé après : elle s’est rendu compte.",
     "Impératif : Lève-toi ! Asseyez-vous ! ; à la forme négative : Ne te lève pas ! Ne vous asseyez pas !",
-    "Quatre sens : réfléchi, l’action revient sur le sujet (je me lave) ; réciproque, les uns les autres (ils se téléphonent) ; passif, avec une chose pour sujet (ce plat se mange froid ; ça ne se fait pas) ; verbes qui n’existent qu’au pronominal ou changent de sens (se souvenir de, s’en aller, se rendre compte de, s’occuper de, se tromper).",
+    "Quatre sens : réfléchi, l’action revient sur le sujet (je me lave) ; réciproque, les uns les autres (ils se téléphonent) ; passif, avec une chose pour sujet (ce plat se mange froid ; ça ne se fait pas) ; idiomatique, verbes qui n’existent qu’au pronominal ou changent de sens (se souvenir de, s’en aller, se rendre compte de, s’occuper de, se tromper).",
     "Parties du corps : l’article défini suffit : Je me brosse les dents ; il s’est cassé la jambe (pas « mes dents », « sa jambe »)."
   ],
   table:{head:["Personne","Présent","Passé composé"],rows:[

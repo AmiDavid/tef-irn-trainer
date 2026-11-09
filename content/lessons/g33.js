@@ -22,7 +22,7 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g33:{
     "Sur + une surface (sur la table, sur le mur), un réseau ou un écran : sur internet, sur le site, sur les réseaux sociaux, sur mon téléphone. Mais à la radio, à la télévision.",
     "Transports : en quand on est à l’intérieur (en bus, en voiture, en train, en avion, en métro) ; à quand on est dessus ou à pied (à pied, à vélo, à moto, à cheval). Avec un déterminant, on dit dans ou sur : dans le bus de 8 heures, sur mon vélo. À l’oral, on entend souvent en vélo, en moto ; à l’écrit, préférez à vélo, à moto.",
     "Position : devant, derrière, entre… et… (sans de) ; à côté de, en face de, près de, loin de, à droite de, à gauche de, au bout de, au coin de (avec de) : devant la gare, en face de la gare, à côté du métro.",
-    "Avec un verbe de mouvement : aller à / en / chez (destination) ; venir de, sortir de, rentrer de (provenance) : Je rentre du travail ; je sors de chez le médecin."
+    "Avec un verbe de mouvement : aller à / en / chez (destination) ; venir de, sortir de, rentrer de (provenance) : Je rentre du travail ; je sors de chez le médecin. Pour un trajet : jusqu’à (allez jusqu’au feu), par (passez par la place)."
   ],
   table:{head:["Préposition","Emploi","Exemple"],rows:[
     ["à","ville, lieu ; à pied, à vélo","à Lille, à la poste, à pied"],

@@ -3,7 +3,7 @@
 (B.grammar=B.grammar||[]).push({
   id:"g29", section:"Les déterminants et accords", order:4, title:"Les articles : le, un, du ou rien ?", status:"untested",
   short:"Le pour le connu et le général, un pour un élément parmi d’autres, du pour une quantité non comptée — et parfois pas d’article.",
-  details:"On emploie l’article défini (le, la, les) pour une chose connue, unique ou générale, et après aimer, adorer, détester, préférer quand on parle d’un goût (mais j’aimerais un café = je voudrais). L’article indéfini (un, une, des) présente un élément parmi d’autres ; le partitif (du, de la, de l’) une quantité que l’on ne compte pas. Après une négation, un / une / des / du / de la devant un COD deviennent de, sauf avec être. Pas d’article devant une profession après être (il est médecin), mais c’est + un + nom (c’est un bon médecin).",
+  details:"On emploie l’article défini (le, la, les) pour une chose connue, unique ou générale, et après aimer, adorer, détester, préférer quand on parle d’un goût (mais j’aimerais un café = je voudrais). L’article indéfini (un, une, des) présente un élément parmi d’autres ; le partitif (du, de la, de l’) une quantité que l’on ne compte pas. Après une négation, l’article indéfini ou partitif d’un COD devient de, sauf avec être. Pas d’article devant une profession après être (il est médecin), mais c’est + un + nom (c’est un bon médecin).",
   examples:["Je bois du café le matin.","J’aime le café noir.","Elle est pharmacienne.","C’est une bonne idée."],
   mistakes:[
     {wrong:"J’aime du chocolat.", right:"J’aime le chocolat.", why:"Après aimer, adorer, détester, préférer : article défini."},
@@ -17,13 +17,13 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g29:{
   intro:"Le choix de l’article est une source d’erreurs typique chez les anglophones : « J’aime le café » mais « Je bois du café », « Il est médecin » sans article. Ces erreurs reviennent dans chaque production écrite et orale du TEF et se voient tout de suite.",
   rule:[
     "Article défini (le, la, l’, les) : une chose connue ou unique (la mairie de mon quartier, le soleil) et les généralités (Les enfants ont besoin de sommeil).",
-    "Après les verbes de goût (aimer, adorer, détester, préférer), pour parler d’un goût en général : article défini : J’aime le café ; elle déteste la pluie. Mais j’aimerais (= je voudrais) se construit comme vouloir : J’aimerais un café ; je voudrais du pain.",
+    "Les verbes de goût (aimer, adorer, détester, préférer) prennent l’article défini quand on parle d’un goût en général : J’aime le café ; elle déteste la pluie. Mais j’aimerais (= je voudrais) se construit comme vouloir : J’aimerais un café ; je voudrais du pain.",
     "Article indéfini (un, une, des) : un élément parmi d’autres, que l’on peut compter : J’ai un rendez-vous ; il y a des travaux dans la rue. À l’écrit, des devient de devant un adjectif placé avant le nom : de bons amis, de nouvelles règles.",
-    "Article partitif (du, de la, de l’) : une quantité non comptée d’une chose qu’on ne compte pas : Je bois du café ; il faut de la patience ; il y a de l’eau par terre. Après un verbe en de (avoir besoin de, manquer de), le partitif disparaît : J’ai besoin d’aide.",
-    "Après une négation, un / une / des / du / de la / de l’ devant un COD (ou après il n’y a pas) deviennent de / d’ : Je n’ai pas de voiture. Mais l’article reste avec être (ce n’est pas un problème), avec ne… que (je ne bois que du thé) et après une préposition (je ne travaille pas dans une banque). L’article défini, lui, ne change pas : Je n’aime pas le café.",
+    "Article partitif (du, de la, de l’) : une quantité non comptée d’une chose qu’on ne compte pas : Je bois du café ; il faut de la patience ; il y a de l’eau par terre. Après un verbe construit avec de (avoir besoin de, manquer de), le partitif disparaît : J’ai besoin d’aide.",
+    "Après une négation, l’article indéfini ou partitif (un, une, des, du, de la, de l’) d’un COD, ou après il n’y a pas, devient de / d’ : Je n’ai pas de voiture. Mais l’article reste avec être (ce n’est pas un problème), avec ne… que (je ne bois que du thé) et après une préposition (je ne travaille pas dans une banque). L’article défini, lui, ne change pas : Je n’aime pas le café.",
     "Pas d’article : profession, nationalité ou religion après être ou devenir (Il est infirmier ; elle est devenue avocate) ; après en (en voiture, en hiver) ; dans un nom + de + nom (un professeur de français, un jus d’orange).",
     "C’est / il est : c’est + déterminant + nom ou nom propre (C’est un bon médecin ; c’est ma voisine ; c’est Julie), au pluriel ce sont (Ce sont mes collègues) ; il / elle est + adjectif, ou + profession sans article (Elle est sympathique ; il est médecin).",
-    "Pour juger une idée : c’est + adjectif au masculin (Paris, c’est cher). Devant de + infinitif + complément, l’écrit soutenu préfère il est : Il est difficile de trouver un logement. Sans complément après l’infinitif : c’est + adjectif + à : C’est difficile à dire.",
+    "Pour juger une idée : c’est + adjectif au masculin (Paris, c’est cher). Devant de + infinitif, l’écrit soutenu préfère il est : Il est difficile de trouver un logement. Mais quand ce reprend la chose dont on parle (le COD de l’infinitif) : c’est + adjectif + à + infinitif, sans autre complément : Ce formulaire ? C’est facile à remplir.",
     "Jours : le lundi = tous les lundis (Le lundi, je travaille) ; lundi = un lundi précis, le prochain ou le dernier (Lundi, j’ai rendez-vous). Parties du corps : article défini, pas de possessif, avec un verbe pronominal et avec avoir mal à (Je me lave les mains ; j’ai mal à la tête)."
   ],
   table:{head:["Article","Quand ?","Exemple"],rows:[
@@ -41,7 +41,7 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g29:{
       ["il / elle est + profession, nationalité","sans article","Il est pharmacien. Elle est italienne."],
       ["c’est + adjectif masculin","juger une idée, une situation","Paris, c’est cher. C’est vrai !"],
       ["il est + adjectif + de + infinitif","écrit soutenu (oral : c’est… de)","Il est important de répondre vite."],
-      ["c’est + adjectif + à + infinitif","l’infinitif n’a pas de complément","C’est difficile à dire. C’est facile à faire."]
+      ["c’est + adjectif + à + infinitif","ce = la chose dont on parle (rien après l’infinitif)","Ce formulaire ? C’est facile à remplir."]
     ]}
   ],
   tips:[
@@ -107,7 +107,7 @@ B.grammarMore=Object.assign(B.grammarMore||{},{g29:[
   {type:"mcq", lvl:3, prompt:"Le directeur ? ___ quelqu’un de très exigeant.", choices:["Il est","C’est","Elle est"], answer:1, explain:"Devant un pronom (quelqu’un) : c’est."},
   {type:"fill", lvl:3, prompt:"Elle s’est brûlé ___ main en cuisinant.", answers:["la"], explain:"Partie du corps avec un verbe pronominal : article défini, pas de possessif."},
   {type:"fill", lvl:3, prompt:"Ce n’est pas ___ problème.", answers:["un"], hint:"article indéfini", explain:"Avec être, l’article indéfini reste après la négation."},
-  {type:"fix", lvl:3, prompt:"C’est difficile à trouver un logement à Paris.", answers:["C’est difficile de trouver un logement à Paris.","Il est difficile de trouver un logement à Paris."], explain:"L’infinitif a un complément (trouver un logement) : c’est / il est + adjectif + de ; à seulement sans complément (c’est difficile à trouver)."},
+  {type:"fix", lvl:3, prompt:"C’est difficile à trouver un logement à Paris.", answers:["C’est difficile de trouver un logement à Paris.","Il est difficile de trouver un logement à Paris."], explain:"L’infinitif a son complément (trouver un logement) : c’est / il est + adjectif + de ; à seulement quand ce reprend la chose (Un logement à Paris ? C’est difficile à trouver)."},
   {type:"transform", lvl:3, instruction:"Réécrivez la phrase en registre soutenu avec « Il est ».", prompt:"C’est indispensable de prendre rendez-vous.", answers:["Il est indispensable de prendre rendez-vous."], explain:"Écrit soutenu : il est + adjectif + de + infinitif."},
   {type:"order", lvl:3, words:["samedi","Le","je","matin","travaille"], answers:["Le samedi matin, je travaille.","Je travaille le samedi matin."], explain:"le samedi = tous les samedis."}
 ]});
