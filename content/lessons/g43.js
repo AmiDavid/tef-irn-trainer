@@ -1,7 +1,7 @@
 /* g43 — Homophones grammaticaux (card, lesson, 12 practice, 28 bank questions) */
 (()=>{const B=window.TEF_BANK=window.TEF_BANK||{};
 (B.grammar=B.grammar||[]).push({
-  id:"g43", section:"L’orthographe", order:20, title:"Homophones : a / à, et / est, ce / se, -é / -er…", status:"untested",
+  id:"g43", section:"L’orthographe", order:23, title:"Homophones : a / à, et / est, ce / se, -é / -er…", status:"untested",
   short:"Des mots qui se prononcent pareil mais s’écrivent autrement : un test de remplacement suffit presque toujours.",
   details:"Beaucoup de fautes d’orthographe viennent de mots qui se prononcent de la même façon. Un test de remplacement règle presque tout : a (verbe avoir) se remplace par avait, à non ; est (être) par était, et par et puis ; sont (être) par étaient, son (possessif) par mon ; ont (avoir) par avaient, on par il ; se va devant un verbe pronominal, ce devant un nom ; -er (infinitif) se remplace par vendre, -é (participe) par vendu.",
   examples:["Il a rendez-vous à la mairie.","Elle est partie et elle n’est pas revenue.","Je vais acheter du pain ; j’ai acheté du pain.","Ses enfants sont à l’école."],

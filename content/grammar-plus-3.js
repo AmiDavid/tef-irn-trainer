@@ -1,6 +1,6 @@
 (()=>{const B=window.TEF_BANK=window.TEF_BANK||{};B.grammarPlus=Object.assign(B.grammarPlus||{},{
   g20:{
-    intro:"Le subjonctif est attendu au niveau B2 : à l’écrit (section B, lettre argumentée) comme à l’oral (section A, demander poliment, section B, convaincre), des formes comme « il faut que je fasse » ou « pour que vous puissiez » montrent immédiatement au correcteur que tu maîtrises la langue.",
+    intro:"Le subjonctif est attendu au niveau B2 : à l’écrit (section B, texte pour convaincre) comme à l’oral (section A, demander poliment ; section B, conseiller un ami), des formes comme « il faut que je fasse » ou « pour que vous puissiez » montrent immédiatement au correcteur que tu maîtrises la langue.",
     rule:[
       "Pars de la 3e personne du pluriel du présent de l’indicatif : ils partent, ils écrivent, ils finissent.",
       "Enlève -ent pour obtenir le radical : part-, écriv-, finiss-.",
@@ -179,7 +179,7 @@
     ]
   },
   g23:{
-    intro:"Les documents de compréhension écrite (articles, avis officiels, règlements) et les annonces sont remplis de passifs : « les dossiers seront traités », « le stationnement est interdit ». À l’écrit (section A, fait divers), le passif met en valeur l’événement plutôt que son auteur.",
+    intro:"Les documents de compréhension écrite (articles, avis officiels, règlements) et les annonces sont remplis de passifs : « les dossiers seront traités », « le stationnement est interdit ». À l’écrit, le passif met en valeur l’événement plutôt que son auteur : « j’ai été recruté en mars », « le projet a été accepté ».",
     rule:[
       "Prends le COD de la phrase active : il devient le sujet (La police a arrêté le voleur → Le voleur…).",
       "Conjugue être au temps du verbe actif : a arrêté → a été arrêté ; arrêtera → sera arrêté ; arrête → est arrêté.",
@@ -205,7 +205,7 @@
       "Piège anglophone : « I was told » ne se traduit pas par « j’ai été dit », mais par « on m’a dit » ; « I was given » → « on m’a donné ».",
       "« Été » est toujours invariable ; seul le dernier participe s’accorde : elles ont été invitées.",
       "La forme pronominale a souvent un sens passif : ce plat se mange froid, ce mot ne s’utilise plus.",
-      "Dans un fait divers (écrit A), le passif est idéal : « Un cycliste a été blessé hier soir… »."
+      "À l’écrit A ou B, le passif évite de dire qui agit : « J’ai été embauché(e) en mars », « Ma candidature a été retenue »."
     ],
     examples:[
       {fr:"Les dossiers incomplets ne seront pas examinés.",en:"Incomplete applications will not be considered.",note:"futur passif sans agent"},

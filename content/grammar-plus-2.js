@@ -97,7 +97,7 @@ g11:{
 },
 
 g12:{
-  intro:"Le passé composé est le temps du récit : fait divers de l’écrit A, expériences personnelles racontées à l’oral. Le choix de l’auxiliaire et l’accord du participe sont parmi les erreurs les plus visibles pour un correcteur.",
+  intro:"Le passé composé est le temps du récit : ce qui s’est passé depuis le dernier échange (message de l’écrit A), un parcours (écrit B), des expériences racontées à l’oral. Le choix de l’auxiliaire et l’accord du participe sont parmi les erreurs les plus visibles pour un correcteur.",
   rule:[
     "Par défaut, utilisez avoir : j’ai mangé, nous avons fini, ils ont pris.",
     "Utilisez être avec les verbes de mouvement ou de changement d’état (aller, venir, arriver, partir, entrer, sortir, monter, descendre, naître, mourir, rester, tomber, retourner, rentrer, revenir, devenir, passer) et avec tous les verbes pronominaux.",
@@ -167,7 +167,7 @@ g12:{
 },
 
 g13:{
-  intro:"Le plus-que-parfait permet de revenir en arrière dans un récit au passé : il est indispensable pour raconter un fait divers à l’écrit A, pour rapporter des paroles et pour exprimer un regret à l’oral.",
+  intro:"Le plus-que-parfait permet de revenir en arrière dans un récit au passé : il sert à l’écrit A (« j’ai appris que tu avais changé de travail »), pour rapporter des paroles et pour exprimer un regret à l’oral.",
   rule:[
     "Formation : avoir ou être à l’imparfait (j’avais, j’étais…) + participe passé.",
     "Même choix d’auxiliaire et mêmes accords qu’au passé composé : elle était partie, les papiers que j’avais remplis.",
@@ -188,7 +188,7 @@ g13:{
     "C’est l’équivalent de l’anglais « had + participe » (had left, had finished) : si vous pensez « had », pensez plus-que-parfait.",
     "Pour une simple succession d’actions dans l’ordre (je suis arrivé, j’ai mangé, je suis parti), le passé composé suffit : le plus-que-parfait sert quand on revient en arrière.",
     "Pronominaux : le pronom se place avant l’auxiliaire, avec élision : je m’étais trompé, ils s’étaient perdus.",
-    "Structure typique de l’écrit A : verbe au passé + que + plus-que-parfait (« La police a découvert que le voleur était entré par la fenêtre »).",
+    "Structure très utile à l’écrit A : verbe au passé + que + plus-que-parfait (« J’ai appris que tu avais déménagé », « Paul m’a dit que tu avais trouvé un poste »).",
     "Des repères comme déjà, la veille, auparavant, la semaine d’avant ou jamais… avant signalent souvent le plus-que-parfait."
   ],
   examples:[
@@ -540,7 +540,7 @@ g18:{
 },
 
 g19:{
-  intro:"Exprimer un regret, faire un reproche ou imaginer un passé différent : c’est une compétence B2 attendue à l’oral B (« Si j’avais su… ») et utile à l’écrit pour commenter un fait divers (« L’accident aurait pu être évité »).",
+  intro:"Exprimer un regret, faire un reproche ou imaginer un passé différent : c’est une compétence B2 attendue à l’oral B (« Si j’avais su… ») et utile à l’écrit (« J’aurais aimé te voir avant ton départ », « J’aurais pu m’inscrire plus tôt »).",
   rule:[
     "Formation : avoir ou être au conditionnel présent + participe passé : j’aurais pris, elle serait partie, nous nous serions inscrits.",
     "Mêmes auxiliaires et mêmes accords qu’au passé composé.",

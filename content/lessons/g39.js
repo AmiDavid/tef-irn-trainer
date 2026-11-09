@@ -1,7 +1,7 @@
 /* g39 — Situer dans le temps : quand, dès que, avant que, après avoir… (card, lesson, 12 practice, 28 bank questions) */
 (()=>{const B=window.TEF_BANK=window.TEF_BANK||{};
 (B.grammar=B.grammar||[]).push({
-  id:"g39", section:"La phrase complexe", order:46, title:"Situer dans le temps : quand, dès que, avant que, après avoir…", status:"untested",
+  id:"g39", section:"La phrase complexe", order:58, title:"Situer dans le temps : quand, dès que, avant que, après avoir…", status:"untested",
   short:"Quand, lorsque, dès que, pendant que, après que + indicatif ; avant que, jusqu’à ce que + subjonctif ; même sujet : avant de + infinitif, après + infinitif passé (après avoir mangé).",
   details:"Les conjonctions de temps relient deux actions. En même temps : quand, lorsque, pendant que, au moment où + indicatif. Juste après : dès que, aussitôt que, une fois que + indicatif (au futur pour l’avenir). Avant : avant que, jusqu’à ce que, en attendant que + subjonctif. Après : après que + indicatif. Si le sujet est le même : avant de + infinitif, après + infinitif passé (après avoir mangé, après être parti). Avec un nom : avant, après, pendant, lors de, dès.",
   examples:["Appelle-moi dès que tu arriveras.","Je dois finir avant que les enfants rentrent.","Après avoir déposé mon dossier, j’ai attendu trois semaines.","Lors de la réunion, chacun a pu donner son avis."],
