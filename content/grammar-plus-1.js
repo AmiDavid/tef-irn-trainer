@@ -2,7 +2,7 @@
   g1:{
     intro: "Les expressions de quantité reviennent sans cesse au TEF : décrire un quartier ou un problème à l’écrit A, chiffrer un argument à l’écrit B, demander « combien de… » à l’oral A. Une erreur sur « beaucoup de » se remarque immédiatement.",
     rule: [
-      "Sans quantité précise, on emploie l’article partitif : du pain, de la patience, de l’eau, des légumes. Dès qu’une quantité est précisée, il ne reste que de : beaucoup de pain, un kilo de légumes.",
+      "Sans quantité précise, on emploie l’article partitif ou indéfini : du pain, de la patience, de l’eau, des légumes. Après une expression de quantité, il ne reste que de : beaucoup de pain, un kilo de légumes.",
       "Adverbe de quantité (beaucoup, peu, assez, trop, tant, autant, plus, moins, combien) + de + nom, sans article : beaucoup de travail, peu de place.",
       "Devant une voyelle ou un h muet, de devient d’ : peu d’habitants, trop d’heures supplémentaires.",
       "Les noms de quantité se construisent aussi avec de : un kilo de pommes, une bouteille d’eau, un paquet de riz.",
@@ -71,7 +71,7 @@
       "Pas de contraction quand le / les est un pronom COD devant un infinitif : J’ai oublié de les appeler.",
       "Pays et villes : en / de + pays féminin ou commençant par une voyelle (en France, de France ; en Iran, d’Iran) ; au / du + pays masculin (au Canada, du Maroc) ; aux / des + pays pluriel (aux États-Unis, des Pays-Bas) ; à / de + ville (à Lyon, de Lyon).",
       "Ne confondez pas des = de + les (la liste des documents) et des = article indéfini pluriel (j’ai des documents). Après une négation ou une quantité, l’article indéfini devient de, mais la contraction reste : je n’ai pas de documents / je ne parle pas des documents (= the documents).",
-      "De + des → de : après un verbe ou une expression avec de, un nom pluriel indéfini perd des : j’ai besoin de conseils, il parle de problèmes graves (mais j’ai besoin des conseils de mon avocat : des conseils précis, de + les)."
+      "De + des → de : après un verbe ou une expression avec de, un nom pluriel indéfini perd des : j’ai besoin de conseils, il parle de problèmes graves (mais j’ai besoin des conseils de mon avocat : de + les conseils de mon avocat)."
     ],
     table: { head:["Préposition + article","Forme","Exemple"], rows:[
       ["à + le","au","Je vais au guichet."],
@@ -254,7 +254,7 @@
       "Un adjectif qui qualifie un nom masculin et un nom féminin se met au masculin pluriel : une cuisine et un salon lumineux.",
       "Avec être, l’adjectif et le participe s’accordent avec le sujet : La salle est fermée ; les dossiers sont complets.",
       "Féminin des adjectifs : en général + e (grand → grande) ; un adjectif déjà terminé par -e ne change pas (jeune, facile). Les autres modèles sont dans le tableau « Féminin des adjectifs ».",
-      "Pluriel : en général + s ; les mots en -s, -x, -z ne changent pas (le prix → les prix) ; -eau et -eu prennent un x (des bureaux, des jeux) ; -al devient -aux (un journal → des journaux, social → sociaux). Voir le tableau « Pluriel ».",
+      "Pluriel : en général + s ; les mots en -s, -x, -z ne changent pas (le prix → les prix) ; -eau et -eu prennent un x (des bureaux, des jeux) ; -al devient -aux (un journal → des journaux, social → sociaux). Voir le tableau « Pluriel des noms et des adjectifs ».",
       "Place de l’adjectif : en général après le nom (un loyer élevé, une voiture rouge) ; avant le nom pour quelques adjectifs courts et très fréquents : beau, joli, bon, mauvais, grand, petit, gros, jeune, vieux, nouveau, autre (un bon salaire, une petite cuisine).",
       "À l’écrit, des devient de devant un adjectif placé avant un nom pluriel : de nouveaux voisins, de bons résultats (mais des voisins sympathiques ; et des grands-parents, des petits pois, qui sont des noms composés)."
     ],
@@ -285,7 +285,7 @@
         ["-er", "-ère", "cher → chère, premier → première, étranger → étrangère"],
         ["-f", "-ve", "actif → active, neuf → neuve"],
         ["-x", "-se", "heureux → heureuse, sérieux → sérieuse, jaloux → jalouse"],
-        ["-eur", "-euse ou -rice", "travailleur → travailleuse, conservateur → conservatrice (mais meilleur → meilleure)"],
+        ["-eur", "-euse ou -rice", "travailleur → travailleuse, conservateur → conservatrice (mais meilleur → meilleure, supérieur → supérieure, extérieur → extérieure)"],
         ["-el, -eil", "-elle, -eille", "professionnel → professionnelle, pareil → pareille"],
         ["-en, -on", "-enne, -onne", "ancien → ancienne, bon → bonne"],
         ["-et", "-ette (parfois -ète)", "muet → muette ; complet → complète, inquiet → inquiète"],
@@ -294,8 +294,8 @@
       {title:"Pluriel des noms et des adjectifs", head:["Singulier", "Pluriel", "Exemples"], rows:[
         ["cas général", "+ s", "un dossier complet → des dossiers complets"],
         ["-s, -x, -z", "pas de changement", "le prix → les prix, un choix → des choix, le nez → les nez"],
-        ["-eau, -au, -eu", "+ x", "un bureau → des bureaux, un tuyau → des tuyaux, un jeu → des jeux (mais des pneus)"],
-        ["-al", "-aux", "un journal → des journaux, social → sociaux (mais des festivals ; final → finals)"],
+        ["-eau, -au, -eu", "+ x", "un bureau → des bureaux, un tuyau → des tuyaux, un jeu → des jeux (mais des pneus, bleu → bleus)"],
+        ["-al", "-aux", "un journal → des journaux, social → sociaux (mais des festivals ; banal → banals)"],
         ["-ail", "+ s", "un détail → des détails (mais le travail → les travaux, un bail → des baux)"],
         ["-ou", "+ s", "un trou → des trous (mais bijou, caillou, chou, genou, hibou, joujou, pou → -oux)"],
         ["irréguliers", "à apprendre", "un œil → des yeux, monsieur → messieurs, madame → mesdames"]
@@ -364,7 +364,7 @@
       "Les verbes d’état (être, avoir, savoir) sont souvent à l’imparfait ; au passé composé, ils marquent un changement ponctuel : J’ai eu peur.",
       "N’oubliez pas l’auxiliaire être avec les verbes de mouvement et les verbes pronominaux : je suis allé(e), je me suis inscrit(e).",
       "Sens différent selon le temps : je savais (I knew) / j’ai su (I found out) ; je connaissais (I knew) / j’ai connu (I met) ; je pouvais (I could) / j’ai pu (I managed to) ; je devais (I was supposed to) / j’ai dû (I had to).",
-      "Repères : il y a + durée (= ago) avec le passé composé (je suis arrivé il y a deux ans) ; depuis + durée avec le présent pour une situation qui continue (j’habite ici depuis deux ans)."
+      "Repères : il y a + durée (= ago) avec un temps du passé (je suis arrivé il y a deux ans) ; depuis + durée avec le présent pour une situation qui continue (j’habite ici depuis deux ans)."
     ],
     examples: [
       {fr:"Quand je suis arrivé en France, je ne parlais pas bien français.", en:"When I arrived in France, I didn’t speak French well.", note:"Arrivée = événement ; niveau de langue = état."},

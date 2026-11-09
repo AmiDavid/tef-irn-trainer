@@ -366,7 +366,7 @@
       "Intensité + conséquence : si / tellement + adjectif ou adverbe + que ; tant de / tellement de + nom + que.",
       "Autres moyens : entraîner, provoquer, causer + nom ; d’où + nom (d’où mon retard).",
       "Autres façons d’exprimer la cause : en effet (justifie la phrase précédente : Je ne peux pas venir ; en effet, j’ai un rendez-vous) ; du fait de + nom, du fait que + indicatif ; sous prétexte que + indicatif (cause contestée) ; pour + infinitif passé (Il a été sanctionné pour avoir menti).",
-      "Autres façons d’exprimer la conséquence : ainsi, de ce fait, c’est la raison pour laquelle ; trop / assez + adjectif + pour + infinitif (Il est trop tard pour annuler)."
+      "Autres façons d’exprimer la conséquence : ainsi, de ce fait, c’est la raison pour laquelle ; trop / assez + adjectif ou adverbe + pour + infinitif (Il est trop tard pour annuler)."
     ],
     table:{head:["Connecteur","Construction","Exemple"],rows:[
       ["comme","+ proposition, en tête","Comme le bureau était fermé, je suis revenu le lendemain."],
@@ -426,7 +426,7 @@
       "Entre deux phrases : pourtant, cependant, néanmoins, toutefois ; en revanche pour un contraste (par contre est plus oral).",
       "Avoir beau + infinitif : avoir se conjugue, beau ne change pas (J’ai beau essayer, je n’y arrive pas).",
       "Autres façons d’opposer : au lieu de + infinitif ou nom (Au lieu de se plaindre, il agit) ; contrairement à + nom (Contrairement à l’an dernier, les prix ont baissé) ; par contre (oral) / en revanche (écrit).",
-      "Dans une argumentation, concédez avant de contredire : certes…, mais… ; il est vrai que…, mais… ; à l’oral, quand même / tout de même (Il pleuvait, mais nous sommes quand même sortis)."
+      "Dans une argumentation, concède avant de contredire : certes…, mais… ; il est vrai que…, mais… ; quand même ou, plus soutenu, tout de même (Il pleuvait, mais nous sommes quand même sortis)."
     ],
     table:{head:["Connecteur","Suivi de","Exemple"],rows:[
       ["bien que / quoique","subjonctif","Bien qu’il soit cher, ce logement me plaît."],

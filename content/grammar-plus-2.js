@@ -10,7 +10,7 @@ g11:{
     "Trois verbes seulement font -es avec vous : vous êtes, vous faites, vous dites. Tous les autres font -ez (vous prenez, vous pouvez, vous allez).",
     "Verbes réguliers : -er → -e, -es, -e, -ons, -ez, -ent (je parle, ils parlent) ; -ir type finir → -is, -is, -it, -issons, -issez, -issent (nous finissons) ; -re type attendre → -s, -s, rien, -ons, -ez, -ent (j’attends, il attend).",
     "Verbes en -er à changement d’orthographe : nous mangeons, nous commençons (pour garder le son) ; j’achète, je préfère, j’appelle, je jette, mais nous achetons, nous préférons, nous appelons ; je paie (ou je paye), j’envoie, mais nous payons, nous envoyons.",
-    "Partir, sortir, dormir, servir, sentir : au singulier, le radical perd sa consonne finale (je pars, il part ; je dors, il dort) ; au pluriel, elle revient (nous partons, ils dorment). Ouvrir, offrir, découvrir et souffrir se conjuguent comme parler : j’ouvre, il offre."
+    "Partir, sortir, dormir, servir, sentir : au singulier, le radical perd sa consonne finale (je pars, il part ; je dors, il dort) ; au pluriel, elle revient (nous partons, ils dorment). Ouvrir, offrir, découvrir et souffrir se conjuguent au présent comme parler : j’ouvre, il offre."
   ],
   table:{head:["Verbe","je","nous","ils / elles"],rows:[
     ["être","suis","sommes","sont"],
@@ -105,7 +105,7 @@ g12:{
     "Avec avoir, n’accordez jamais avec le sujet ; accordez seulement avec un COD placé avant le verbe (que, le, la, les) : la voiture que j’ai achetée.",
     "Monter, descendre, sortir, rentrer, retourner et passer prennent avoir quand ils ont un COD : elle a descendu l’escalier, mais elle est descendue.",
     "Pronominaux : accord avec le sujet si le pronom est COD (elle s’est lavée), pas d’accord si le pronom est COI ou si un COD suit (ils se sont parlé, elle s’est lavé les mains).",
-    "Les adverbes courts (déjà, bien, mal, beaucoup, toujours, encore, pas encore) se placent entre l’auxiliaire et le participe : j’ai déjà payé, il a bien compris, je n’ai pas encore reçu."
+    "Les adverbes courts (déjà, bien, mal, beaucoup, toujours, encore, pas encore) se placent entre l’auxiliaire et le participe : j’ai déjà payé, il a bien compris, je n’ai pas encore reçu (mais : je suis arrivé tard, je l’ai vu hier)."
   ],
   table:{head:["Situation","Exemple","Accord ?"],rows:[
     ["Avoir, sans COD avant","Elle a signé le contrat.","Non"],
