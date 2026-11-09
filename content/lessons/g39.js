@@ -18,7 +18,7 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g39:{
   rule:[
     "En même temps : quand, lorsque, pendant que, tandis que, au moment où + indicatif : Lorsque je suis arrivé, la réunion commençait.",
     "Juste après : dès que, aussitôt que, une fois que + indicatif. Pour l’avenir, futur (ou futur antérieur si la première action sera terminée) : Dès que j’aurai reçu la réponse, je vous écrirai.",
-    "Avant : avant que + subjonctif (Je partirai avant qu’il fasse nuit) ; jusqu’à ce que, en attendant que + subjonctif (Attendez jusqu’à ce qu’on vous appelle). Après avant que, l’écrit ajoute souvent un ne explétif, qui n’est pas une négation : avant qu’il ne soit trop tard. Mais après que + indicatif (Après qu’il est parti, nous avons rangé).",
+    "Avant : avant que + subjonctif (Je partirai avant qu’il fasse nuit) ; jusqu’à ce que, en attendant que + subjonctif (Attendez jusqu’à ce qu’on vous appelle). Avec avant que, l’écrit ajoute souvent un ne explétif, qui n’est pas une négation : avant qu’il ne soit trop tard. Mais après que + indicatif (Après qu’il est parti, nous avons rangé).",
     "Même sujet : avant de + infinitif (Avant de partir, éteignez la lumière) ; après + infinitif passé : après avoir + participe, après être + participe accordé (Après avoir mangé, nous sommes sortis ; après être rentrée, elle s’est reposée), après s’être + participe pour les pronominaux (après s’être levé).",
     "Avec un nom : avant, après, pendant, dès, lors de (= au moment de, soutenu), au cours de, à partir de : dès 8 heures, lors de la réunion, au cours de l’année.",
     "Depuis que + indicatif (situation qui continue) ; tant que (= aussi longtemps que) + indicatif ; chaque fois que, toutes les fois que (répétition) : Chaque fois qu’il pleut, la cave est inondée.",
@@ -58,15 +58,15 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g39:{
     {type:"mcq", lvl:1, prompt:"Je t’appellerai ___ j’arriverai.", choices:["quand","pendant","avant"], answer:0, explain:"Quand + futur pour une action à venir."},
     {type:"mcq", lvl:1, prompt:"___ de partir, vérifie que tout est fermé.", choices:["Avant","Après","Pendant"], answer:0, explain:"Même sujet : avant de + infinitif."},
     {type:"fill", lvl:1, prompt:"___ que je lisais, le téléphone a sonné.", answers:["Pendant","Tandis","Alors"], explain:"Deux actions en même temps : pendant que (tandis que, alors que) + indicatif."},
-    {type:"fill", lvl:1, prompt:"Attends-moi jusqu’à ce que je ___ .", answers:["revienne","sois revenu","sois revenue"], hint:"revenir", explain:"Jusqu’à ce que + subjonctif : que je revienne (ou, au passé, que je sois revenu(e))."},
+    {type:"fill", lvl:1, prompt:"Attends-moi jusqu’à ce que je ___.", answers:["revienne","sois revenu","sois revenue"], hint:"revenir", explain:"Jusqu’à ce que + subjonctif : que je revienne (ou, au passé, que je sois revenu(e))."},
     {type:"order", lvl:1, words:["dès","Appelle-moi","que","arriveras","tu"], answers:["Appelle-moi dès que tu arriveras.","Dès que tu arriveras, appelle-moi."], explain:"Dès que + futur pour une action à venir, même après un impératif."},
-    {type:"fix", lvl:2, prompt:"Après manger, nous avons fait la vaisselle.", answers:["Après avoir mangé, nous avons fait la vaisselle."], explain:"Après + infinitif passé : après avoir mangé."},
+    {type:"fix", lvl:2, prompt:"Après finir mes devoirs, je suis sorti.", answers:["Après avoir fini mes devoirs, je suis sorti."], explain:"Après + infinitif passé : après avoir fini."},
     {type:"fix", lvl:2, prompt:"Dès que je finis ce travail demain, je t’aiderai.", answers:["Dès que je finirai ce travail demain, je t’aiderai.","Dès que j’aurai fini ce travail demain, je t’aiderai."], explain:"Pour l’avenir : dès que + futur (ou futur antérieur)."},
     {type:"transform", lvl:2, instruction:"Reformulez avec « après » + infinitif passé.", prompt:"J’ai lu le contrat, puis je l’ai signé.", answers:["Après avoir lu le contrat, je l’ai signé.","J’ai signé le contrat après l’avoir lu."], explain:"Même sujet : après avoir + participe."},
     {type:"transform", lvl:2, instruction:"Reformulez avec « avant de ».", prompt:"Je réfléchis bien, puis je décide.", answers:["Je réfléchis bien avant de décider.","Avant de décider, je réfléchis bien."], explain:"Même sujet : avant de + infinitif."},
     {type:"order", lvl:2, words:["être","Après","elle","rentrée","s’est","reposée"], answers:["Après être rentrée, elle s’est reposée.","Elle s’est reposée après être rentrée."], explain:"Après être + participe accordé avec le sujet."},
     {type:"mcq", lvl:3, prompt:"___ de la réunion, le directeur a annoncé de nouvelles mesures.", choices:["Lors","Pendant que","Dès que"], answer:0, explain:"Lors de + nom (soutenu) = au moment de."},
-    {type:"fill", lvl:3, prompt:"Je resterai à l’accueil en attendant que vous ___ .", answers:["finissiez","ayez fini"], hint:"finir", explain:"En attendant que + subjonctif (présent ou passé)."}
+    {type:"fill", lvl:3, prompt:"Je resterai à l’accueil en attendant que vous ___.", answers:["finissiez","ayez fini"], hint:"finir", explain:"En attendant que + subjonctif (présent ou passé)."}
   ]
 }});
 B.grammarMore=Object.assign(B.grammarMore||{},{g39:[
@@ -75,8 +75,8 @@ B.grammarMore=Object.assign(B.grammarMore||{},{g39:[
   {type:"mcq", lvl:1, prompt:"Lavez-vous les mains ___ manger.", choices:["avant de","avant que","avant"], answer:0, explain:"Même sujet : avant de + infinitif."},
   {type:"mcq", lvl:1, prompt:"Elle s’est endormie ___ le trajet.", choices:["pendant","pendant que","quand"], answer:0, explain:"Devant un nom : pendant."},
   {type:"fill", lvl:1, prompt:"Rentre avant ___ fasse nuit.", answers:["qu’il","qu’il ne"], explain:"Avant que + subjonctif : avant qu’il fasse nuit (ne explétif possible : avant qu’il ne fasse nuit)."},
-  {type:"fill", lvl:1, prompt:"Je t’enverrai le document dès que je le ___ .", answers:["recevrai"], hint:"recevoir, futur", explain:"Pour l’avenir : dès que + futur."},
-  {type:"fill", lvl:1, prompt:"Après avoir ___ , il est allé se coucher.", answers:["dîné","diné"], hint:"dîner", explain:"Après avoir + participe passé."},
+  {type:"fill", lvl:1, prompt:"Je t’enverrai le document dès que je le ___.", answers:["recevrai"], hint:"recevoir, futur", explain:"Pour l’avenir : dès que + futur."},
+  {type:"fill", lvl:1, prompt:"Après avoir ___, il est allé se coucher.", answers:["dîné","diné"], hint:"dîner", explain:"Après avoir + participe passé."},
   {type:"fix", lvl:1, prompt:"Avant que tu pars, je dois te parler.", answers:["Avant que tu partes, je dois te parler.","Avant que tu ne partes, je dois te parler."], explain:"Deux sujets différents (tu / je) : avant que + subjonctif."},
   {type:"fix", lvl:1, prompt:"Après être mangé, nous avons fait une promenade.", answers:["Après avoir mangé, nous avons fait une promenade."], explain:"Manger se conjugue avec avoir : après avoir mangé."},
   {type:"transform", lvl:1, instruction:"Reformulez avec « pendant que ».", prompt:"Je cuisine et en même temps j’écoute la radio.", answers:["J’écoute la radio pendant que je cuisine.","Pendant que je cuisine, j’écoute la radio.","Je cuisine pendant que j’écoute la radio.","Pendant que j’écoute la radio, je cuisine."], explain:"Deux actions simultanées : pendant que + indicatif."},
@@ -84,9 +84,9 @@ B.grammarMore=Object.assign(B.grammarMore||{},{g39:[
   {type:"mcq", lvl:2, prompt:"Nous attendrons ___ le médecin soit disponible.", choices:["jusqu’à ce que","jusqu’à","pendant que"], answer:0, explain:"Jusqu’à ce que + subjonctif (soit)."},
   {type:"mcq", lvl:2, prompt:"___ avoir signé le bail, vous recevrez les clés.", choices:["Après","Avant de","Dès que"], answer:0, explain:"Après + infinitif passé."},
   {type:"mcq", lvl:2, prompt:"Je vous rembourserai dès que j’___ mon salaire.", choices:["aurai reçu","ai reçu","avais reçu"], answer:0, explain:"Action future terminée avant l’autre : futur antérieur."},
-  {type:"fill", lvl:2, prompt:"Une fois le paiement ___ , votre commande sera expédiée.", answers:["validé"], hint:"valider", explain:"Une fois + nom + participe accordé."},
+  {type:"fill", lvl:2, prompt:"Une fois le paiement ___, votre commande sera expédiée.", answers:["validé"], hint:"valider", explain:"Une fois + nom + participe accordé."},
   {type:"fill", lvl:2, prompt:"Il a démissionné après qu’on lui ___ refusé une augmentation.", answers:["a","avait"], hint:"avoir, indicatif", explain:"Après que + indicatif."},
-  {type:"fill", lvl:2, prompt:"Avant de ___ , relisez bien votre lettre.", answers:["signer","la signer"], hint:"signer", explain:"Avant de + infinitif."},
+  {type:"fill", lvl:2, prompt:"Avant de ___, relisez bien votre lettre.", answers:["signer","la signer"], hint:"signer", explain:"Avant de + infinitif."},
   {type:"fix", lvl:2, prompt:"Il est resté jusqu’à ce que tout le monde est parti.", answers:["Il est resté jusqu’à ce que tout le monde soit parti.","Il est resté jusqu’à ce que tout le monde parte."], explain:"Jusqu’à ce que + subjonctif."},
   {type:"fix", lvl:2, prompt:"Après avoir arrivée, elle a téléphoné.", answers:["Après être arrivée, elle a téléphoné."], explain:"Arriver se conjugue avec être : après être arrivée."},
   {type:"transform", lvl:2, instruction:"Reformulez avec « dès que » et le futur antérieur.", prompt:"Je finirai le rapport, puis je te l’enverrai.", answers:["Dès que j’aurai fini le rapport, je te l’enverrai.","Je te l’enverrai dès que j’aurai fini le rapport.","Je t’enverrai le rapport dès que je l’aurai fini."], explain:"Dès que + futur antérieur pour l’action terminée d’abord."},

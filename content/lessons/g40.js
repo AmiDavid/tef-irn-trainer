@@ -58,7 +58,7 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g40:{
   ],
   practice:[
     {type:"mcq", lvl:1, prompt:"Je ___ couper les cheveux tous les mois.", choices:["me fais","fais","me fait"], answer:0, explain:"Se faire + infinitif : je me fais couper les cheveux."},
-    {type:"mcq", lvl:1, prompt:"Mon ordinateur est en panne : je vais le faire ___ .", choices:["réparer","réparé","répare"], answer:0, explain:"Faire + infinitif."},
+    {type:"mcq", lvl:1, prompt:"Mon ordinateur est en panne : je vais le faire ___.", choices:["réparer","réparé","répare"], answer:0, explain:"Faire + infinitif."},
     {type:"fill", lvl:1, prompt:"Ils font ___ une maison à la campagne.", answers:["construire"], hint:"construire", explain:"Faire + infinitif : une entreprise construit la maison."},
     {type:"fill", lvl:1, prompt:"Ce document ? Je ___ fais traduire.", answers:["le"], hint:"pronom : le document", explain:"Le pronom se place devant faire."},
     {type:"order", lvl:1, words:["les","Je","laisse","sortir"], answers:["Je les laisse sortir."], explain:"Pronom devant laisser + infinitif."},

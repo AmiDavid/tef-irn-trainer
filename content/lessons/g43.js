@@ -23,7 +23,7 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g43:{
     "ou / où : ou = ou bien (thé ou café ?) ; où = lieu ou temps (la ville où j’habite, le jour où il est parti).",
     "-er / -é / -ez / -ais / -ait : après une préposition (à, de, pour, sans) ou un autre verbe conjugué → infinitif en -er (test : vendre) ; après avoir ou être, ou employé comme adjectif (un dossier complété) → participe en -é (test : vendu), puis accordé si nécessaire (elle est arrivée, les lettres envoyées) ; avec vous → -ez ; à l’imparfait → -ais, -ait.",
     "leur / leurs, quelle / qu’elle, peu / peut, là / la / l’a : leur devant un verbe est un pronom invariable (je leur parle) ; devant un nom, leur + singulier (leur maison), leurs + pluriel (leurs enfants) ; quelle + nom (quelle heure ?), qu’elle = que + elle (test : qu’il) ; peut = pouvoir (pouvait), peu = pas beaucoup ; là = lieu (là-bas), la = article ou pronom (la clé, je la vois), l’a = le ou la + a (l’avait).",
-    "quand / quant à / qu’en, près / prêt : quand = when (quand il pleut) ; quant à = as for (quant à moi) ; qu’en = que + en (qu’en pensez-vous ?) ; près de = near (près de la gare), prêt(e) à = ready to (elle est prête à partir)."
+    "quand / quant à / qu’en, près / prêt, plutôt / plus tôt, sur / sûr : quand = when (quand il pleut) ; quant à = as for (quant à moi) ; qu’en = que + en (qu’en pensez-vous ?) ; près de = near (près de la gare), prêt(e) à = ready to (elle est prête à partir) ; plutôt = rather (plutôt que), plus tôt = earlier (≠ plus tard) ; sur = on (sur la table), sûr = certain (bien sûr)."
   ],
   table:{head:["Homophones","Test","Exemple"],rows:[
     ["a / à","a → avait","Il a froid. / Il va à Paris."],

@@ -97,7 +97,7 @@ B.grammarMore=Object.assign(B.grammarMore||{},{g38:[
   {type:"transform", lvl:2, instruction:"Mettez la phrase à la forme négative avec « rien ».", prompt:"J’ai acheté quelque chose.", answers:["Je n’ai rien acheté."], explain:"Quelque chose → ne… rien (rien avant le participe)."},
   {type:"order", lvl:2, words:["partis","Ils","tous","sont"], answers:["Ils sont tous partis."], explain:"Pronom tous entre l’auxiliaire et le participe."},
   {type:"mcq", lvl:3, prompt:"Ma fille était ___ contente de son cadeau.", choices:["toute","tout","tous"], answer:0, explain:"Devant un adjectif féminin commençant par une consonne, tout s’accorde : toute contente."},
-  {type:"fill", lvl:3, prompt:"Vous pouvez vous asseoir ___ .", answers:["n’importe où"], hint:"indéfini, any place", explain:"N’importe où = anywhere."},
+  {type:"fill", lvl:3, prompt:"Vous pouvez vous asseoir ___.", answers:["n’importe où"], hint:"indéfini, any place", explain:"N’importe où = anywhere."},
   {type:"fill", lvl:3, prompt:"___ les deux jours, je change les draps.", answers:["Tous"], explain:"Fréquence : tous les deux jours."},
   {type:"fix", lvl:3, prompt:"Je n’ai aucuns problèmes avec mes voisins.", answers:["Je n’ai aucun problème avec mes voisins."], explain:"Aucun(e) + nom singulier : aucun problème."},
   {type:"transform", lvl:3, instruction:"Remplacez « à l’heure que vous voulez » par « n’importe quel » + nom.", prompt:"Vous pouvez venir à l’heure que vous voulez.", answers:["Vous pouvez venir à n’importe quelle heure."], explain:"N’importe quel s’accorde avec le nom : n’importe quelle heure (féminin)."},
