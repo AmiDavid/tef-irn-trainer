@@ -68,14 +68,16 @@ The app does not redistribute CCI/TEF audio. Official resources are linked separ
 - Every lesson has one (build 23); a new lesson needs its English entry too, or content QA fails.
 - When a French rule, tip or summary line is added, moved or removed, change the English array the same way.
 
-## Short notebook (build 24)
+## Notebook versions: fiche, short, full (builds 24–25)
 
-- The notebook page has two versions, chosen with « Courte / Complète » (`S.nbShort`, short by default).
-  Short: « À retenir » first, then the tables, examples and common mistakes; the detailed rules and tips are folded at the
-  bottom (« à relire, pas à recopier ») and hidden when printing. Full: the whole page as before.
-- A copy remembers its version (`S.copied[id].mode`). Updates are computed only on the lines of that version
-  (`notebookLines(id, mode)` in `topic.js`), so changes to rules left out of a short copy never ask to be added.
-  Copies made before build 24 count as full.
+- The notebook page switches between « Fiche (1 page) » and « Complète » (`S.nbMode`, fiche by default).
+- **Fiche**: a one-page summary written for looking things up when a question blocks: `content/fiches/fiches-N.js` fills
+  `grammarFiche[id] = [{h, l: [lines], t: {head, rows}}]`, `*…*` marks keywords (blue highlighter). Content QA keeps each
+  fiche to one page (≤ 32 lines). A lesson without a fiche falls back to the **short** page: « À retenir », tables, examples
+  and mistakes, with the detailed rules and tips folded (« à relire, pas à recopier ») and hidden when printing.
+- A copy remembers its version (`S.copied[id].mode`: fiche, short or full; copies before build 24 count as full). Updates are
+  computed only on the lines of that version (`notebookLines(id, mode)`), and while a copy has lines to add, the page opens
+  on that version until the learner picks another one with the switch. « J’ai recopié cette page » records any lesson.
 
 ## Running locally
 

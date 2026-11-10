@@ -457,3 +457,15 @@ body[data-view="today"] .city-bg{display:none}
 .nb-fold>summary small{font-weight:500;font-style:italic;color:#6d7aa6;margin-left:6px;font-size:14px}
 .nb-fold[open]{background:rgba(28,47,124,.03)}
 @media print{.nb-fold{display:none}}
+
+/* ===== One-page summary (« fiche », build 25): framed, keywords marked with a blue highlighter ===== */
+.nb-fiche{margin-top:0;padding:0 14px 12px;border:2px solid var(--ink);border-radius:4px}
+.notebook .nb-fiche h2{margin-top:16px;font-size:16.5px}
+.nb-fiche ul{padding-left:20px}
+.nb-fiche li::marker{color:var(--pen-red)}
+.notebook mark.kw{background:linear-gradient(transparent 58%,rgba(96,165,250,.38) 58%);color:inherit;font-weight:700;padding:0 1px}
+.nb-ftable{margin-top:8px}
+.nb-ftable th,.nb-ftable td{line-height:30px}
+.nb-more{margin-top:16px!important;font-size:14px;color:#5b6aa0;font-style:italic}
+.linklike{border:0;background:none;padding:0;color:var(--pen-red);text-decoration:underline;font:inherit;cursor:pointer}
+@media print{.notebook mark.kw{background:none;text-decoration:underline}}
