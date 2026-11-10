@@ -9,6 +9,11 @@ const esc=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const card=id=>D().grammar.find(g=>g.id===id);
 const plus=id=>(D().grammarPlus||{})[id]||{};
+/* English layer (content/english/*.js): plain-English explanations aligned with rule[], tables, tips[] and summary[]. */
+const enOf=id=>(D().grammarEn||{})[id]||null;
+/* In the English text, *…* marks French words: they are shown upright and bright so they stand out from the explanation. */
+const enText=t=>esc(t).replace(/\*([^*]+)\*/g,'<i class="fr" lang="fr">$1</i>');
+const enNote=(t,cls)=>t?`<span class="en-note${cls?' '+cls:''}" lang="en"><b class="en-tag">EN</b> ${enText(t)}</span>`:'';
 const daily=()=>window.TEF_DAILY;
 const TYPE_LABEL={mcq:'Choix multiple',fill:'Complète',fix:'Corrige l’erreur',transform:'Transforme',order:'Remets dans l’ordre'};
 
@@ -73,6 +78,7 @@ function renderLesson(id){
   const count=practiceItems(id).length,seen=daily()?.seenCount(id)||0;
   const today=daily()?.isTodayTopic(id);
   if(today)origin='today';
+  const E=enOf(id),enOn=!!E&&S().ruleEn!==false;
   root.innerHTML=`
     <button class="back-link" data-back>‹ ${backLabel()}</button>
     ${today?`<div class="today-banner"><strong>Leçon du jour · étape 1</strong><span>Lis toute la leçon. Ensuite, recopie-la dans ton cahier avec la version cahier.</span></div>`:''}
@@ -87,19 +93,22 @@ function renderLesson(id){
       <div class="button-row more-row">${window.TEF_GEN?.has(id)?'<button class="btn ghost small" id="genBtn">♾️ Exercices illimités</button>':''}<button class="btn ghost small" id="aiBtn">✨ 10 nouvelles questions (IA)</button></div>
     </div>
     ${p.intro?`<section class="card topic-sec"><h2>Pourquoi c’est utile au TEF</h2><p>${esc(p.intro)}</p></section>`:''}
-    <section class="card topic-sec"><h2>La règle</h2>
-      ${p.rule?.length?`<ol class="rule-list">${p.rule.map(r=>`<li>${esc(r)}</li>`).join('')}</ol>`:''}
+    <section class="card topic-sec"><div class="sec-head"><h2>La règle</h2>${E?`<button class="en-toggle" data-en aria-pressed="${enOn}" title="Explications en anglais sous chaque règle">🇬🇧 English</button>`:''}</div>
+      ${p.rule?.length?`<ol class="rule-list">${p.rule.map((r,i)=>`<li>${esc(r)}${enNote(E?.rule?.[i])}</li>`).join('')}</ol>`:''}
       <details class="rule-more"${p.rule?.length?'':' open'}><summary>Explication complète</summary><p>${esc(g.details)}</p></details>
-      ${tablesOf(p).map(t=>tableHTML(t,'topic-table')).join('')}
+      ${tablesOf(p).map((t,k)=>tableHTML(t,'topic-table',null,E?.tables?.[k])).join('')}
     </section>
-    ${p.tips?.length?`<section class="card topic-sec"><h2>Astuces</h2><ul class="tip-list">${p.tips.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></section>`:''}
+    ${p.tips?.length?`<section class="card topic-sec"><h2>Astuces</h2><ul class="tip-list">${p.tips.map((t,i)=>`<li>${esc(t)}${enNote(E?.tips?.[i])}</li>`).join('')}</ul></section>`:''}
     <section class="card topic-sec"><h2>Exemples</h2><div class="ex-list">${examplesOf(id).map((e,i)=>`<div class="ex"><button class="say" data-say="${i}" title="Écouter" aria-label="Écouter">🔊</button><div><div class="ex-fr">${esc(e.fr)}</div>${e.en?`<div class="ex-en">${esc(e.en)}</div>`:''}${e.note?`<div class="ex-note">${esc(e.note)}</div>`:''}</div></div>`).join('')}</div></section>
     ${g.mistakes?.length?`<section class="card topic-sec"><h2>Erreurs fréquentes</h2><div class="mistakes">${g.mistakes.map(m=>`<div class="mistake"><span class="wrong">✕ ${esc(m.wrong)}</span><span class="right">✓ ${esc(m.right)}</span><small>${esc(m.why)}</small></div>`).join('')}</div></section>`:''}
     ${myErrors(id)}
     <section class="card topic-sec"><h2>Mes notes</h2><p class="muted">Ton espace libre : exemples de ton cours, questions pour ton professeur, phrases à retenir. Enregistré automatiquement.</p><textarea class="writing-area notes-area" id="topicNotes" placeholder="Écris ici…"></textarea><small class="muted" id="notesSaved"></small></section>
-    ${p.summary?.length?`<section class="card topic-sec summary-sec"><h2>À retenir</h2><ul>${p.summary.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></section>`:''}
+    ${p.summary?.length?`<section class="card topic-sec summary-sec"><h2>À retenir</h2><ul>${p.summary.map((s,i)=>`<li>${esc(s)}${enNote(E?.summary?.[i])}</li>`).join('')}</ul></section>`:''}
     <div class="topic-cta">${today?`<button class="btn" id="readDone">J’ai lu la leçon → Recopier dans mon cahier</button>`:`<button class="btn" data-practice>S’entraîner : ${Math.min(SERIES,count)} questions</button><button class="btn secondary" data-copy>📓 Version cahier</button>`}<button class="btn ghost" data-back>Retour : ${backLabel()}</button></div>`;
   app().show('gtopic');window.scrollTo(0,0);
+  root.classList.toggle('en-off',!enOn);
+  const enBtn=$('[data-en]',root);
+  enBtn&&(enBtn.onclick=()=>{const on=root.classList.contains('en-off');root.classList.toggle('en-off',!on);enBtn.setAttribute('aria-pressed',String(on));S().ruleEn=on;app().save()});
   $$('[data-back]',root).forEach(b=>b.onclick=backHome);
   $$('[data-practice]',root).forEach(b=>b.onclick=()=>go('#gp/'+id));
   $$('[data-copy]',root).forEach(b=>b.onclick=()=>go('#c/'+id));
@@ -116,10 +125,10 @@ const keepEndings=h=>h.replace(/(^|[\s(])(-[^\s,;()]+)/g,'$1<span class="nw">$2<
 const tablesOf=p=>[p.table,...(p.tables||[])].filter(t=>t?.head?.length);
 const clsAttr=c=>c.trim()?` class="${c.trim()}"`:'';
 /* mk(kind,text) returns ' nb-new' for a line added since the learner copied the page (notebook only). */
-function tableHTML(t,cls,mk){
+function tableHTML(t,cls,mk,en){
   if(!t?.head?.length)return '';
   const m=mk||(()=>''),hc=m('thead',tableHead(t));
-  return `${t.title?`<h3 class="table-title${hc}">${esc(t.title)}</h3>`:''}<div class="table-wrap"><table class="${cls}"><thead><tr${clsAttr(hc)}>${t.head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${t.rows.map(r=>`<tr${clsAttr(m('row',r.join(' | ')))}>${r.map(c=>`<td>${keepEndings(esc(c))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  return `${t.title?`<h3 class="table-title${hc}">${esc(t.title)}</h3>`:''}${enNote(en,'en-table')}<div class="table-wrap"><table class="${cls}"><thead><tr${clsAttr(hc)}>${t.head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${t.rows.map(r=>`<tr${clsAttr(m('row',r.join(' | ')))}>${r.map(c=>`<td>${keepEndings(esc(c))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 }
 
 /* lines:start — the notebook page as a list of lines, so the app can tell what was added after the learner copied it.
@@ -158,7 +167,7 @@ function myErrors(id){
 function renderCopy(id){
   const g=card(id),p=plus(id),today=daily()?.isTodayTopic(id);
   if(today)origin='today';
-  const showEn=S().copyEn!==false;
+  const showEn=S().copyEn!==false,E=showEn?enOf(id):null;
   const date=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   const done=today&&daily()?.stepDone('copy');
   const root=$('#gcopyBody');
@@ -167,7 +176,7 @@ function renderCopy(id){
   root.innerHTML=`
     <div class="copy-tools no-print">
       <button class="back-link" data-back>‹ ${backLabel()}</button>
-      <div class="copy-actions"><label class="copy-toggle"><input type="checkbox" id="copyEn" ${showEn?'checked':''}> Traductions</label><button class="btn ghost small" id="copyPrint">Imprimer</button></div>
+      <div class="copy-actions"><label class="copy-toggle"><input type="checkbox" id="copyEn" ${showEn?'checked':''}> 🇬🇧 Anglais</label><button class="btn ghost small" id="copyPrint">Imprimer</button></div>
     </div>
     ${news.length?`<div class="nb-update no-print" role="status"><strong>📌 ${news.length} ${news.length>1?'nouveautés':'nouveauté'} depuis ta copie${snap.t?` du ${new Date(snap.t).toLocaleDateString('fr-FR',{day:'numeric',month:'long'})}`:''}</strong><span>Les passages surlignés en jaune sont nouveaux ou ont été complétés : ajoute-les dans ton cahier.</span><button class="btn small" id="nbAck">C’est fait, je les ai ajoutés ✓</button></div>`:''}
     ${today?`<div class="today-banner no-print"><strong>Leçon du jour · étape 2</strong><span>Recopie toute la page dans ton cahier, à la main. Écrire aide à retenir.</span></div>`:''}
@@ -176,13 +185,13 @@ function renderCopy(id){
       <h1 class="nb-title">${esc(g.title)}</h1>
       <p class="nb-sub${mk('sub',g.short)}">${esc(g.short)}</p>
       <h2>La règle</h2>
-      ${p.rule?.length?`<ol class="nb-rule">${p.rule.map(r=>li('rule',r,esc(r))).join('')}</ol>`:`<p${clsAttr(mk('rule',g.details))}>${esc(g.details)}</p>`}
-      ${tablesOf(p).map(t=>tableHTML(t,'nb-table',mk)).join('')}
+      ${p.rule?.length?`<ol class="nb-rule">${p.rule.map((r,i)=>li('rule',r,esc(r)+enNote(E?.rule?.[i]))).join('')}</ol>`:`<p${clsAttr(mk('rule',g.details))}>${esc(g.details)}</p>`}
+      ${tablesOf(p).map((t,k)=>tableHTML(t,'nb-table',mk,E?.tables?.[k])).join('')}
       <h2>Exemples</h2>
       <ul class="nb-ex">${examplesOf(id).map(e=>li('ex',e.fr,`${esc(e.fr)}${showEn&&e.en?` <span class="nb-en">(${esc(e.en)})</span>`:''}`)).join('')}</ul>
       ${g.mistakes?.length?`<h2>Attention aux erreurs</h2><ul class="nb-mist">${g.mistakes.map(m=>li('mist',m.wrong+' → '+m.right,`<span class="nb-wrong">${esc(m.wrong)}</span> → <span class="nb-right">${esc(m.right)}</span>`)).join('')}</ul>`:''}
-      ${p.tips?.length?`<h2>Astuces</h2><ul class="nb-tips">${p.tips.map(t=>li('tip',t,esc(t))).join('')}</ul>`:''}
-      ${p.summary?.length?`<div class="nb-box"><h2>À retenir</h2><ul>${p.summary.map(s=>li('sum',s,esc(s))).join('')}</ul></div>`:''}
+      ${p.tips?.length?`<h2>Astuces</h2><ul class="nb-tips">${p.tips.map((t,i)=>li('tip',t,esc(t)+enNote(E?.tips?.[i]))).join('')}</ul>`:''}
+      ${p.summary?.length?`<div class="nb-box"><h2>À retenir</h2><ul>${p.summary.map((s,i)=>li('sum',s,esc(s)+enNote(E?.summary?.[i]))).join('')}</ul></div>`:''}
     </article>
     <div class="topic-cta no-print">${today?(done?`<span class="chip">✓ Recopié</span><button class="btn" id="copyNext">Continuer : questions de base</button>`:`<button class="btn" id="copyDone">J’ai tout recopié ✓</button>`):''}<button class="btn ghost" id="copyLesson">Revoir la leçon</button></div>`;
   app().show('gcopy');window.scrollTo(0,0);
