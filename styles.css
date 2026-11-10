@@ -469,3 +469,4 @@ body[data-view="today"] .city-bg{display:none}
 .nb-more{margin-top:16px!important;font-size:14px;color:#5b6aa0;font-style:italic}
 .linklike{border:0;background:none;padding:0;color:var(--pen-red);text-decoration:underline;font:inherit;cursor:pointer}
 @media print{.notebook mark.kw{background:none;text-decoration:underline}}
+.nb-fiche .table-wrap{margin-top:8px}
