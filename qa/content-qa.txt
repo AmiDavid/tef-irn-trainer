@@ -5,7 +5,7 @@ const assert = require("node:assert").strict;
 const sandbox = { window: {} };
 sandbox.globalThis = sandbox;
 vm.createContext(sandbox);
-const BANK_FILES=["content/reading.js","content/listening.js","content/vocab.js","content/grammar.js","content/grammar-plus-1.js","content/grammar-plus-2.js","content/grammar-plus-3.js","content/grammar-more-1.js","content/grammar-more-2.js","content/grammar-more-3.js","content/grammar-more-4.js","content/grammar-more-5.js","content/grammar-more-6.js","content/grammar-more-7.js","content/lessons/g29.js","content/lessons/g30.js","content/lessons/g31.js","content/lessons/g32.js","content/lessons/g33.js","content/lessons/g34.js","content/lessons/g43.js","content/lessons/g35.js","content/lessons/g36.js","content/lessons/g37.js","content/lessons/g38.js","content/lessons/g39.js","content/lessons/g40.js","content/lessons/g41.js","content/lessons/g42.js","content/english/en-1.js","content/prompts.js"];
+const BANK_FILES=["content/reading.js","content/listening.js","content/vocab.js","content/grammar.js","content/grammar-plus-1.js","content/grammar-plus-2.js","content/grammar-plus-3.js","content/grammar-more-1.js","content/grammar-more-2.js","content/grammar-more-3.js","content/grammar-more-4.js","content/grammar-more-5.js","content/grammar-more-6.js","content/grammar-more-7.js","content/lessons/g29.js","content/lessons/g30.js","content/lessons/g31.js","content/lessons/g32.js","content/lessons/g33.js","content/lessons/g34.js","content/lessons/g43.js","content/lessons/g35.js","content/lessons/g36.js","content/lessons/g37.js","content/lessons/g38.js","content/lessons/g39.js","content/lessons/g40.js","content/lessons/g41.js","content/lessons/g42.js","content/english/en-1.js","content/english/en-2.js","content/english/en-3.js","content/english/en-4.js","content/prompts.js"];
 vm.runInContext(fs.readFileSync("data.js","utf8"), sandbox);
 const CORE = JSON.parse(JSON.stringify(sandbox.window.TEF_DATA));
 for(const f of BANK_FILES) vm.runInContext(fs.readFileSync(f,"utf8"), sandbox, {filename:f});
@@ -248,7 +248,7 @@ safe(teachingText,"teaching bank");
 
 // English layer (content/english/*.js): one explanation per French rule, table, tip and summary line, in the same order.
 const EN=D.grammarEn||{};
-assert.ok(Object.keys(EN).length>=10,"English layer missing");
+for(const g of D.grammar)assert.ok(EN[g.id],`${g.id} has no English layer (content/english/*.js)`);
 for(const [id,e] of Object.entries(EN)){
   const p=D.grammarPlus[id];
   assert.ok(p&&D.grammar.some(g=>g.id===id),`English for unknown lesson ${id}`);
