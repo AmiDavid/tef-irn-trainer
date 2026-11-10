@@ -230,9 +230,15 @@ async function visible(page,selector){
     await visible(page,"#view-gtopic.active .today-banner");
     await page.locator("#readDone").click();
     await visible(page,"#view-gcopy.active .notebook");
+    assert.equal(await page.locator("#gcopyBody .nb-fiche").count(),1,"the notebook page opens on the one-page fiche");
+    assert.ok(await page.locator("#gcopyBody .nb-fiche li").count()>=8,"fiche lines");
+    await page.locator('#gcopyBody .nb-mode [data-nbmode="full"]').click();
+    await visible(page,'#view-gcopy.active [data-nbmode="full"][aria-pressed="true"]');
     const nb=await page.locator(".notebook").textContent();
     for(const h of ["La règle","Exemples","À retenir"]) assert.ok(nb.includes(h),"notebook page missing "+h);
     assert.ok(await page.locator(".notebook .nb-rule li").count()>=3,"notebook rule list");
+    await page.locator('#gcopyBody .nb-mode [data-nbmode="fiche"]').click();
+    await visible(page,"#view-gcopy.active .nb-fiche");
     await page.locator("#copyDone").click();
     await visible(page,"#view-today.active");
     assert.ok(await page.evaluate(id=>!!TEF_APP.S.copied[id]&&TEF_TOPIC.updatesOf(id).length===0,firstId),"« J’ai tout recopié » remembers what was copied");
@@ -285,9 +291,9 @@ async function visible(page,selector){
     assert.equal(await page.locator("#gcopyBody .nb-new").count(),0,"no highlight after « C’est fait »");
     assert.equal(await page.evaluate(()=>TEF_TOPIC.updatesOf("g4").length),0);
     /* Extra tables (titled) are shown on the lesson page and on the notebook page. */
-    await page.evaluate(()=>TEF_TOPIC.copy("g11"));
+    await page.evaluate(()=>{TEF_APP.S.nbMode="full";TEF_TOPIC.copy("g11")});
     await visible(page,"#view-gcopy.active .notebook");
-    assert.equal(await page.locator("#gcopyBody table").count(),3,"g11 notebook shows its three tables");
+    assert.equal(await page.locator("#gcopyBody table").count(),3,"g11 full notebook shows its three tables");
     assert.ok((await page.locator("#gcopyBody .table-title").allTextContents()).includes("Les autres personnes : tu, il, vous"));
     /* English layer: one explanation per rule, table, tip and summary line; the button hides them and the choice is kept. */
     await page.evaluate(()=>{delete TEF_APP.S.ruleEn;TEF_TOPIC.open("g5")});
@@ -303,28 +309,44 @@ async function visible(page,selector){
     await page.locator("#gtopicBody [data-en]").click();
     assert.ok(await page.locator("#gtopicBody .en-note:visible").count()>10,"English shown again");
     /* Notebook page: the explanations follow the « Anglais » box. */
-    await page.evaluate(()=>TEF_TOPIC.copy("g5"));
+    await page.evaluate(()=>{TEF_APP.S.nbMode="full";TEF_TOPIC.copy("g5")});
     await visible(page,"#view-gcopy.active .notebook");
-    assert.equal(await page.locator("#gcopyBody .en-note").count(),enWant,"notebook shows the explanations");
+    assert.equal(await page.locator("#gcopyBody .en-note").count(),enWant,"full notebook shows the explanations");
     await page.locator("#copyEn").uncheck();
     await visible(page,"#view-gcopy.active .notebook");
     assert.equal(await page.locator("#gcopyBody .en-note").count(),0,"notebook without English");
     await page.locator("#copyEn").check();
-    /* Short notebook (default): « À retenir » first, rules and tips folded; a short copy never asks for the rules it left out. */
-    await page.evaluate(()=>{delete TEF_APP.S.nbShort;TEF_TOPIC.copy("g11")});
-    await visible(page,'#view-gcopy.active [data-nbmode="short"][aria-pressed="true"]');
-    assert.equal((await page.locator("#gcopyBody .notebook h2").first().textContent()).trim(),"À retenir","short version starts with « À retenir »");
+    /* One-page fiche (default notebook version): a fiche copy records only its own lines; switching version creates no updates. */
+    await page.evaluate(()=>{delete TEF_APP.S.nbMode;delete TEF_APP.S.nbShort;TEF_TOPIC.copy("g5")});
+    await visible(page,'#view-gcopy.active [data-nbmode="fiche"][aria-pressed="true"]');
+    assert.equal(await page.locator("#gcopyBody .nb-fiche").count(),1,"g5 shows its fiche");
+    assert.ok(await page.locator("#gcopyBody .nb-fiche mark.kw").count()>5,"keywords are highlighted");
+    assert.equal(await page.locator("#gcopyBody #copyEn").count(),0,"no English box on the fiche");
+    const ficheCopy=await page.evaluate(()=>{TEF_TOPIC.markCopied("g5");const c=TEF_APP.S.copied.g5;return {mode:c.mode,n:c.keys.length,want:TEF_TOPIC.notebookLines("g5","fiche").length,upd:TEF_TOPIC.updatesOf("g5").length}});
+    assert.equal(ficheCopy.mode,"fiche");assert.equal(ficheCopy.n,ficheCopy.want);assert.ok(ficheCopy.n>=10);assert.equal(ficheCopy.upd,0,"a fiche copy is complete");
+    await page.locator('#gcopyBody .nb-more [data-nbmode="full"]').click();
+    await visible(page,'#view-gcopy.active [data-nbmode="full"][aria-pressed="true"]');
+    assert.equal(await page.locator("#gcopyBody .nb-fiche").count(),0);
+    assert.equal((await page.locator("#gcopyBody .notebook h2").first().textContent()).trim(),"La règle");
+    assert.equal(await page.evaluate(()=>TEF_TOPIC.updatesOf("g5").length),0,"switching version creates no updates");
+    /* Any lesson: « J’ai recopié cette page » records the version on screen, then disappears. */
+    await page.evaluate(()=>{delete TEF_APP.S.nbMode;if(TEF_APP.S.copied)delete TEF_APP.S.copied.g30;TEF_TOPIC.copy("g30")});
+    await visible(page,"#view-gcopy.active #copyMark");
+    await page.locator("#copyMark").click();
+    await visible(page,"#view-gcopy.active .nb-fiche");
+    assert.equal(await page.evaluate(()=>TEF_APP.S.copied.g30.mode),"fiche");
+    assert.equal(await page.locator("#copyMark").count(),0,"no button once the page is recorded");
+    await page.evaluate(()=>{delete TEF_APP.S.copied.g30;TEF_APP.save()});
+    /* A lesson without a fiche falls back to the short page: « À retenir » first, the detailed rules folded. */
+    await page.evaluate(()=>{window.__fiche=TEF_APP.D.grammarFiche.g11;delete TEF_APP.D.grammarFiche.g11;TEF_APP.S.nbMode="fiche";TEF_TOPIC.copy("g11")});
+    await visible(page,'#view-gcopy.active [data-nbmode="fiche"][aria-pressed="true"]');
+    assert.equal((await page.locator("#gcopyBody .notebook h2").first().textContent()).trim(),"À retenir","short page starts with « À retenir »");
     assert.equal(await page.locator("#gcopyBody details.nb-fold:not([open]) .nb-rule").count(),1,"detailed rules folded");
-    assert.equal(await page.locator("#gcopyBody table").count(),3,"tables kept in the short version");
+    assert.equal(await page.locator("#gcopyBody table").count(),3,"tables kept in the short page");
     const shortCopy=await page.evaluate(()=>{TEF_TOPIC.markCopied("g11");const c=TEF_APP.S.copied.g11;return {mode:c.mode,n:c.keys.length,want:TEF_TOPIC.notebookLines("g11","short").length,full:TEF_TOPIC.notebookLines("g11","full").length,upd:TEF_TOPIC.updatesOf("g11").length}});
     assert.equal(shortCopy.mode,"short");assert.equal(shortCopy.n,shortCopy.want);assert.ok(shortCopy.full>shortCopy.want);
     assert.equal(shortCopy.upd,0,"rules left out of a short copy are never asked for");
-    await page.locator('#gcopyBody [data-nbmode="full"]').click();
-    await visible(page,'#view-gcopy.active [data-nbmode="full"][aria-pressed="true"]');
-    assert.equal(await page.locator("#gcopyBody .nb-fold").count(),0,"full version has no folded part");
-    assert.equal((await page.locator("#gcopyBody .notebook h2").first().textContent()).trim(),"La règle");
-    assert.equal(await page.evaluate(()=>TEF_TOPIC.updatesOf("g11").length),0,"switching version creates no updates");
-    await page.evaluate(()=>{delete TEF_APP.S.nbShort;delete TEF_APP.S.copied.g11;TEF_APP.save()});
+    await page.evaluate(()=>{TEF_APP.D.grammarFiche.g11=window.__fiche;delete TEF_APP.S.nbMode;delete TEF_APP.S.copied.g11;delete TEF_APP.S.copied.g5;TEF_APP.save()});
     await page.evaluate(()=>{delete window.__TEF_TODAY__;delete TEF_APP.S.course;TEF_APP.save();TEF_DAILY.render()});
 
     assert.deepEqual(pageErrors,[],"runtime errors: "+pageErrors.join(" | "));

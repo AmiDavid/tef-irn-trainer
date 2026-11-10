@@ -157,10 +157,16 @@ function snapshot(id){const s=(S().copied||{})[id];if(s)return s;const b=(window
 /* Short notebook (build 24): « À retenir », tables, examples and mistakes are copied; the detailed rules and tips stay folded
    on the page, to reread. A copy remembers its version, so later changes to lines that were not copied never ask to be added. */
 const SHORT_KINDS=new Set(['sub','sum','thead','row','ex','mist']);
-const nbShort=()=>S().nbShort!==false;
-const linesFor=(id,mode)=>{const l=lessonLines(card(id),plus(id));return mode==='short'?l.filter(x=>SHORT_KINDS.has(x.k)):l};
+/* One-page summary (« fiche », build 25): content/fiches/*.js, [{h, l:[lines], t:{head,rows}}], *…* = keyword. It is the default
+   page to copy; « Complète » shows the whole lesson. A lesson without a fiche falls back to the short page above. */
+const ficheOf=id=>(D().grammarFiche||{})[id]||null;
+const ficheText=t=>esc(t).replace(/\*([^*]+)\*/g,'<mark class="kw">$1</mark>');
+function ficheLines(id){const out=[],add=(k,t)=>{if(lineText(t))out.push({k,t:lineText(t),key:lineKey(k,t)})};
+  (ficheOf(id)||[]).forEach(s=>{add('fh',s.h);(s.l||[]).forEach(x=>add('fl',x));if(s.t?.head?.length){add('fth',s.t.head.join(' | '));s.t.rows.forEach(r=>add('ftr',r.join(' | ')))}});return out}
+const nbMode=()=>{const m=S().nbMode;return m==='full'||m==='fiche'?m:(S().nbShort===false?'full':'fiche')};
+const linesFor=(id,mode)=>{if(mode==='fiche')return ficheLines(id);const l=lessonLines(card(id),plus(id));return mode==='short'?l.filter(x=>SHORT_KINDS.has(x.k)):l};
 function updatesOf(id){const s=snapshot(id);if(!s||!card(id))return [];const have=new Set(s.keys);return linesFor(id,s.mode||'full').filter(l=>!have.has(l.key))}
-function markCopied(id,mode){const st=S(),m=mode||(nbShort()?'short':'full');st.copied=st.copied||{};st.copied[id]={t:Date.now(),mode:m,keys:linesFor(id,m).map(l=>l.key)};app().save()}
+function markCopied(id,mode){const st=S();let m=mode||nbMode();if(m==='fiche'&&!ficheOf(id))m='short';st.copied=st.copied||{};st.copied[id]={t:Date.now(),mode:m,keys:linesFor(id,m).map(l=>l.key)};app().save()}
 const notebookUpdates=()=>D().grammar.map(g=>({id:g.id,title:g.title,n:updatesOf(g.id).length})).filter(u=>u.n);
 function myErrors(id){
   const g=card(id),list=(S().aiErrors||[]).filter(e=>e.category===`Grammaire : ${g.title}`).slice(-6);
@@ -169,15 +175,23 @@ function myErrors(id){
 }
 
 /* ---------- notebook page: the whole topic, laid out to copy by hand (Seyès paper) ---------- */
+/* The notebook page shows one of three layouts: 'fiche' (one-page summary), 'short' (fallback when a lesson has no fiche) or
+   'full'. It follows the learner's choice, except when a copy of another version has lines to add: that version is shown, so
+   the highlighted lines make sense, until the learner picks a version with the switch. */
+let pickedFor=null;
+const layoutOf=(id,mode)=>mode==='full'?'full':mode==='short'?'short':ficheOf(id)?'fiche':'short';
 function renderCopy(id){
-  const g=card(id),p=plus(id),today=daily()?.isTodayTopic(id);
+  if(pickedFor!==id)pickedFor=null;
+  const g=card(id),p=plus(id),today=daily()?.isTodayTopic(id),F=ficheOf(id);
   if(today)origin='today';
   const showEn=S().copyEn!==false,E=showEn?enOf(id):null;
   const date=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   const done=today&&daily()?.stepDone('copy');
   const root=$('#gcopyBody');
-  const news=updatesOf(id),nk=new Set(news.map(l=>l.key)),mk=(k,t)=>nk.has(lineKey(k,t))?' nb-new':'',li=(k,t,html)=>`<li${clsAttr(mk(k,t))}>${html}</li>`;
-  const snap=news.length?snapshot(id):null,short=nbShort();
+  const snap=snapshot(id),snapLayout=snap?layoutOf(id,snap.mode||'full'):null,pending=updatesOf(id);
+  const layout=pending.length&&!pickedFor?snapLayout:layoutOf(id,nbMode());
+  const news=snapLayout===layout?pending:[],copiedHere=!!snap&&snapLayout===layout;
+  const nk=new Set(news.map(l=>l.key)),mk=(k,t)=>nk.has(lineKey(k,t))?' nb-new':'',li=(k,t,html)=>`<li${clsAttr(mk(k,t))}>${html}</li>`;
   const ruleBlock=`<h2>La règle</h2>
       ${p.rule?.length?`<ol class="nb-rule">${p.rule.map((r,i)=>li('rule',r,esc(r)+enNote(E?.rule?.[i]))).join('')}</ol>`:`<p${clsAttr(mk('rule',g.details))}>${esc(g.details)}</p>`}`;
   const tablesBlock=tablesOf(p).map((t,k)=>tableHTML(t,'nb-table',mk,E?.tables?.[k])).join('');
@@ -187,32 +201,39 @@ function renderCopy(id){
   const tipsBlock=p.tips?.length?`<h2>Astuces</h2><ul class="nb-tips">${p.tips.map((t,i)=>li('tip',t,esc(t)+enNote(E?.tips?.[i]))).join('')}</ul>`:'';
   const sumBlock=p.summary?.length?`<div class="nb-box"><h2>À retenir</h2><ul>${p.summary.map((s,i)=>li('sum',s,esc(s)+enNote(E?.summary?.[i]))).join('')}</ul></div>`:'';
   const foldOpen=news.some(l=>l.k==='rule'||l.k==='tip');
-  const body=short
-    ?`${sumBlock}${tablesBlock}${exBlock}${mistBlock}
-      <details class="nb-fold"${foldOpen?' open':''}><summary>La règle en détail et les astuces <small>à relire, pas à recopier</small></summary>${ruleBlock}${tipsBlock}</details>`
-    :`${ruleBlock}${tablesBlock}${exBlock}${mistBlock}${tipsBlock}${sumBlock}`;
+  const body=layout==='full'
+    ?`${ruleBlock}${tablesBlock}${exBlock}${mistBlock}${tipsBlock}${sumBlock}`
+    :layout==='fiche'
+    ?`<div class="nb-fiche">${F.map(s=>`<h2${clsAttr(mk('fh',s.h))}>${ficheText(s.h)}</h2>${s.l?.length?`<ul class="nb-fl">${s.l.map(x=>li('fl',x,ficheText(x))).join('')}</ul>`:''}${s.t?.head?.length?tableHTML(s.t,'nb-table nb-ftable',(k,t)=>mk(k==='thead'?'fth':'ftr',t)):''}`).join('')}</div>
+      <p class="nb-more no-print">Tout le détail (règles, tableaux, exemples, astuces) est dans la <button class="linklike" data-nbmode="full">version complète</button>.</p>`
+    :`${sumBlock}${tablesBlock}${exBlock}${mistBlock}
+      <details class="nb-fold"${foldOpen?' open':''}><summary>La règle en détail et les astuces <small>à relire, pas à recopier</small></summary>${ruleBlock}${tipsBlock}</details>`;
+  const stepText=layout==='full'?'Recopie toute la page dans ton cahier, à la main. Écrire aide à retenir.'
+    :layout==='fiche'?'Recopie la fiche dans ton cahier : tout le sujet sur une page. Quand une question te bloque, c’est là que tu cherches la réponse.'
+    :'Recopie cette page à la main : l’essentiel, les tableaux, les exemples et les erreurs. La règle en détail reste repliée en bas, pour la relire.';
   root.innerHTML=`
     <div class="copy-tools no-print">
       <button class="back-link" data-back>‹ ${backLabel()}</button>
-      <div class="copy-actions"><div class="nb-mode" role="group" aria-label="Version du cahier"><button data-nbmode="short" aria-pressed="${short}">Courte</button><button data-nbmode="full" aria-pressed="${!short}">Complète</button></div><label class="copy-toggle"><input type="checkbox" id="copyEn" ${showEn?'checked':''}> 🇬🇧 Anglais</label><button class="btn ghost small" id="copyPrint">Imprimer</button></div>
+      <div class="copy-actions"><div class="nb-mode" role="group" aria-label="Version du cahier"><button data-nbmode="fiche" aria-pressed="${layout!=='full'}">${F?'Fiche (1 page)':'Courte'}</button><button data-nbmode="full" aria-pressed="${layout==='full'}">Complète</button></div>${layout!=='fiche'?`<label class="copy-toggle"><input type="checkbox" id="copyEn" ${showEn?'checked':''}> 🇬🇧 Anglais</label>`:''}<button class="btn ghost small" id="copyPrint">Imprimer</button></div>
     </div>
     ${news.length?`<div class="nb-update no-print" role="status"><strong>📌 ${news.length} ${news.length>1?'nouveautés':'nouveauté'} depuis ta copie${snap.t?` du ${new Date(snap.t).toLocaleDateString('fr-FR',{day:'numeric',month:'long'})}`:''}</strong><span>Les passages surlignés en jaune sont nouveaux ou ont été complétés : ajoute-les dans ton cahier.</span><button class="btn small" id="nbAck">C’est fait, je les ai ajoutés ✓</button></div>`:''}
-    ${today?`<div class="today-banner no-print"><strong>Leçon du jour · étape 2</strong><span>${short?'Recopie cette page à la main : l’essentiel, les tableaux, les exemples et les erreurs. La règle en détail reste repliée en bas, pour la relire.':'Recopie toute la page dans ton cahier, à la main. Écrire aide à retenir.'}</span></div>`:''}
+    ${today?`<div class="today-banner no-print"><strong>Leçon du jour · étape 2</strong><span>${stepText}</span></div>`:''}
     <article class="notebook" aria-label="Version cahier : ${esc(g.title)}">
       <div class="nb-date">${esc(date.charAt(0).toUpperCase()+date.slice(1))}</div>
       <h1 class="nb-title">${esc(g.title)}</h1>
       <p class="nb-sub${mk('sub',g.short)}">${esc(g.short)}</p>
       ${body}
     </article>
-    <div class="topic-cta no-print">${today?(done?`<span class="chip">✓ Recopié</span><button class="btn" id="copyNext">Continuer : questions de base</button>`:`<button class="btn" id="copyDone">J’ai tout recopié ✓</button>`):''}<button class="btn ghost" id="copyLesson">Revoir la leçon</button></div>`;
+    <div class="topic-cta no-print">${today?(done?`<span class="chip">✓ Recopié</span><button class="btn" id="copyNext">Continuer : questions de base</button>`:`<button class="btn" id="copyDone">J’ai tout recopié ✓</button>`):copiedHere?'':`<button class="btn" id="copyMark">J’ai recopié cette page ✓</button>`}<button class="btn ghost" id="copyLesson">Revoir la leçon</button></div>`;
   app().show('gcopy');window.scrollTo(0,0);
   $('[data-back]',root).onclick=backHome;
-  $('#copyEn').onchange=e=>{S().copyEn=e.target.checked;app().save();renderCopy(id)};
-  $$('[data-nbmode]',root).forEach(b=>b.onclick=()=>{S().nbShort=b.dataset.nbmode==='short';app().save();renderCopy(id)});
+  $('#copyEn')&&($('#copyEn').onchange=e=>{S().copyEn=e.target.checked;app().save();renderCopy(id)});
+  $$('[data-nbmode]',root).forEach(b=>b.onclick=()=>{S().nbMode=b.dataset.nbmode;delete S().nbShort;pickedFor=id;app().save();renderCopy(id)});
   $('#copyPrint').onclick=()=>window.print();
   $('#copyLesson').onclick=()=>go('#g/'+id);
-  $('#copyDone')&&($('#copyDone').onclick=()=>{markCopied(id);daily()?.mark('copy');backHome()});
-  $('#nbAck')&&($('#nbAck').onclick=()=>{markCopied(id,snapshot(id)?.mode||'full');app().toast('Cahier à jour ✓');renderCopy(id)});
+  $('#copyDone')&&($('#copyDone').onclick=()=>{markCopied(id,layout);daily()?.mark('copy');backHome()});
+  $('#copyMark')&&($('#copyMark').onclick=()=>{markCopied(id,layout);app().toast('Noté : cette page est dans ton cahier ✓');renderCopy(id)});
+  $('#nbAck')&&($('#nbAck').onclick=()=>{markCopied(id,layout);app().toast('Cahier à jour ✓');renderCopy(id)});
   $('#copyNext')&&($('#copyNext').onclick=()=>daily()?.start('daily-basic'));
 }
 

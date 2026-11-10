@@ -11,5 +11,6 @@ for(const k of ['reading','listening','vocab','grammar','writingPrompts','speaki
 D.grammarPlus=Object.assign({},D.grammarPlus||{},B.grammarPlus||{});
 D.grammarMore=Object.assign({},D.grammarMore||{},B.grammarMore||{});
 D.grammarEn=Object.assign({},D.grammarEn||{},B.grammarEn||{});
+D.grammarFiche=Object.assign({},D.grammarFiche||{},B.grammarFiche||{});
 D.grammar.sort((a,b)=>(a.order??999)-(b.order??999));
 })();
