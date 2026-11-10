@@ -310,6 +310,21 @@ async function visible(page,selector){
     await visible(page,"#view-gcopy.active .notebook");
     assert.equal(await page.locator("#gcopyBody .en-note").count(),0,"notebook without English");
     await page.locator("#copyEn").check();
+    /* Short notebook (default): « À retenir » first, rules and tips folded; a short copy never asks for the rules it left out. */
+    await page.evaluate(()=>{delete TEF_APP.S.nbShort;TEF_TOPIC.copy("g11")});
+    await visible(page,'#view-gcopy.active [data-nbmode="short"][aria-pressed="true"]');
+    assert.equal((await page.locator("#gcopyBody .notebook h2").first().textContent()).trim(),"À retenir","short version starts with « À retenir »");
+    assert.equal(await page.locator("#gcopyBody details.nb-fold:not([open]) .nb-rule").count(),1,"detailed rules folded");
+    assert.equal(await page.locator("#gcopyBody table").count(),3,"tables kept in the short version");
+    const shortCopy=await page.evaluate(()=>{TEF_TOPIC.markCopied("g11");const c=TEF_APP.S.copied.g11;return {mode:c.mode,n:c.keys.length,want:TEF_TOPIC.notebookLines("g11","short").length,full:TEF_TOPIC.notebookLines("g11","full").length,upd:TEF_TOPIC.updatesOf("g11").length}});
+    assert.equal(shortCopy.mode,"short");assert.equal(shortCopy.n,shortCopy.want);assert.ok(shortCopy.full>shortCopy.want);
+    assert.equal(shortCopy.upd,0,"rules left out of a short copy are never asked for");
+    await page.locator('#gcopyBody [data-nbmode="full"]').click();
+    await visible(page,'#view-gcopy.active [data-nbmode="full"][aria-pressed="true"]');
+    assert.equal(await page.locator("#gcopyBody .nb-fold").count(),0,"full version has no folded part");
+    assert.equal((await page.locator("#gcopyBody .notebook h2").first().textContent()).trim(),"La règle");
+    assert.equal(await page.evaluate(()=>TEF_TOPIC.updatesOf("g11").length),0,"switching version creates no updates");
+    await page.evaluate(()=>{delete TEF_APP.S.nbShort;delete TEF_APP.S.copied.g11;TEF_APP.save()});
     await page.evaluate(()=>{delete window.__TEF_TODAY__;delete TEF_APP.S.course;TEF_APP.save();TEF_DAILY.render()});
 
     assert.deepEqual(pageErrors,[],"runtime errors: "+pageErrors.join(" | "));
