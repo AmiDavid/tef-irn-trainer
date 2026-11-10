@@ -198,7 +198,7 @@ function render(){
   const revTopics=rev?[...new Set(reviewKeys(d).map(k=>k.split(':')[0]))].map(t=>card(t).title):[];
   const steps=[
     {k:'read',t:'Lire la leçon',s:'La règle, le tableau, les exemples et les astuces.',done:d.read,go:()=>TEF_TOPIC.open(d.topicId,'today'),cta:'Lire',again:'Revoir'},
-    {k:'copy',t:'Recopier dans mon cahier',s:'La version cahier : tout le sujet sur une page, à recopier à la main.',done:d.copy,go:()=>TEF_TOPIC.copy(d.topicId,'today'),cta:'Ouvrir la version cahier',again:'Revoir'},
+    {k:'copy',t:'Recopier dans mon cahier',s:'La version cahier, à recopier à la main : courte (l’essentiel, les tableaux, les exemples) ou complète, au choix.',done:d.copy,go:()=>TEF_TOPIC.copy(d.topicId,'today'),cta:'Ouvrir la version cahier',again:'Revoir'},
     {k:'practice',t:'Questions de base',s:d.practice?`Score : ${d.practice.ok}/${d.practice.total} · ${bank} exercices sur ce sujet en tout.`:`${Math.min(sz.b,bank)} questions sur ce sujet, des plus simples aux plus difficiles, corrigées tout de suite.`,done:!!d.practice,go:()=>start(d.practice?'daily-more':'daily-basic'),cta:'Commencer',again:`Encore ${MORE}`},
   ];
   if(rev)steps.push({k:'review',t:'Révision',s:d.review?`Score : ${d.review.ok}/${d.review.total}`:`${reviewKeys(d).length} questions sur : ${revTopics.join(', ')}.`,done:!!d.review,go:()=>start(d.review?'daily-review-more':'daily-review'),cta:'Commencer',again:`Encore ${MORE}`});

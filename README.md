@@ -68,6 +68,15 @@ The app does not redistribute CCI/TEF audio. Official resources are linked separ
 - Every lesson has one (build 23); a new lesson needs its English entry too, or content QA fails.
 - When a French rule, tip or summary line is added, moved or removed, change the English array the same way.
 
+## Short notebook (build 24)
+
+- The notebook page has two versions, chosen with « Courte / Complète » (`S.nbShort`, short by default).
+  Short: « À retenir » first, then the tables, examples and common mistakes; the detailed rules and tips are folded at the
+  bottom (« à relire, pas à recopier ») and hidden when printing. Full: the whole page as before.
+- A copy remembers its version (`S.copied[id].mode`). Updates are computed only on the lines of that version
+  (`notebookLines(id, mode)` in `topic.js`), so changes to rules left out of a short copy never ask to be added.
+  Copies made before build 24 count as full.
+
 ## Running locally
 
 Serve this folder over HTTP, e.g. `python -m http.server 8000`, then open `http://localhost:8000`.

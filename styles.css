@@ -442,3 +442,18 @@ body[data-view="today"] .city-bg{display:none}
 .notebook .en-table{margin-top:8px}
 .en-note i.fr{font-style:normal;font-weight:700;color:#ffffff}
 .notebook .en-note i.fr{font-style:normal;font-weight:600;color:var(--ink)}
+
+/* ===== Short notebook (build 24): « Courte » / « Complète » switch, detailed rules folded at the bottom ===== */
+.nb-mode{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.nb-mode button{border:0;background:transparent;color:var(--muted);font-size:13px;font-weight:750;padding:6px 12px}
+.nb-mode button[aria-pressed="true"]{background:rgba(243,198,109,.16);color:var(--brand)}
+.copy-actions{flex-wrap:wrap}
+.notebook .nb-sub+.nb-box{margin-top:0}
+.nb-fold{margin-top:32px;padding-top:0;border-top:2px dashed rgba(28,47,124,.28)}
+.nb-fold>summary{cursor:pointer;line-height:32px;font-family:Manrope,system-ui,sans-serif;font-size:16px;font-weight:800;color:var(--pen-red);list-style:none}
+.nb-fold>summary::-webkit-details-marker{display:none}
+.nb-fold>summary::before{content:"▸ ";color:var(--pen-red)}
+.nb-fold[open]>summary::before{content:"▾ "}
+.nb-fold>summary small{font-weight:500;font-style:italic;color:#6d7aa6;margin-left:6px;font-size:14px}
+.nb-fold[open]{background:rgba(28,47,124,.03)}
+@media print{.nb-fold{display:none}}

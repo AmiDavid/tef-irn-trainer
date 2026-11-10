@@ -154,8 +154,13 @@ function lessonLines(g,p){
    (build 18 and earlier) are compared with the lessons as they were on 8 November (content/notebook-baseline.js). */
 const copiedBefore=id=>{const c=S().course||{};return !!((c.done||{})[id]||(c.day&&c.day.topicId===id&&c.day.copy))};
 function snapshot(id){const s=(S().copied||{})[id];if(s)return s;const b=(window.TEF_NOTEBOOK_BASELINE||{})[id];return b&&copiedBefore(id)?{t:null,keys:b}:null}
-function updatesOf(id){const s=snapshot(id);if(!s||!card(id))return [];const have=new Set(s.keys);return lessonLines(card(id),plus(id)).filter(l=>!have.has(l.key))}
-function markCopied(id){const st=S();st.copied=st.copied||{};st.copied[id]={t:Date.now(),keys:lessonLines(card(id),plus(id)).map(l=>l.key)};app().save()}
+/* Short notebook (build 24): « À retenir », tables, examples and mistakes are copied; the detailed rules and tips stay folded
+   on the page, to reread. A copy remembers its version, so later changes to lines that were not copied never ask to be added. */
+const SHORT_KINDS=new Set(['sub','sum','thead','row','ex','mist']);
+const nbShort=()=>S().nbShort!==false;
+const linesFor=(id,mode)=>{const l=lessonLines(card(id),plus(id));return mode==='short'?l.filter(x=>SHORT_KINDS.has(x.k)):l};
+function updatesOf(id){const s=snapshot(id);if(!s||!card(id))return [];const have=new Set(s.keys);return linesFor(id,s.mode||'full').filter(l=>!have.has(l.key))}
+function markCopied(id,mode){const st=S(),m=mode||(nbShort()?'short':'full');st.copied=st.copied||{};st.copied[id]={t:Date.now(),mode:m,keys:linesFor(id,m).map(l=>l.key)};app().save()}
 const notebookUpdates=()=>D().grammar.map(g=>({id:g.id,title:g.title,n:updatesOf(g.id).length})).filter(u=>u.n);
 function myErrors(id){
   const g=card(id),list=(S().aiErrors||[]).filter(e=>e.category===`Grammaire : ${g.title}`).slice(-6);
@@ -172,35 +177,42 @@ function renderCopy(id){
   const done=today&&daily()?.stepDone('copy');
   const root=$('#gcopyBody');
   const news=updatesOf(id),nk=new Set(news.map(l=>l.key)),mk=(k,t)=>nk.has(lineKey(k,t))?' nb-new':'',li=(k,t,html)=>`<li${clsAttr(mk(k,t))}>${html}</li>`;
-  const snap=news.length?snapshot(id):null;
+  const snap=news.length?snapshot(id):null,short=nbShort();
+  const ruleBlock=`<h2>La règle</h2>
+      ${p.rule?.length?`<ol class="nb-rule">${p.rule.map((r,i)=>li('rule',r,esc(r)+enNote(E?.rule?.[i]))).join('')}</ol>`:`<p${clsAttr(mk('rule',g.details))}>${esc(g.details)}</p>`}`;
+  const tablesBlock=tablesOf(p).map((t,k)=>tableHTML(t,'nb-table',mk,E?.tables?.[k])).join('');
+  const exBlock=`<h2>Exemples</h2>
+      <ul class="nb-ex">${examplesOf(id).map(e=>li('ex',e.fr,`${esc(e.fr)}${showEn&&e.en?` <span class="nb-en">(${esc(e.en)})</span>`:''}`)).join('')}</ul>`;
+  const mistBlock=g.mistakes?.length?`<h2>Attention aux erreurs</h2><ul class="nb-mist">${g.mistakes.map(m=>li('mist',m.wrong+' → '+m.right,`<span class="nb-wrong">${esc(m.wrong)}</span> → <span class="nb-right">${esc(m.right)}</span>`)).join('')}</ul>`:'';
+  const tipsBlock=p.tips?.length?`<h2>Astuces</h2><ul class="nb-tips">${p.tips.map((t,i)=>li('tip',t,esc(t)+enNote(E?.tips?.[i]))).join('')}</ul>`:'';
+  const sumBlock=p.summary?.length?`<div class="nb-box"><h2>À retenir</h2><ul>${p.summary.map((s,i)=>li('sum',s,esc(s)+enNote(E?.summary?.[i]))).join('')}</ul></div>`:'';
+  const foldOpen=news.some(l=>l.k==='rule'||l.k==='tip');
+  const body=short
+    ?`${sumBlock}${tablesBlock}${exBlock}${mistBlock}
+      <details class="nb-fold"${foldOpen?' open':''}><summary>La règle en détail et les astuces <small>à relire, pas à recopier</small></summary>${ruleBlock}${tipsBlock}</details>`
+    :`${ruleBlock}${tablesBlock}${exBlock}${mistBlock}${tipsBlock}${sumBlock}`;
   root.innerHTML=`
     <div class="copy-tools no-print">
       <button class="back-link" data-back>‹ ${backLabel()}</button>
-      <div class="copy-actions"><label class="copy-toggle"><input type="checkbox" id="copyEn" ${showEn?'checked':''}> 🇬🇧 Anglais</label><button class="btn ghost small" id="copyPrint">Imprimer</button></div>
+      <div class="copy-actions"><div class="nb-mode" role="group" aria-label="Version du cahier"><button data-nbmode="short" aria-pressed="${short}">Courte</button><button data-nbmode="full" aria-pressed="${!short}">Complète</button></div><label class="copy-toggle"><input type="checkbox" id="copyEn" ${showEn?'checked':''}> 🇬🇧 Anglais</label><button class="btn ghost small" id="copyPrint">Imprimer</button></div>
     </div>
     ${news.length?`<div class="nb-update no-print" role="status"><strong>📌 ${news.length} ${news.length>1?'nouveautés':'nouveauté'} depuis ta copie${snap.t?` du ${new Date(snap.t).toLocaleDateString('fr-FR',{day:'numeric',month:'long'})}`:''}</strong><span>Les passages surlignés en jaune sont nouveaux ou ont été complétés : ajoute-les dans ton cahier.</span><button class="btn small" id="nbAck">C’est fait, je les ai ajoutés ✓</button></div>`:''}
-    ${today?`<div class="today-banner no-print"><strong>Leçon du jour · étape 2</strong><span>Recopie toute la page dans ton cahier, à la main. Écrire aide à retenir.</span></div>`:''}
+    ${today?`<div class="today-banner no-print"><strong>Leçon du jour · étape 2</strong><span>${short?'Recopie cette page à la main : l’essentiel, les tableaux, les exemples et les erreurs. La règle en détail reste repliée en bas, pour la relire.':'Recopie toute la page dans ton cahier, à la main. Écrire aide à retenir.'}</span></div>`:''}
     <article class="notebook" aria-label="Version cahier : ${esc(g.title)}">
       <div class="nb-date">${esc(date.charAt(0).toUpperCase()+date.slice(1))}</div>
       <h1 class="nb-title">${esc(g.title)}</h1>
       <p class="nb-sub${mk('sub',g.short)}">${esc(g.short)}</p>
-      <h2>La règle</h2>
-      ${p.rule?.length?`<ol class="nb-rule">${p.rule.map((r,i)=>li('rule',r,esc(r)+enNote(E?.rule?.[i]))).join('')}</ol>`:`<p${clsAttr(mk('rule',g.details))}>${esc(g.details)}</p>`}
-      ${tablesOf(p).map((t,k)=>tableHTML(t,'nb-table',mk,E?.tables?.[k])).join('')}
-      <h2>Exemples</h2>
-      <ul class="nb-ex">${examplesOf(id).map(e=>li('ex',e.fr,`${esc(e.fr)}${showEn&&e.en?` <span class="nb-en">(${esc(e.en)})</span>`:''}`)).join('')}</ul>
-      ${g.mistakes?.length?`<h2>Attention aux erreurs</h2><ul class="nb-mist">${g.mistakes.map(m=>li('mist',m.wrong+' → '+m.right,`<span class="nb-wrong">${esc(m.wrong)}</span> → <span class="nb-right">${esc(m.right)}</span>`)).join('')}</ul>`:''}
-      ${p.tips?.length?`<h2>Astuces</h2><ul class="nb-tips">${p.tips.map((t,i)=>li('tip',t,esc(t)+enNote(E?.tips?.[i]))).join('')}</ul>`:''}
-      ${p.summary?.length?`<div class="nb-box"><h2>À retenir</h2><ul>${p.summary.map((s,i)=>li('sum',s,esc(s)+enNote(E?.summary?.[i]))).join('')}</ul></div>`:''}
+      ${body}
     </article>
     <div class="topic-cta no-print">${today?(done?`<span class="chip">✓ Recopié</span><button class="btn" id="copyNext">Continuer : questions de base</button>`:`<button class="btn" id="copyDone">J’ai tout recopié ✓</button>`):''}<button class="btn ghost" id="copyLesson">Revoir la leçon</button></div>`;
   app().show('gcopy');window.scrollTo(0,0);
   $('[data-back]',root).onclick=backHome;
   $('#copyEn').onchange=e=>{S().copyEn=e.target.checked;app().save();renderCopy(id)};
+  $$('[data-nbmode]',root).forEach(b=>b.onclick=()=>{S().nbShort=b.dataset.nbmode==='short';app().save();renderCopy(id)});
   $('#copyPrint').onclick=()=>window.print();
   $('#copyLesson').onclick=()=>go('#g/'+id);
   $('#copyDone')&&($('#copyDone').onclick=()=>{markCopied(id);daily()?.mark('copy');backHome()});
-  $('#nbAck')&&($('#nbAck').onclick=()=>{markCopied(id);app().toast('Cahier à jour ✓');renderCopy(id)});
+  $('#nbAck')&&($('#nbAck').onclick=()=>{markCopied(id,snapshot(id)?.mode||'full');app().toast('Cahier à jour ✓');renderCopy(id)});
   $('#copyNext')&&($('#copyNext').onclick=()=>daily()?.start('daily-basic'));
 }
 
@@ -395,5 +407,5 @@ function init(){
   route();
 }
 window.TEF_TOPIC={init,open:(id,o)=>{origin=o||'grammar';go('#g/'+id)},copy:(id,o)=>{origin=o||'grammar';go('#c/'+id)},practice:id=>go('#gp/'+id),
-  session:(cfg)=>{origin='today';session(cfg,false)},check,norm,practiceItems,isFlagged,levelOf,lessonLines,updatesOf,markCopied,notebookUpdates,invalidate,moreFor,unlimited,generateAI,route,current:()=>P&&{key:P.key,items:P.items.map(o=>({tid:o.tid,i:o.i,x:o.x})),idx:P.idx}};
+  session:(cfg)=>{origin='today';session(cfg,false)},check,norm,practiceItems,isFlagged,levelOf,lessonLines,notebookLines:linesFor,updatesOf,markCopied,notebookUpdates,invalidate,moreFor,unlimited,generateAI,route,current:()=>P&&{key:P.key,items:P.items.map(o=>({tid:o.tid,i:o.i,x:o.x})),idx:P.idx}};
 })();
