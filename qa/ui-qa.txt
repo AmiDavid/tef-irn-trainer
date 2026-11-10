@@ -289,6 +289,27 @@ async function visible(page,selector){
     await visible(page,"#view-gcopy.active .notebook");
     assert.equal(await page.locator("#gcopyBody table").count(),3,"g11 notebook shows its three tables");
     assert.ok((await page.locator("#gcopyBody .table-title").allTextContents()).includes("Les autres personnes : tu, il, vous"));
+    /* English layer: one explanation per rule, table, tip and summary line; the button hides them and the choice is kept. */
+    await page.evaluate(()=>{delete TEF_APP.S.ruleEn;TEF_TOPIC.open("g5")});
+    await visible(page,"#view-gtopic.active [data-en]");
+    const enWant=await page.evaluate(()=>{const p=TEF_APP.D.grammarPlus.g5;return p.rule.length+p.tips.length+p.summary.length+[p.table,...(p.tables||[])].filter(t=>t&&t.head).length});
+    assert.equal(await page.locator("#gtopicBody .en-note:visible").count(),enWant,"g5 shows one English note per line");
+    await page.locator("#gtopicBody [data-en]").click();
+    assert.equal(await page.locator("#gtopicBody .en-note:visible").count(),0,"English hidden after the click");
+    assert.equal(await page.evaluate(()=>TEF_APP.S.ruleEn),false);
+    await page.evaluate(()=>TEF_TOPIC.open("g29"));
+    await visible(page,'#view-gtopic.active [data-en][aria-pressed="false"]');
+    assert.equal(await page.locator("#gtopicBody .en-note:visible").count(),0,"the choice is kept on the next lesson");
+    await page.locator("#gtopicBody [data-en]").click();
+    assert.ok(await page.locator("#gtopicBody .en-note:visible").count()>10,"English shown again");
+    /* Notebook page: the explanations follow the « Anglais » box. */
+    await page.evaluate(()=>TEF_TOPIC.copy("g5"));
+    await visible(page,"#view-gcopy.active .notebook");
+    assert.equal(await page.locator("#gcopyBody .en-note").count(),enWant,"notebook shows the explanations");
+    await page.locator("#copyEn").uncheck();
+    await visible(page,"#view-gcopy.active .notebook");
+    assert.equal(await page.locator("#gcopyBody .en-note").count(),0,"notebook without English");
+    await page.locator("#copyEn").check();
     await page.evaluate(()=>{delete window.__TEF_TODAY__;delete TEF_APP.S.course;TEF_APP.save();TEF_DAILY.render()});
 
     assert.deepEqual(pageErrors,[],"runtime errors: "+pageErrors.join(" | "));

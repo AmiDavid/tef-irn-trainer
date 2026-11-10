@@ -57,6 +57,16 @@ The app does not redistribute CCI/TEF audio. Official resources are linked separ
   redone (`coverage()` in `daily.js`). Daily picks skip what was seen today, then take questions answered wrong
   first, then unseen ones, then the ones seen longest ago.
 
+## English explanations (build 22)
+
+- `content/english/en-N.js` fills `grammarEn[id] = {rule, tables, tips, summary}`: one plain-English explanation per French
+  line, in the same order (tables in the order of `tablesOf()`: `table` first, then `tables`). `*…*` marks French words,
+  shown upright and bright inside the English. `qa/content-qa.txt` fails if an array does not line up with the lesson.
+- Lesson page: button **English** under « La règle » shows or hides every explanation (choice kept in `S.ruleEn`).
+  Notebook page: the box **Anglais** (`S.copyEn`) shows the explanations and the example translations.
+- English lines are not notebook lines: they never appear as « nouveautés » to copy.
+- When a French rule, tip or summary line is added, moved or removed, change the English array the same way.
+
 ## Running locally
 
 Serve this folder over HTTP, e.g. `python -m http.server 8000`, then open `http://localhost:8000`.
