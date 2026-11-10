@@ -162,7 +162,7 @@ const SHORT_KINDS=new Set(['sub','sum','thead','row','ex','mist']);
 const ficheOf=id=>(D().grammarFiche||{})[id]||null;
 const ficheText=t=>esc(t).replace(/\*([^*]+)\*/g,'<mark class="kw">$1</mark>');
 function ficheLines(id){const out=[],add=(k,t)=>{if(lineText(t))out.push({k,t:lineText(t),key:lineKey(k,t)})};
-  (ficheOf(id)||[]).forEach(s=>{add('fh',s.h);(s.l||[]).forEach(x=>add('fl',x));if(s.t?.head?.length){add('fth',s.t.head.join(' | '));s.t.rows.forEach(r=>add('ftr',r.join(' | ')))}});return out}
+  (ficheOf(id)||[]).forEach(s=>{add('fh',s.h);if(s.t?.head?.length){add('fth',s.t.head.join(' | '));s.t.rows.forEach(r=>add('ftr',r.join(' | ')))}(s.l||[]).forEach(x=>add('fl',x))});return out}
 const nbMode=()=>{const m=S().nbMode;return m==='full'||m==='fiche'?m:(S().nbShort===false?'full':'fiche')};
 const linesFor=(id,mode)=>{if(mode==='fiche')return ficheLines(id);const l=lessonLines(card(id),plus(id));return mode==='short'?l.filter(x=>SHORT_KINDS.has(x.k)):l};
 function updatesOf(id){const s=snapshot(id);if(!s||!card(id))return [];const have=new Set(s.keys);return linesFor(id,s.mode||'full').filter(l=>!have.has(l.key))}
@@ -204,7 +204,7 @@ function renderCopy(id){
   const body=layout==='full'
     ?`${ruleBlock}${tablesBlock}${exBlock}${mistBlock}${tipsBlock}${sumBlock}`
     :layout==='fiche'
-    ?`<div class="nb-fiche">${F.map(s=>`<h2${clsAttr(mk('fh',s.h))}>${ficheText(s.h)}</h2>${s.l?.length?`<ul class="nb-fl">${s.l.map(x=>li('fl',x,ficheText(x))).join('')}</ul>`:''}${s.t?.head?.length?tableHTML(s.t,'nb-table nb-ftable',(k,t)=>mk(k==='thead'?'fth':'ftr',t)):''}`).join('')}</div>
+    ?`<div class="nb-fiche">${F.map(s=>`<h2${clsAttr(mk('fh',s.h))}>${ficheText(s.h)}</h2>${s.t?.head?.length?tableHTML(s.t,'nb-table nb-ftable',(k,t)=>mk(k==='thead'?'fth':'ftr',t)):''}${s.l?.length?`<ul class="nb-fl">${s.l.map(x=>li('fl',x,ficheText(x))).join('')}</ul>`:''}`).join('')}</div>
       <p class="nb-more no-print">Tout le détail (règles, tableaux, exemples, astuces) est dans la <button class="linklike" data-nbmode="full">version complète</button>.</p>`
     :`${sumBlock}${tablesBlock}${exBlock}${mistBlock}
       <details class="nb-fold"${foldOpen?' open':''}><summary>La règle en détail et les astuces <small>à relire, pas à recopier</small></summary>${ruleBlock}${tipsBlock}</details>`;

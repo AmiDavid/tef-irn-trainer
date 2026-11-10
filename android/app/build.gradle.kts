@@ -11,7 +11,7 @@ android {
         applicationId = "io.github.amidavid.tefb2coach"
         minSdk = 26
         targetSdk = 35
-        versionCode = 20
+        versionCode = 21
         versionName = "2.6"
     }
 
