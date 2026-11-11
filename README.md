@@ -80,12 +80,24 @@ The app does not redistribute CCI/TEF audio. Official resources are linked separ
   computed only on the lines of that version (`notebookLines(id, mode)`), and while a copy has lines to add, the page opens
   on that version until the learner picks another one with the switch. « J’ai recopié cette page » records any lesson.
 
+## Word translation (build 29)
+
+- **Computer**: right-click a French word (or a selected phrase) → a small pane next to it: the dictionary form and grammar,
+  the English meaning *in that sentence*, a note when something is easy to miss, and 🔊. Shift + right-click keeps the
+  browser's menu; English notes and fields keep it too. **Phone**: long-press a word (drag the handles for a phrase) → the
+  same pane at the bottom of the screen.
+- 🌐 adds up to two more languages (Hebrew, Arabic, Spanish…; `S.trLangs`, synced with the rest of the state). « ＋ Mes cartes »
+  turns the word into a flashcard (`S.custom`, theme « Mots traduits ») with the sentence as its example.
+- `translate.js` sends `{text, context, langs}` to `api/translate.js` (Claude Haiku, signed-in allowed accounts only) and keeps
+  the last 300 answers in `localStorage` (`tef-tr-cache-v1`). Without the AI it uses the browser's built-in translator when its
+  model is already on the device (never starts a download), then the app's word list. Off during a timed examen blanc.
+
 ## Running locally
 
 Serve this folder over HTTP, e.g. `python -m http.server 8000`, then open `http://localhost:8000`.
 
 ```
-npm test            # conjugation engine
+npm test            # conjugation engine, word picking for the translation pane
 npm run qa          # content, static and phone-size UI checks
 ```
 

@@ -353,6 +353,93 @@ async function visible(page,selector){
 
     assert.deepEqual(pageErrors,[],"runtime errors: "+pageErrors.join(" | "));
     await page.close();
+
+    /* Word translation (build 29): right-click a French word → a pane with its English meaning in context. */
+    {
+      const dp=await browser.newPage({viewport:{width:1280,height:820}});
+      const derr=[];dp.on("pageerror",e=>derr.push(e.message));
+      await dp.goto(base,{waitUntil:"networkidle"});
+      await dp.evaluate(()=>{location.hash="#g/g5"});
+      await visible(dp,"#view-gtopic.active .topic-hero h1");
+      await dp.evaluate(()=>{
+        TEF_TRANSLATE.clearCache();delete TEF_APP.S.trLangs;window.__calls=[];
+        addEventListener("contextmenu",e=>{window.__cm=e.defaultPrevented});
+        Object.defineProperty(TEF_CONNECTED,"ready",{get:()=>true,set:()=>{},configurable:true});
+        TEF_CONNECTED.post=async(p,b)=>{window.__calls.push({p,b});return {text:b.text,lemma:b.text==="personne"?"la personne":b.text,grammar:"nom féminin",en:b.text==="personne"?"person":"insurance",other:b.langs.includes("he")?{he:"אדם"}:{},note:""}};
+      });
+      /* Screen point on a word: the n-th match outside (or inside) the English notes, scrolled into view. */
+      const at=(word,{en=false,off=2}={})=>dp.evaluate(({word,en,off})=>{
+        const tw=document.createTreeWalker(document.querySelector("#gtopicBody"),NodeFilter.SHOW_TEXT);
+        for(let n;(n=tw.nextNode());){const i=n.data.indexOf(word);if(i<0||Boolean(n.parentElement.closest(".en-note"))!==en)continue;
+          n.parentElement.scrollIntoView({block:"center",behavior:"instant"});
+          const r=document.createRange();r.setStart(n,i+off);r.setEnd(n,i+off+1);const b=r.getBoundingClientRect();return {x:b.left+b.width/2,y:b.top+b.height/2}}
+        return null},{word,en,off});
+      const rightClick=async(word,opt)=>{const p=await at(word,opt);assert.ok(p,"word on the page: "+word);await dp.mouse.click(p.x,p.y,{button:"right"})};
+      await rightClick("personne");
+      await visible(dp,".tr-pane:not([hidden]) .tr-en");
+      assert.equal((await dp.locator(".tr-pane .tr-en").textContent()).trim(),"person");
+      assert.equal((await dp.locator(".tr-pane .tr-word").textContent()).trim(),"personne");
+      let calls=await dp.evaluate(()=>window.__calls);
+      assert.equal(calls.length,1);assert.equal(calls[0].p,"/api/translate");assert.equal(calls[0].b.text,"personne");
+      assert.ok(calls[0].b.context.includes("toujours féminin"),"the sentence goes with the word");
+      assert.deepEqual(calls[0].b.langs,[]);
+      assert.equal(await dp.evaluate(()=>window.__cm),true,"the browser menu is replaced");
+      await dp.keyboard.press("Escape");
+      assert.ok(await dp.locator(".tr-pane").isHidden(),"Esc closes the pane");
+      /* Same word, same sentence: answered from the cache. */
+      await rightClick("personne");
+      await visible(dp,".tr-pane:not([hidden]) .tr-en");
+      assert.equal(await dp.evaluate(()=>window.__calls.length),1,"cached");
+      /* 🌐 → Hebrew: saved, sent, shown right to left. */
+      await dp.locator('.tr-pane [data-tr="langs"]').click();
+      await dp.locator('.tr-pane [data-l="he"]').click();
+      await visible(dp,".tr-pane .tr-other");
+      assert.deepEqual(await dp.evaluate(()=>TEF_APP.S.trLangs),["he"]);
+      assert.deepEqual(await dp.evaluate(()=>window.__calls[1].b.langs),["he"]);
+      assert.equal(await dp.locator('.tr-pane .tr-other span[dir="rtl"]').textContent(),"אדם");
+      /* ＋ Mes cartes → a flashcard with the dictionary form and the sentence. */
+      await dp.locator('.tr-pane [data-tr="add"]').click();
+      const card=await dp.evaluate(()=>TEF_APP.S.custom.at(-1));
+      assert.equal(card.front,"la personne");assert.equal(card.back,"person");assert.equal(card.tag,"trad");assert.equal(card.gender,"f");assert.equal(card.pos,"nom");
+      assert.ok(card.example.includes("la personne"));
+      await visible(dp,".tr-pane .tr-done");
+      /* A click elsewhere closes it. */
+      await dp.locator("#view-gtopic.active .topic-hero h1").click();
+      assert.ok(await dp.locator(".tr-pane").isHidden(),"outside click closes the pane");
+      /* l’assurance → « assurance » with its table cell as context. */
+      await rightClick("l’assurance",{off:4});
+      await visible(dp,".tr-pane:not([hidden]) .tr-en");
+      assert.equal(await dp.evaluate(()=>window.__calls.at(-1).b.text),"assurance");
+      await dp.keyboard.press("Escape");
+      /* English notes, Shift + right-click and the timed examen blanc keep the browser menu. */
+      const n=await dp.evaluate(()=>window.__calls.length);
+      await rightClick("Common",{en:true});
+      assert.equal(await dp.evaluate(()=>window.__cm),false,"English text keeps the browser menu");
+      await dp.keyboard.down("Shift");await rightClick("personne");await dp.keyboard.up("Shift");
+      assert.equal(await dp.evaluate(()=>window.__cm),false,"Shift + right-click keeps the browser menu");
+      await dp.evaluate(()=>{window.__mock=TEF_EXAM.mockLive;TEF_EXAM.mockLive=()=>true});
+      await rightClick("personne");
+      assert.equal(await dp.evaluate(()=>window.__cm),false,"no translation during an examen blanc");
+      await dp.evaluate(()=>{TEF_EXAM.mockLive=window.__mock});
+      assert.ok(await dp.locator(".tr-pane").isHidden());
+      assert.equal(await dp.evaluate(()=>window.__calls.length),n,"no request for those clicks");
+      /* Phone: a long-press selection opens the pane at the bottom. */
+      await dp.evaluate(()=>{const tw=document.createTreeWalker(document.querySelector("#gtopicBody"),NodeFilter.SHOW_TEXT);
+        for(let t;(t=tw.nextNode());){const i=t.data.indexOf("système");if(i>=0&&!t.parentElement.closest(".en-note")){
+          document.dispatchEvent(new PointerEvent("pointerdown",{pointerType:"touch",bubbles:true}));getSelection().setBaseAndExtent(t,i,t,i+7);break}}});
+      await visible(dp,".tr-pane.sheet:not([hidden]) .tr-en");
+      assert.equal(await dp.evaluate(()=>window.__calls.at(-1).b.text),"système");
+      await dp.evaluate(()=>{getSelection().removeAllRanges();TEF_TRANSLATE.close()});
+      /* Signed out: the app's word list, else a hint to sign in. */
+      await dp.evaluate(()=>{delete TEF_CONNECTED.ready;TEF_CONNECTED.ready=false;TEF_TRANSLATE.clearCache()});
+      const fromList=await dp.evaluate(()=>TEF_TRANSLATE.lookup("la préfecture","",[]));
+      assert.equal(fromList.src,"vocab");assert.ok(fromList.en.startsWith("prefecture"));
+      const offline=await dp.evaluate(()=>TEF_TRANSLATE.lookup("zzzz","",[]).then(()=>"",e=>e.message));
+      assert.ok(offline.includes("Connecte-toi"),offline);
+      await dp.evaluate(()=>{TEF_APP.S.custom=TEF_APP.S.custom.filter(c=>c.tag!=="trad");delete TEF_APP.S.trLangs;TEF_APP.save();TEF_TRANSLATE.clearCache()});
+      assert.deepEqual(derr,[],"translation page errors: "+derr.join(" | "));
+      await dp.close();
+    }
     console.log("UI QA OK");
   } finally {
     await browser.close();

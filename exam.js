@@ -265,7 +265,7 @@ function runSpeaking(k){
 
 /* ---------- results ---------- */
 async function finish(){
-  clearInterval(R.tick);
+  clearInterval(R.tick);R.finished=true;
   const o=overlay(),res=R.results;
   o.innerHTML=`<div class="runner">${header('Résultats','Calcul…')}<div class="runner-body"><div class="card intro-card"><p>Préparation des résultats…</p></div></div></div>`;bindQuit();
   // Writing: AI assessment when connected
@@ -344,5 +344,5 @@ function init(){
   $$('[data-mock]').forEach(b=>b.onclick=()=>startMock(b.dataset.mock));
   renderHistory();
 }
-window.TEF_EXAM={init,series,startMock,practiceCard,renderHistory,skillEstimates,speakItem,recognize,compEstimate};
+window.TEF_EXAM={mockLive:()=>Boolean(R&&R.type==='mock'&&!R.finished),init,series,startMock,practiceCard,renderHistory,skillEstimates,speakItem,recognize,compEstimate};
 })();
