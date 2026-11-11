@@ -2,12 +2,7 @@
 (()=>{const B=window.TEF_BANK=window.TEF_BANK||{};const F=B.grammarFiche=B.grammarFiche||{};
 Object.assign(F,{
 g7:[
-  {h:"Les trois si",t:{head:["Après si","Dans l’autre partie","Exemple"],rows:[
-    ["présent","présent, futur, impératif","Si tu es libre, viens. Si tu veux, je t’aiderai."],
-    ["imparfait","conditionnel présent","Si je gagnais plus, je déménagerais."],
-    ["plus-que-parfait","conditionnel passé","Si j’avais su, je serais venu."],
-    ["plus-que-parfait","conditionnel présent (effet maintenant)","Si j’avais fait médecine, je serais médecin."]
-  ]}},
+  {h:"Les phrases avec si",tab:0},
   {h:"Règles d’or",l:[
     "*Jamais de futur ni de conditionnel juste après si* : « Les si n’aiment pas les -rais ».",
     "*si + il, ils → s’il, s’ils* ; mais si elle, si on.",
@@ -25,8 +20,7 @@ g7:[
   ]}
 ],
 g13:[
-  {h:"Former",l:[
-    "*avoir, être à l’imparfait* + participe passé : j’*avais* fini, elle *était* partie, ils *s’étaient* inscrits.",
+  {h:"Former : l’auxiliaire passe à l’imparfait",tab:0,l:[
     "Mêmes auxiliaires, mêmes accords qu’au passé composé : nous *étions* partis ; les papiers que j’avais *remplis*."
   ]},
   {h:"Quand l’utiliser ?",l:[
@@ -53,14 +47,9 @@ g26:[
   {h:"La conséquence",l:[
     "*donc, alors, c’est pourquoi, par conséquent, ainsi, de ce fait, c’est la raison pour laquelle*",
     "*si bien que, de sorte que* + indicatif ; *d’où* + nom (d’où mon retard) ; entraîner, provoquer, causer + nom.",
-    "Intensité : *si, tellement* + adjectif + *que* ; *tant de, tellement de* + nom + *que*.",
-    "*trop, assez* + adjectif + *pour* + infinitif : il est trop tard pour annuler."
+    "Intensité : *si, tellement* + adjectif + *que* ; *tant de, tellement de* + nom + *que* ; *trop, assez* + adjectif + *pour* + infinitif."
   ]},
-  {h:"Phrases types",l:[
-    "*Comme* le bureau était fermé, je suis revenu le lendemain.",
-    "Il y avait *tellement de* monde *que* nous sommes partis.",
-    "*En raison de* ce retard, j’ai manqué mon rendez-vous ; *par conséquent*, je demande un remboursement."
-  ]},
+  {h:"Les connecteurs en contexte",tab:0},
   {h:"Pièges",l:[
     "« Car il pleuvait, … » → *Comme* il pleuvait ; « à cause de je voulais » → *parce que* je voulais.",
     "« Grâce à la pluie, le match a été annulé » → *À cause de* la pluie."
@@ -69,14 +58,9 @@ g26:[
 g20:[
   {h:"La méthode",l:[
     "Partir de *ils* au présent et enlever -ent : ils partent → *part-* ; ils finissent → *finiss-* ; ils écrivent → *écriv-*.",
-    "je, tu, il, ils : *-e, -es, -e, -ent* : que je parte, que tu écrives, qu’ils finissent.",
-    "nous, vous = *forme de l’imparfait* : que nous partions, que vous écriviez (que je boive / que nous buvions)."
+    "je, tu, il, ils : *-e, -es, -e, -ent* ; nous, vous = *forme de l’imparfait* : que nous partions, que vous écriviez."
   ]},
-  {h:"Les irréguliers",t:{head:["Verbe","que je, qu’il","que nous","qu’ils"],rows:[
-    ["être","sois, soit","soyons","soient"],["avoir","aie, ait","ayons","aient"],["aller","aille","allions","aillent"],
-    ["faire","fasse","fassions","fassent"],["pouvoir","puisse","puissions","puissent"],["savoir","sache","sachions","sachent"],
-    ["vouloir","veuille","voulions","veuillent"],["falloir, pleuvoir","qu’il faille, qu’il pleuve","",""]
-  ]}},
+  {h:"Les formes à connaître",tab:0},
   {h:"Pièges",l:[
     "Verbes en -er : je, tu, il, ils comme au présent (que je parle) ; seuls nous et vous changent.",
     "que j’*aie* (avoir) ≠ que j’*aille* (aller) ; nous *étudiions*, vous *envoyiez* (deux i) ; mais *soyons, ayez* (pas de i).",
@@ -89,10 +73,7 @@ g3:[
     "*Même sujet* → *pour* + infinitif : j’économise pour *acheter* une voiture (pas « pour que je… »).",
     "Plus soutenu : *afin que, afin de* ; la crainte : *de peur que, de peur de*."
   ]},
-  {h:"Former le subjonctif",t:{head:["Infinitif","que je…","que vous…"],rows:[
-    ["prendre","prenne","preniez"],["venir","vienne","veniez"],["faire","fasse","fassiez"],["pouvoir","puisse","puissiez"],
-    ["être","sois","soyez"],["avoir","aie","ayez"],["aller","aille","alliez"],["savoir","sache","sachiez"]
-  ]},l:[
+  {h:"Les formes du subjonctif",tab:0,l:[
     "Règle : radical de *ils* au présent + -e, -es, -e, -ions, -iez, -ent."
   ]},
   {h:"Négation et autres buts",l:[
@@ -105,14 +86,7 @@ g3:[
   ]}
 ],
 g21:[
-  {h:"Subjonctif ou indicatif ?",t:{head:["+ subjonctif","+ indicatif"],rows:[
-    ["il faut que, il est important que, il vaut mieux que","il est certain que, il est évident que, il paraît que"],
-    ["je veux, je souhaite, j’exige, je demande que","j’espère que"],
-    ["il est possible que, je doute que","il est probable que, je suis sûr que"],
-    ["je suis content que, je regrette que, j’ai peur que","je sais que, je constate que"],
-    ["pour que, afin que, avant que, jusqu’à ce que","parce que, puisque, après que, pendant que"],
-    ["bien que, à moins que, sans que, à condition que","même si, alors que, sauf si"]
-  ]}},
+  {h:"Subjonctif ou indicatif ?",tab:0},
   {h:"Repères",l:[
     "Obligation, volonté, sentiment, doute + que → *subjonctif*.",
     "*Même sujet* → infinitif : je veux *partir* ; je suis content *d’être* là ; avant *de* partir.",
