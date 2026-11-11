@@ -270,14 +270,15 @@ for(const [id,f] of Object.entries(FI)){
   let n=0;
   for(const s of f){
     assert.ok(nonempty(s.h),`${id} fiche: section without heading`);n++;
-    assert.ok((s.l||[]).length||(s.t&&s.t.rows.length),`${id} fiche: empty section ${s.h}`);
+    assert.ok((s.l||[]).length||(s.t&&s.t.rows.length)||s.tab!=null,`${id} fiche: empty section ${s.h}`);
     for(const x of s.l||[]){
       assert.ok(nonempty(x),`${id} fiche: empty line`);assert.ok(x.length<=180,`${id} fiche line too long for the notebook: ${x}`);
       assert.equal((x.match(/\*/g)||[]).length%2,0,`${id} fiche: unpaired * in ${x}`);assert.ok(!/[<>]/.test(x),`${id} fiche: markup in ${x}`);safe(x,`${id} fiche`);n++;
     }
     if(s.t){assert.ok(s.t.head.length>=2,`${id} fiche table head`);s.t.rows.forEach(r=>assert.equal(r.length,s.t.head.length,`${id} fiche table row ${r.join(" | ")}`));n+=1+s.t.rows.length}
+    if(s.tab!=null){const p=D.grammarPlus[id],tabs=[p.table,...(p.tables||[])].filter(t=>t&&t.head&&t.head.length);assert.ok(tabs[s.tab],`${id} fiche: no lesson table ${s.tab}`);n+=1+tabs[s.tab].rows.length}
   }
-  assert.ok(n<=32,`${id} fiche is longer than one page (${n} lines)`);
+  assert.ok(n<=64,`${id} fiche is longer than a double page (${n} lines)`);
 }
 
 assert.ok(D.vocab.some(v=>v.front==="un cours d’essai"));
