@@ -9,7 +9,7 @@ const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math
 const DAY=864e5,iso=d=>d.toISOString().slice(0,10),today=()=>iso(new Date()),inDays=n=>iso(new Date(Date.now()+n*DAY));
 const fold=s=>String(s||'').toLocaleLowerCase('fr').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[’']/g,'’');
 
-const THEMES={administration:'Administration & préfecture',logement:'Logement',travail:'Travail',sante:'Santé',transports:'Transports',ecole:'École',banque:'Banque',loisirs:'Loisirs',medias:'Médias',environnement:'Environnement',citoyennete:'Vie citoyenne',argumentation:'Argumentation',connecteur:'Connecteurs',ville:'Ville',quotidien:'Vie quotidienne',oral:'Oral',adverbe:'Adverbes',scan:'Mes notes'};
+const THEMES={administration:'Administration & préfecture',logement:'Logement',travail:'Travail',sante:'Santé',transports:'Transports',ecole:'École',banque:'Banque',loisirs:'Loisirs',medias:'Médias',environnement:'Environnement',citoyennete:'Vie citoyenne',argumentation:'Argumentation',connecteur:'Connecteurs',ville:'Ville',quotidien:'Vie quotidienne',oral:'Oral',adverbe:'Adverbes',scan:'Mes notes',trad:'Mots traduits'};
 const POS={nom:'nom',verbe:'verbe',adj:'adjectif',adv:'adverbe',expr:'expression',connecteur:'connecteur'};
 const TENSE_LABEL={present:'Présent',passeCompose:'Passé composé',imparfait:'Imparfait',plusQueParfait:'Plus-que-parfait',futur:'Futur simple',conditionnel:'Conditionnel présent',conditionnelPasse:'Conditionnel passé',subjonctif:'Subjonctif présent',imperatif:'Impératif'};
 const INTERVALS=[0,1,3,7,14,30,60,120];

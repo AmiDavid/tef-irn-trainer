@@ -10,7 +10,7 @@ g5:[
   ]},
   {h:"Accorder",l:[
     "Déterminant + nom + adjectif : *même genre, même nombre* (le / la / les, un / une / des, mon / ma / mes, ce / cette / ces).",
-    "Avec *être* : accord avec le sujet (la salle est fermée, les dossiers sont complets).",
+    "Avec *être*, l’adjectif *et le participe passé* s’accordent avec le sujet : la salle est *fermée*, les charges sont *comprises*, la demande a été *transmise*.",
     "Masculin + féminin → *masculin pluriel* (une cuisine et un salon lumineux)."
   ]},
   {h:"Féminin des adjectifs",tab:1},
