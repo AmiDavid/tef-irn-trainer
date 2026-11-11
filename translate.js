@@ -3,8 +3,8 @@
    this sentence and, if chosen (🌐), one or two other languages. Select a few words first to translate the phrase.
    Shift + right-click keeps the browser's own menu.
    Phone: long-press a word (it gets selected) → the same pane slides up from the bottom; drag the handles for a phrase.
-   Source: /api/translate (Claude, signed-in account). Without it: the browser's own translator when it is ready,
-   then the app's word list. Off during a timed examen blanc, as in the real test. */
+   Source: /api/translate (Claude, signed-in account); without it, the app's own word list.
+   Off during a timed examen blanc, as in the real test. */
 (()=>{'use strict';
 const G=globalThis;
 
@@ -115,7 +115,7 @@ function pickAt(x,y,target){
   return {text:text.slice(w.start,w.end),context:sentenceAt(text,w.start,w.end),range};
 }
 
-/* ---------- lookup: AI, then the browser's translator, then the app's word list ---------- */
+/* ---------- lookup: AI, else the app's word list ---------- */
 const KEY='tef-tr-cache-v1',MAXC=300;let MEM=null;
 function mem(){if(MEM)return MEM;MEM=new Map();try{for(const [k,v] of JSON.parse(localStorage.getItem(KEY)||'[]'))MEM.set(k,v)}catch{}return MEM}
 function remember(k,v){const m=mem();m.delete(k);m.set(k,v);while(m.size>MAXC)m.delete(m.keys().next().value);try{localStorage.setItem(KEY,JSON.stringify([...m]))}catch{}}
@@ -126,31 +126,17 @@ function fromVocab(text){
   const v=(app()?.vocab?.()||[]).find(x=>norm(x.front)===t);
   return v?{lemma:v.front,grammar:'',en:v.back,other:{},note:'',src:'vocab'}:null;
 }
-const TR={};
-async function fromBrowser(text,ls){
-  const T=G.Translator;if(!T?.availability)return null;
-  const out={};
-  for(const l of ['en',...ls]){
-    try{
-      if(await T.availability({sourceLanguage:'fr',targetLanguage:l})!=='available')continue; // never start a model download
-      TR[l]=TR[l]||T.create({sourceLanguage:'fr',targetLanguage:l});
-      out[l]=await (await TR[l]).translate(text);
-    }catch{}
-  }
-  if(!out.en)return null;const {en,...other}=out;
-  return {lemma:'',grammar:'',en,other,note:'',src:'browser'};
-}
+const late=(ms,msg)=>new Promise((_,no)=>setTimeout(()=>no(new Error(msg)),ms));
 async function lookup(text,context,ls=langs()){
   const k=keyOf(text,context,ls),hit=mem().get(k);if(hit)return hit;
   const c=C();let why='';
   if(c?.ready&&c.post){
     try{
-      const r=await c.post('/api/translate',{text,context,langs:ls});
+      const r=await Promise.race([c.post('/api/translate',{text,context,langs:ls}),late(15000,'pas de réponse du serveur')]);
       const v={lemma:r.lemma||'',grammar:r.grammar||'',en:r.en,other:r.other||{},note:r.note||'',src:'ai'};
       if(v.en){remember(k,v);return v}
     }catch(e){why=e.message||''}
   }
-  const b=await fromBrowser(text,ls);if(b)return b;
   const v=fromVocab(text);if(v)return v;
   throw new Error(why?`Traduction indisponible : ${why}`:c?.session?'Traduction IA indisponible pour le moment.':'Connecte-toi (☁️ Sync) pour traduire chaque mot.');
 }
@@ -193,7 +179,7 @@ function render(){
       +`<div class="tr-en" lang="en" aria-live="polite">${esc(r.en)}</div>`
       +(r.note?`<div class="tr-note" lang="en">${esc(r.note)}</div>`:'')
       +ls.filter(l=>r.other?.[l]).map(l=>`<div class="tr-other"><b lang="${l}">${LANGS[l][0]}</b><span lang="${l}" dir="${LANGS[l][1]||'auto'}">${esc(r.other[l])}</span></div>`).join('')
-      +(r.src==='browser'?'<div class="tr-src">Traduction du navigateur, sans le contexte.</div>':r.src==='vocab'?'<div class="tr-src">D’après la liste de vocabulaire de l’app.</div>':'')
+      +(r.src==='vocab'?'<div class="tr-src">D’après la liste de vocabulaire de l’app.</div>':'')
       +`<div class="tr-foot">${inCards(q,r)?'<span class="tr-done">✓ Dans mes cartes</span>':'<button type="button" class="tr-link" data-tr="add">＋ Mes cartes</button>'}</div>`;
   }
   if(q.showLangs)h+=`<div class="tr-langs"><div class="tr-chips">${Object.entries(LANGS).map(([k,[n]])=>`<button type="button" class="tr-chip" data-tr="lang" data-l="${k}" lang="${k}" aria-pressed="${ls.includes(k)}">${n}</button>`).join('')}</div><small>Jusqu’à 2 langues en plus de l’anglais. Maj + clic droit : menu habituel.</small></div>`;

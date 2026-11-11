@@ -89,8 +89,8 @@ The app does not redistribute CCI/TEF audio. Official resources are linked separ
 - 🌐 adds up to two more languages (Hebrew, Arabic, Spanish…; `S.trLangs`, synced with the rest of the state). « ＋ Mes cartes »
   turns the word into a flashcard (`S.custom`, theme « Mots traduits ») with the sentence as its example.
 - `translate.js` sends `{text, context, langs}` to `api/translate.js` (Claude Haiku, signed-in allowed accounts only) and keeps
-  the last 300 answers in `localStorage` (`tef-tr-cache-v1`). Without the AI it uses the browser's built-in translator when its
-  model is already on the device (never starts a download), then the app's word list. Off during a timed examen blanc.
+  the last 300 answers in `localStorage` (`tef-tr-cache-v1`). Without the AI (signed out, offline) it falls back to the app's
+  word list, else asks to sign in. Off during a timed examen blanc.
 
 ## Running locally
 
