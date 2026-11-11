@@ -470,3 +470,4 @@ body[data-view="today"] .city-bg{display:none}
 .linklike{border:0;background:none;padding:0;color:var(--pen-red);text-decoration:underline;font:inherit;cursor:pointer}
 @media print{.notebook mark.kw{background:none;text-decoration:underline}}
 .nb-fiche .table-wrap{margin-top:8px}
+.nb-ftable th{hyphens:none;-webkit-hyphens:none;white-space:nowrap}

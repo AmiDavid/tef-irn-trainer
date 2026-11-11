@@ -159,7 +159,8 @@ function snapshot(id){const s=(S().copied||{})[id];if(s)return s;const b=(window
 const SHORT_KINDS=new Set(['sub','sum','thead','row','ex','mist']);
 /* One-page summary (« fiche », build 25): content/fiches/*.js, [{h, l:[lines], t:{head,rows}}], *…* = keyword. It is the default
    page to copy; « Complète » shows the whole lesson. A lesson without a fiche falls back to the short page above. */
-const ficheOf=id=>(D().grammarFiche||{})[id]||null;
+const ficheOf=id=>{const f=(D().grammarFiche||{})[id];if(!f)return null;const tabs=tablesOf(plus(id));
+  return f.map(s=>s.tab!=null&&tabs[s.tab]?{...s,t:{head:tabs[s.tab].head,rows:tabs[s.tab].rows}}:s)};
 const ficheText=t=>esc(t).replace(/\*([^*]+)\*/g,'<mark class="kw">$1</mark>');
 function ficheLines(id){const out=[],add=(k,t)=>{if(lineText(t))out.push({k,t:lineText(t),key:lineKey(k,t)})};
   (ficheOf(id)||[]).forEach(s=>{add('fh',s.h);if(s.t?.head?.length){add('fth',s.t.head.join(' | '));s.t.rows.forEach(r=>add('ftr',r.join(' | ')))}(s.l||[]).forEach(x=>add('fl',x))});return out}
@@ -214,7 +215,7 @@ function renderCopy(id){
   root.innerHTML=`
     <div class="copy-tools no-print">
       <button class="back-link" data-back>‹ ${backLabel()}</button>
-      <div class="copy-actions"><div class="nb-mode" role="group" aria-label="Version du cahier"><button data-nbmode="fiche" aria-pressed="${layout!=='full'}">${F?'Fiche (1 page)':'Courte'}</button><button data-nbmode="full" aria-pressed="${layout==='full'}">Complète</button></div>${layout!=='fiche'?`<label class="copy-toggle"><input type="checkbox" id="copyEn" ${showEn?'checked':''}> 🇬🇧 Anglais</label>`:''}<button class="btn ghost small" id="copyPrint">Imprimer</button></div>
+      <div class="copy-actions"><div class="nb-mode" role="group" aria-label="Version du cahier"><button data-nbmode="fiche" aria-pressed="${layout!=='full'}">${F?'Fiche':'Courte'}</button><button data-nbmode="full" aria-pressed="${layout==='full'}">Complète</button></div>${layout!=='fiche'?`<label class="copy-toggle"><input type="checkbox" id="copyEn" ${showEn?'checked':''}> 🇬🇧 Anglais</label>`:''}<button class="btn ghost small" id="copyPrint">Imprimer</button></div>
     </div>
     ${news.length?`<div class="nb-update no-print" role="status"><strong>📌 ${news.length} ${news.length>1?'nouveautés':'nouveauté'} depuis ta copie${snap.t?` du ${new Date(snap.t).toLocaleDateString('fr-FR',{day:'numeric',month:'long'})}`:''}</strong><span>Les passages surlignés en jaune sont nouveaux ou ont été complétés : ajoute-les dans ton cahier.</span><button class="btn small" id="nbAck">C’est fait, je les ai ajoutés ✓</button></div>`:''}
     ${today?`<div class="today-banner no-print"><strong>Leçon du jour · étape 2</strong><span>${stepText}</span></div>`:''}
@@ -224,7 +225,7 @@ function renderCopy(id){
       <p class="nb-sub${mk('sub',g.short)}">${esc(g.short)}</p>
       ${body}
     </article>
-    <div class="topic-cta no-print">${today?(done?`<span class="chip">✓ Recopié</span><button class="btn" id="copyNext">Continuer : questions de base</button>`:`<button class="btn" id="copyDone">J’ai tout recopié ✓</button>`):copiedHere?'':`<button class="btn" id="copyMark">J’ai recopié cette page ✓</button>`}<button class="btn ghost" id="copyLesson">Revoir la leçon</button></div>`;
+    <div class="topic-cta no-print">${today?(done?`<span class="chip">✓ Recopié</span>${copiedHere?'':`<button class="btn ghost" id="copyMark">J’ai recopié cette version ✓</button>`}<button class="btn" id="copyNext">Continuer : questions de base</button>`:`<button class="btn" id="copyDone">J’ai tout recopié ✓</button>`):copiedHere?'':`<button class="btn" id="copyMark">J’ai recopié cette page ✓</button>`}<button class="btn ghost" id="copyLesson">Revoir la leçon</button></div>`;
   app().show('gcopy');window.scrollTo(0,0);
   $('[data-back]',root).onclick=backHome;
   $('#copyEn')&&($('#copyEn').onchange=e=>{S().copyEn=e.target.checked;app().save();renderCopy(id)});

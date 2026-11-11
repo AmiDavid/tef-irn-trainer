@@ -1,25 +1,20 @@
 /* One-page summaries (« fiches »), part 1: the page to copy into the notebook and to look things up in when a question
    blocks. Each fiche = sections {h: heading, l: lines, t: optional compact table}; *…* = keyword (highlighted).
-   qa/content-qa.txt keeps each fiche to one page. Lessons: g5, g29, g11, g30, g4, g31. */
+   qa/content-qa.txt keeps each fiche to one page, or a double page when it carries the lesson’s full tables ({h, tab: n}
+   shows the lesson’s table n exactly as in the lesson). Lessons: g5, g29, g11, g30, g4, g31. */
 (()=>{const B=window.TEF_BANK=window.TEF_BANK||{};const F=B.grammarFiche=B.grammarFiche||{};
 Object.assign(F,{
 g5:[
-  {h:"Un ou une ? Le genre",l:[
-    "Apprendre chaque nom *avec son article* : une semaine, un problème, une facture.",
-    "*Féminin* : -tion, -sion, -té, -ure, -ée, -ie, -ette, -ade, -ance, -ence, -esse, -tude (la décision, la santé, l’expérience)",
-    "*Masculin* : -ment, -age, -eau, -isme, -oir, -ier, -et, -al, -ail, -ème (le logement, le garage, le problème)",
-    "Exceptions : *la* page, plage, image, eau, peau, crème · *le* musée, lycée, silence, côté, été, incendie · *la* personne"
+  {h:"Un ou une ? Apprendre chaque nom avec son article",tab:0,l:[
+    "Toujours féminin : *la personne* (même pour un homme). Masculin malgré le -e : *le* problème, *le* système, *le* programme."
   ]},
   {h:"Accorder",l:[
-    "Déterminant + nom + adjectif : *même genre, même nombre* (des charges élevées).",
-    "Féminin *+ e* (grand → grande) ; adjectif déjà en -e : rien ne change (jeune, facile).",
-    "-er → *-ère* · -f → *-ve* · -x → *-se* · -eur → *-euse / -rice* · -el → *-elle* · -en, -on → *-enne, -onne* · -et → *-ette* (mais complète)",
-    "À connaître : belle, nouvelle, vieille, grosse, blanche, longue, fraîche, gentille, fausse, douce, publique, sèche",
-    "Pluriel *+ s* ; -s, -x, -z : rien (le prix → les prix) ; -eau, -eu → *+ x* (des bureaux, des jeux)",
-    "-al → *-aux* (des journaux) ; travail → travaux ; bijou, chou, genou → -oux ; un œil → des yeux",
+    "Déterminant + nom + adjectif : *même genre, même nombre* (le / la / les, un / une / des, mon / ma / mes, ce / cette / ces).",
     "Avec *être* : accord avec le sujet (la salle est fermée, les dossiers sont complets).",
     "Masculin + féminin → *masculin pluriel* (une cuisine et un salon lumineux)."
   ]},
+  {h:"Féminin des adjectifs",tab:1},
+  {h:"Pluriel des noms et des adjectifs",tab:2},
   {h:"Devant une voyelle ou un h muet",l:[
     "ma, ta, sa → *mon, ton, son* : mon adresse, son école.",
     "beau, nouveau, vieux → *bel, nouvel, vieil* : un nouvel appartement."
@@ -28,7 +23,7 @@ g5:[
     "En général *après* : une voiture rouge, un loyer élevé.",
     "*Avant* (BAGS) : beau, joli · jeune, vieux, nouveau · bon, mauvais · grand, petit, gros · autre.",
     "des + adjectif + nom pluriel → *de* : de nouveaux voisins (mais des grands-parents).",
-    "Le sens change : un *ancien* collègue (former) / un immeuble *ancien* (old) ; un *grand* homme / un homme *grand*."
+    "Le sens change : un *ancien* collègue (former) / un immeuble *ancien* (old) ; mon *propre* bureau (own) / un bureau *propre* (clean)."
   ]}
 ],
 g29:[

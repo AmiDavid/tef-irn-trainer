@@ -72,8 +72,9 @@ The app does not redistribute CCI/TEF audio. Official resources are linked separ
 
 - The notebook page switches between « Fiche (1 page) » and « Complète » (`S.nbMode`, fiche by default).
 - **Fiche**: a one-page summary written for looking things up when a question blocks: `content/fiches/fiches-N.js` fills
-  `grammarFiche[id] = [{h, l: [lines], t: {head, rows}}]`, `*…*` marks keywords (blue highlighter). Content QA keeps each
-  fiche to one page (≤ 32 lines) and fails if a lesson has none (all 43 since build 26). A lesson without a fiche would fall back to the **short** page: « À retenir », tables, examples
+  `grammarFiche[id] = [{h, l: [lines], t: {head, rows}, tab: n}]`, `*…*` marks keywords (blue highlighter); `tab: n` shows the
+  lesson's own table n (as in `tablesOf()`) exactly as in the lesson, so the tables to look things up in stay identical. Content QA keeps each
+  fiche to one page, or a double page when it carries full lesson tables (≤ 64 lines), and fails if a lesson has none (all 43 since build 26). A lesson without a fiche would fall back to the **short** page: « À retenir », tables, examples
   and mistakes, with the detailed rules and tips folded (« à relire, pas à recopier ») and hidden when printing.
 - A copy remembers its version (`S.copied[id].mode`: fiche, short or full; copies before build 24 count as full). Updates are
   computed only on the lines of that version (`notebookLines(id, mode)`), and while a copy has lines to add, the page opens
