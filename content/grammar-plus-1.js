@@ -273,7 +273,7 @@
       ["-eau","masculin","le bureau, le tableau (mais l’eau f., la peau)"],
       ["-isme","masculin","le tourisme, le racisme"],
       ["-oir","masculin","le trottoir, le devoir, l’espoir"],
-      ["-ier","masculin","le quartier, le dossier, le métier"],
+      ["-er, -ier","masculin","le loyer, le dossier, le quartier, le métier (mais la mer f.)"],
       ["-et","masculin","le billet, le projet, le budget"],
       ["-al, -ail","masculin","le journal, l’hôpital, le travail, le détail"],
       ["-ème","masculin","le problème, le système (mais la crème f.)"]
@@ -288,7 +288,7 @@
         ["-eur", "-euse ou -rice", "travailleur → travailleuse, conservateur → conservatrice (mais meilleur → meilleure, supérieur → supérieure, extérieur → extérieure)"],
         ["-el, -eil", "-elle, -eille", "professionnel → professionnelle, pareil → pareille"],
         ["-en, -on", "-enne, -onne", "ancien → ancienne, bon → bonne"],
-        ["-et", "-ette (parfois -ète)", "muet → muette ; complet → complète, inquiet → inquiète"],
+        ["-et", "-ette, mais -ète pour complet, concret, discret, inquiet, secret", "muet → muette, net → nette ; complet → complète, inquiet → inquiète, secret → secrète"],
         ["irréguliers", "à apprendre", "beau → belle, nouveau → nouvelle, vieux → vieille, gros → grosse, blanc → blanche, frais → fraîche, long → longue, gentil → gentille, faux → fausse, doux → douce, public → publique, sec → sèche"]
       ]},
       {title:"Pluriel des noms et des adjectifs", head:["Singulier", "Pluriel", "Exemples"], rows:[

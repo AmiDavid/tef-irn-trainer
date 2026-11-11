@@ -34,7 +34,7 @@ function check(given,answers){
 }
 /* Word-level diff of the learner's answer against the closest expected answer. */
 function diff(given,answer){
-  const a=String(given||'').trim().split(/\s+/),b=String(answer||'').trim().split(/\s+/);
+  const tok=s=>String(s||'').replace(/\s*([:;!?])/g,' $1').trim().split(/\s+/),a=tok(given),b=tok(answer);
   const n=a.length,m=b.length,L=Array.from({length:n+1},()=>new Array(m+1).fill(0));
   const same=(u,v)=>nocomma(norm(u))===nocomma(norm(v));
   for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)L[i][j]=same(a[i],b[j])?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
