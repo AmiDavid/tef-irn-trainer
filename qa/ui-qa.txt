@@ -493,6 +493,30 @@ async function visible(page,selector){
       assert.deepEqual(rerr,[],"rule panel page errors: "+rerr.join(" | "));
       await rp.close();
     }
+
+    /* « Mais » column (build 31): exceptions written « (mais …) » get their own column; copies are not asked to recopy rows. */
+    {
+      const mp=await browser.newPage({viewport:{width:1280,height:820}});
+      const merr=[];mp.on("pageerror",e=>merr.push(e.message));
+      await mp.goto(base,{waitUntil:"networkidle"});
+      await mp.evaluate(()=>{const keys=TEF_TOPIC.notebookLines("g5","fiche").map(l=>l.key);
+        const row=TEF_TOPIC.notebookLines("g5","fiche").find(l=>l.t.startsWith("-ance, -ence"));
+        TEF_APP.S.copied=TEF_APP.S.copied||{};TEF_APP.S.copied.g5={t:Date.now()-864e5,mode:"fiche",keys:keys.filter(k=>k!==row.key)};
+        TEF_TOPIC.copy("g5")});
+      await visible(mp,"#view-gcopy.active .nb-fiche table.has-mais >> nth=0");
+      const v=await mp.evaluate(()=>({heads:[...document.querySelectorAll("#view-gcopy .nb-fiche table")].map(t=>[...t.querySelectorAll("th")].map(h=>h.textContent).join(" | ")),
+        news:[...document.querySelectorAll("#view-gcopy tr.nb-new")].map(tr=>[...tr.children].map(td=>td.textContent)),
+        updates:TEF_TOPIC.updatesOf("g5").length}));
+      assert.deepEqual(v.heads,["Terminaison | Genre le plus fréquent | Exemples | Mais","Masculin | Féminin | Exemples | Mais","Singulier | Pluriel | Exemples | Mais"]);
+      assert.equal(v.updates,1,"only the row left out of the copy is new");
+      assert.deepEqual(v.news,[["-ance, -ence","féminin","la naissance, l’assurance, l’expérience, la résidence","le silence m."]],"the new row is split into its Mais cell");
+      /* A table without exceptions keeps its columns. */
+      await mp.evaluate(()=>{delete TEF_APP.S.copied.g5;TEF_APP.save();location.hash="#g/g29"});
+      await visible(mp,"#view-gtopic.active .topic-hero h1");
+      assert.equal(await mp.locator("#view-gtopic th.mais-col").count(),0,"no Mais column without exceptions");
+      assert.deepEqual(merr,[],"Mais column page errors: "+merr.join(" | "));
+      await mp.close();
+    }
     console.log("UI QA OK");
   } finally {
     await browser.close();

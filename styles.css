@@ -534,3 +534,7 @@ body.rp-open .rule-btn{border-color:var(--brand);color:var(--brand)}
 .tr-g.f{background:rgba(244,114,182,.18);color:#f9a8d4;border:1px solid rgba(244,114,182,.45)}
 .tr-g.m{background:rgba(96,165,250,.18);color:#93c5fd;border:1px solid rgba(96,165,250,.45)}
 .tr-g.mf{background:rgba(167,139,250,.18);color:#c4b5fd;border:1px solid rgba(167,139,250,.45)}
+/* « Mais » column (build 31): the exceptions of a row, apart from its examples. */
+th.mais-col{white-space:nowrap}
+td.mais-col{font-style:italic}
+.notebook td.mais-col{color:#1f7a4d}

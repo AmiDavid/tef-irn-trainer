@@ -19,7 +19,7 @@ g5:{
     "*Des* (some) becomes *de* when an adjective comes before a plural noun: *de nouveaux voisins* (new neighbours), *de bons résultats* (good results). With the adjective after the noun, keep *des*: *des voisins sympathiques* (nice neighbours). If adjective + noun form one fixed word, keep *des*: *des grands-parents* (grandparents), *des petits pois* (peas). In speech many people say *des* anyway; in the exam, write *de*."
   ],
   tables:[
-    "Guessing a noun’s gender from its ending: nouns with these endings are usually feminine (top) or masculine (bottom). The words after *mais* (but) are the exceptions to learn.",
+    "Guessing a noun’s gender from its ending: nouns with these endings are usually feminine (top) or masculine (bottom). The *Mais* (but) column lists the exceptions to learn.",
     "How an adjective changes for a feminine noun: find its masculine ending in the first column; the feminine ending is in the second.",
     "How nouns and adjectives change in the plural: find the singular ending in the first column."
   ],

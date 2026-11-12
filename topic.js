@@ -124,11 +124,19 @@ function renderLesson(id){
 const keepEndings=h=>h.replace(/(^|[\s(])(-[^\s,;()]+)/g,'$1<span class="nw">$2</span>');
 const tablesOf=p=>[p.table,...(p.tables||[])].filter(t=>t?.head?.length);
 const clsAttr=c=>c.trim()?` class="${c.trim()}"`:'';
+/* Exceptions get their own « Mais » column (build 31): a last cell ending in « (mais …) » is shown as two cells,
+   « la santé, la société » | « le côté, l’été m. ». Only tables that have exceptions get the column. Line keys (what the learner
+   copied) keep the original text, so the new layout never asks to recopy a row. */
+const MAIS=/\s*\(mais\s+([^()]+)\)\s*$/i;
+function maisView(t){
+  if(!t.rows.some(r=>MAIS.test(r[r.length-1]||'')))return t;
+  return {...t,head:[...t.head,'Mais'],mais:true,rows:t.rows.map(r=>{const last=r[r.length-1]||'',x=last.match(MAIS);return x?[...r.slice(0,-1),last.replace(MAIS,''),x[1]]:[...r,'']})};
+}
 /* mk(kind,text) returns ' nb-new' for a line added since the learner copied the page (notebook only). */
 function tableHTML(t,cls,mk,en){
   if(!t?.head?.length)return '';
-  const m=mk||(()=>''),hc=m('thead',tableHead(t));
-  return `${t.title?`<h3 class="table-title${hc}">${esc(t.title)}</h3>`:''}${enNote(en,'en-table')}<div class="table-wrap"><table class="${cls}"><thead><tr${clsAttr(hc)}>${t.head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${t.rows.map(r=>`<tr${clsAttr(m('row',r.join(' | ')))}>${r.map(c=>`<td>${keepEndings(esc(c))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  const m=mk||(()=>''),hc=m('thead',tableHead(t)),v=maisView(t),last=v.head.length-1;
+  return `${t.title?`<h3 class="table-title${hc}">${esc(t.title)}</h3>`:''}${enNote(en,'en-table')}<div class="table-wrap"><table class="${cls}${v.mais?' has-mais':''}"><thead><tr${clsAttr(hc)}>${v.head.map((h,i)=>`<th${v.mais&&i===last?' class="mais-col"':''}>${esc(h)}</th>`).join('')}</tr></thead><tbody>${v.rows.map((r,ri)=>`<tr${clsAttr(m('row',t.rows[ri].join(' | ')))}>${r.map((c,i)=>`<td${v.mais&&i===last?' class="mais-col"':''}>${keepEndings(esc(c))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 }
 
 /* lines:start — the notebook page as a list of lines, so the app can tell what was added after the learner copied it.
