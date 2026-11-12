@@ -168,6 +168,61 @@ const nbMode=()=>{const m=S().nbMode;return m==='full'||m==='fiche'?m:(S().nbSho
 const linesFor=(id,mode)=>{if(mode==='fiche')return ficheLines(id);const l=lessonLines(card(id),plus(id));return mode==='short'?l.filter(x=>SHORT_KINDS.has(x.k)):l};
 function updatesOf(id){const s=snapshot(id);if(!s||!card(id))return [];const have=new Set(s.keys);return linesFor(id,s.mode||'full').filter(l=>!have.has(l.key))}
 function markCopied(id,mode){const st=S();let m=mode||nbMode();if(m==='fiche'&&!ficheOf(id))m='short';st.copied=st.copied||{};st.copied[id]={t:Date.now(),mode:m,keys:linesFor(id,m).map(l=>l.key)};app().save()}
+
+/* 📖 The rule behind a question (build 30): « 📖 Fiche » opens the subject's one-page summary in a side panel, at the section that
+   fits the question; once answered, « 📖 Voir la règle » also highlights the line or table row. The match compares the words the
+   answer changes (and the cue and the explanation) with the fiche's lines and table rows, ignoring accents, -s and -e. */
+const RSTOP=new Set('le la les l un une des de du d au aux a et ou en est sont etre avoir ai as ont ce cet cette ces qui que qu quoi dont ne n pas plus se s sa son ses mon ma mes ton ta tes il elle ils elles on nous vous je j tu me m te t lui leur leurs y dans par pour sur avec sans tres mais donc car si comme tout tous toute toutes'.split(' '));
+const rWords=t=>strip(String(t||'').toLowerCase()).replace(/[’']/g,' ').match(/[a-zœæ]+/g)||[];
+const rStem=w=>{if(w.length>3)w=w.replace(/[sx]$/,'');if(w.length>3)w=w.replace(/e$/,'');return w};
+function ruleMatch(tid,x){
+  const lines=ficheLines(tid);if(!lines.length||!x)return null;
+  const answer=x.type==='mcq'?(x.choices||[])[x.answer]:(x.answers||[])[0]||(x.words||[]).join(' ');
+  const before=new Set(rWords(x.prompt));
+  let target=rWords(answer).filter(w=>!before.has(w));if(!target.length)target=rWords(answer);
+  const onlyStop=target.every(w=>RSTOP.has(w)),tw=new Map();
+  for(const w of target){const k=rStem(w);tw.set(k,Math.max(tw.get(k)||0,RSTOP.has(w)?(onlyStop?2:1):3))}
+  /* The words right around a gap (« ___ horaire ») say what the question is about. */
+  const gap=String(x.prompt||'').split(/_{3,}/),near=new Set(gap.length>1?[...rWords(gap[0]).filter(w=>!RSTOP.has(w)).slice(-2),...rWords(gap[1]).filter(w=>!RSTOP.has(w)).slice(0,2)].map(rStem):[]);
+  const ctx=new Set([...rWords(x.explain),...rWords(x.hint)].filter(w=>w.length>2&&!RSTOP.has(w)).map(rStem));
+  let best=null,sec=-1,head=new Set();
+  for(const l of lines){
+    if(l.k==='fh'){sec++;head=new Set(rWords(l.t).map(rStem));continue}
+    if(l.k!=='fl'&&l.k!=='ftr')continue;
+    const ws=new Set(rWords(l.t).map(rStem));let sc=0;
+    for(const [w,v] of tw)if(ws.has(w))sc+=v;
+    for(const w of ctx)sc+=ws.has(w)?1:head.has(w)?.75:0;
+    for(const w of near)if(ws.has(w))sc+=1.5;
+    if(sc>(best?best.score:0))best={score:sc,key:l.key,sec,text:l.t,words:[...tw].filter(([,v])=>v>=2).map(([w])=>w)};
+  }
+  return best&&best.score>=2?best:null;
+}
+let RP=null;
+function rulePanel(tid,x,hit){
+  const F=ficheOf(tid);if(!F)return app().toast('Pas encore de fiche pour ce sujet.');
+  const m=ruleMatch(tid,x),hk=hit&&m?m.key:null,mk=(k,t)=>hk&&lineKey(k,t)===hk?' rule-hit':'';
+  let el=$('#rulePanel');
+  if(!el){el=document.createElement('aside');el.id='rulePanel';el.className='rule-panel';el.setAttribute('role','dialog');document.body.appendChild(el);
+    el.addEventListener('click',e=>{if(e.target.closest('[data-rp-close]'))closeRule()})}
+  el.setAttribute('aria-label','Fiche : '+card(tid).title);
+  el.innerHTML=`<div class="rp-head"><span class="rp-title">📖 ${esc(card(tid).title)}</span><button type="button" class="rp-x" data-rp-close aria-label="Fermer la fiche" title="Fermer (Échap)">×</button></div>
+    <div class="rp-body">${hit&&!m?'<p class="rp-miss">La ligne exacte n’a pas été trouvée : la règle est dans cette fiche.</p>':''}<article class="notebook rp-note"><div class="nb-fiche">${F.map((f,i)=>`<section data-sec="${i}"><h2>${ficheText(f.h)}</h2>${f.t?.head?.length?tableHTML(f.t,'nb-table nb-ftable',(k,t)=>mk(k==='thead'?'fth':'ftr',t)):''}${f.l?.length?`<ul class="nb-fl">${f.l.map(l=>`<li${clsAttr(mk('fl',l))}>${ficheText(l)}</li>`).join('')}</ul>`:''}</section>`).join('')}</div></article></div>`;
+  el.hidden=false;document.body.classList.add('rp-open');RP={tid,hit:!!hit};
+  const body=$('.rp-body',el),target=$('.rule-hit',el)||(m?$(`[data-sec="${m.sec}"]`,el):null);
+  const hitEl=hk&&$('.rule-hit',el),want=new Set(m?.words||[]);
+  if(hitEl&&want.size){ // inside the highlighted line, the very words of the answer
+    const tw=document.createTreeWalker(hitEl,NodeFilter.SHOW_TEXT),nodes=[];for(let n;(n=tw.nextNode());)nodes.push(n);
+    for(const n of nodes){const parts=n.data.split(/(\p{L}+)/u);if(!parts.some(p=>want.has(rStem(strip(p.toLowerCase())))))continue;
+      const frag=document.createDocumentFragment();
+      for(const p of parts){if(!p)continue;if(want.has(rStem(strip(p.toLowerCase())))){const b=document.createElement('b');b.className='rule-word';b.textContent=p;frag.append(b)}else frag.append(p)}
+      n.replaceWith(frag)}
+  }
+  body.scrollTop=0;
+  if(target){const r=target.getBoundingClientRect(),b=body.getBoundingClientRect();body.scrollTop=Math.max(0,r.top-b.top-(hk?Math.min(120,b.height/4):6))}
+}
+function closeRule(){const el=$('#rulePanel');if(el){el.hidden=true;el.innerHTML=''}document.body.classList.remove('rp-open');RP=null}
+addEventListener('keydown',e=>{if(e.key==='Escape'&&RP)closeRule()});
+addEventListener('hashchange',()=>{if(RP&&!/^#g[sp]\//.test(location.hash))closeRule()});
 const notebookUpdates=()=>D().grammar.map(g=>({id:g.id,title:g.title,n:updatesOf(g.id).length})).filter(u=>u.n);
 function myErrors(id){
   const g=card(id),list=(S().aiErrors||[]).filter(e=>e.category===`Grammaire : ${g.title}`).slice(-6);
@@ -335,8 +390,11 @@ function renderExercise(){
     body=`<p class="ex-instruction">Touche les mots dans le bon ordre pour former la phrase.</p><div class="order-line" id="orderLine"><span class="muted">Ta phrase apparaîtra ici</span></div><div class="order-bank" id="orderBank">${shuffle(x.words.map((w,i)=>({w,i}))).map(o=>`<button class="token" data-t="${o.i}">${esc(o.w)}</button>`).join('')}</div><div class="button-row"><button class="btn ghost small" id="orderReset">Recommencer</button><button class="btn" id="exCheck">Vérifier</button></div>`;
   }
   const topicChip=(P.mixed?`<span class="chip topic-chip">${esc(card(it.tid).title)}</span>`:'')+(x.ai?'<span class="chip ai-chip">IA</span>':x.gen?'<span class="chip ai-chip">auto</span>':'');
-  root.innerHTML=head()+`<div class="card exercise"><div class="exercise-top"><span class="kicker">${TYPE_LABEL[x.type]||''}</span>${topicChip}</div>${body}<div id="exFb"></div><div class="runner-nav" id="exNav" hidden><span></span><button class="btn" id="exNext">${P.idx<P.items.length-1?'Suivant ›':'Voir mon score'}</button></div></div>`;
+  const ruleBtn=ficheOf(it.tid)?'<button type="button" class="rule-btn" id="exRule" title="Ouvrir la fiche de ce sujet">📖 Fiche</button>':'';
+  root.innerHTML=head()+`<div class="card exercise"><div class="exercise-top"><span class="kicker">${TYPE_LABEL[x.type]||''}</span><span class="ex-top-end">${topicChip}${ruleBtn}</span></div>${body}<div id="exFb"></div><div class="runner-nav" id="exNav" hidden><span></span><button class="btn" id="exNext">${P.idx<P.items.length-1?'Suivant ›':'Voir mon score'}</button></div></div>`;
   $('[data-lesson]',root).onclick=()=>P.back.fn();
+  $('#exRule')&&($('#exRule').onclick=()=>RP?closeRule():rulePanel(it.tid,x,P.results.length>P.idx));
+  if(RP){if(ficheOf(it.tid))rulePanel(it.tid,x,false);else closeRule()}
   $('#exHint')&&($('#exHint').onclick=()=>{$('#exHintText').hidden=false;$('#exHint').hidden=true});
   $$('.accent-key',root).forEach(k=>k.onmousedown=e=>{e.preventDefault();const i=$('#exInput');if(!i)return;const s=i.selectionStart??i.value.length,en=i.selectionEnd??s;i.value=i.value.slice(0,s)+k.textContent+i.value.slice(en);i.selectionStart=i.selectionEnd=s+k.textContent.length;i.focus()});
   if(x.type==='mcq'){
@@ -383,6 +441,8 @@ function alsoOk(answers,best){
 function feedback(verdict,x,expected,diffHTML,others){
   const title={ok:'✓ Correct',accents:'≈ Presque : vérifie les accents',wrong:'✕ Pas tout à fait'}[verdict];
   $('#exFb').innerHTML=`<div class="feedback ex-feedback v-${verdict}"><strong>${title}</strong>${expected?`<div>Réponse attendue : ${expected}</div>`:''}${diffHTML?`<div class="diff">${diffHTML}</div>`:''}${others?.length?`<div class="muted">Aussi accepté : ${others.map(esc).join(' · ')}</div>`:''}${x.explain?`<div class="ex-explain">${esc(x.explain)}</div>`:''}</div>`;
+  const cur=P.items[P.idx];
+  if(ficheOf(cur.tid)){$('#exFb .ex-feedback').insertAdjacentHTML('beforeend','<button type="button" class="link-btn rule-link" id="exRuleHit">📖 Voir la règle dans la fiche</button>');$('#exRuleHit').onclick=()=>rulePanel(cur.tid,cur.x,true);if(RP)rulePanel(cur.tid,cur.x,true)}
   if(!P.items[P.idx]?.x?.gen)$('#exFb').insertAdjacentHTML('beforeend','<button class="link-btn flag-btn" id="exFlag">Signaler une erreur dans cette question</button>');
   $('#exFlag')&&($('#exFlag').onclick=()=>{
     const it=P.items[P.idx],st=S();st.flags=st.flags||{};
@@ -404,6 +464,7 @@ function record(ok,given,expected){
   app().save();
 }
 function renderEnd(){
+  closeRule();
   const ok=P.results.filter(r=>r.ok).length,total=P.results.length,wrongK=P.results.filter(r=>!r.ok).map(r=>r.k);
   const st=S();st.gbest=st.gbest||{};
   if(P.topicId&&P.items.length===practiceItems(P.topicId).length&&(!st.gbest[P.topicId]||ok>st.gbest[P.topicId].score))st.gbest[P.topicId]={score:ok,total,date:new Date().toISOString()};
@@ -429,5 +490,5 @@ function init(){
   route();
 }
 window.TEF_TOPIC={init,open:(id,o)=>{origin=o||'grammar';go('#g/'+id)},copy:(id,o)=>{origin=o||'grammar';go('#c/'+id)},practice:id=>go('#gp/'+id),
-  session:(cfg)=>{origin='today';session(cfg,false)},check,norm,practiceItems,isFlagged,levelOf,lessonLines,notebookLines:linesFor,updatesOf,markCopied,notebookUpdates,invalidate,moreFor,unlimited,generateAI,route,current:()=>P&&{key:P.key,items:P.items.map(o=>({tid:o.tid,i:o.i,x:o.x})),idx:P.idx}};
+  session:(cfg)=>{origin='today';session(cfg,false)},check,norm,practiceItems,isFlagged,levelOf,lessonLines,notebookLines:linesFor,ruleMatch,rulePanel,closeRule,updatesOf,markCopied,notebookUpdates,invalidate,moreFor,unlimited,generateAI,route,current:()=>P&&{key:P.key,items:P.items.map(o=>({tid:o.tid,i:o.i,x:o.x})),idx:P.idx}};
 })();

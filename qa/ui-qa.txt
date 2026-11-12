@@ -365,20 +365,23 @@ async function visible(page,selector){
         TEF_TRANSLATE.clearCache();delete TEF_APP.S.trLangs;window.__calls=[];
         addEventListener("contextmenu",e=>{window.__cm=e.defaultPrevented});
         Object.defineProperty(TEF_CONNECTED,"ready",{get:()=>true,set:()=>{},configurable:true});
-        TEF_CONNECTED.post=async(p,b)=>{window.__calls.push({p,b});return {text:b.text,lemma:b.text==="personne"?"la personne":b.text,grammar:"nom féminin",en:b.text==="personne"?"person":"insurance",other:b.langs.includes("he")?{he:"אדם"}:{},note:""}};
+        TEF_CONNECTED.post=async(p,b)=>{window.__calls.push({p,b});return {text:b.text,lemma:b.text==="personne"?"la personne":b.text,gender:"f",grammar:"nom",en:b.text==="personne"?"person":"insurance",other:b.langs.includes("he")?{he:"אדם"}:{},note:""}};
       });
       /* Screen point on a word: the n-th match outside (or inside) the English notes, scrolled into view. */
-      const at=(word,{en=false,off=2}={})=>dp.evaluate(({word,en,off})=>{
+      const at=(word,{en=false,off=2,ctx=""}={})=>dp.evaluate(({word,en,off,ctx})=>{
         const tw=document.createTreeWalker(document.querySelector("#gtopicBody"),NodeFilter.SHOW_TEXT);
         for(let n;(n=tw.nextNode());){const i=n.data.indexOf(word);if(i<0||Boolean(n.parentElement.closest(".en-note"))!==en)continue;
+          if(ctx&&!n.parentElement.closest("li,p,td,div").textContent.includes(ctx))continue;
           n.parentElement.scrollIntoView({block:"center",behavior:"instant"});
           const r=document.createRange();r.setStart(n,i+off);r.setEnd(n,i+off+1);const b=r.getBoundingClientRect();return {x:b.left+b.width/2,y:b.top+b.height/2}}
-        return null},{word,en,off});
+        return null},{word,en,off,ctx});
       const rightClick=async(word,opt)=>{const p=await at(word,opt);assert.ok(p,"word on the page: "+word);await dp.mouse.click(p.x,p.y,{button:"right"})};
-      await rightClick("personne");
+      await rightClick("personne",{ctx:"toujours féminin"});
       await visible(dp,".tr-pane:not([hidden]) .tr-en");
       assert.equal((await dp.locator(".tr-pane .tr-en").textContent()).trim(),"person");
       assert.equal((await dp.locator(".tr-pane .tr-word").textContent()).trim(),"personne");
+      assert.equal((await dp.locator(".tr-pane .tr-g.f").textContent()).trim(),"féminin","the gender is shown");
+      assert.ok((await dp.locator(".tr-pane .tr-meta").textContent()).includes("la personne"),"with its article");
       let calls=await dp.evaluate(()=>window.__calls);
       assert.equal(calls.length,1);assert.equal(calls[0].p,"/api/translate");assert.equal(calls[0].b.text,"personne");
       assert.ok(calls[0].b.context.includes("toujours féminin"),"the sentence goes with the word");
@@ -387,7 +390,7 @@ async function visible(page,selector){
       await dp.keyboard.press("Escape");
       assert.ok(await dp.locator(".tr-pane").isHidden(),"Esc closes the pane");
       /* Same word, same sentence: answered from the cache. */
-      await rightClick("personne");
+      await rightClick("personne",{ctx:"toujours féminin"});
       await visible(dp,".tr-pane:not([hidden]) .tr-en");
       assert.equal(await dp.evaluate(()=>window.__calls.length),1,"cached");
       /* 🌐 → Hebrew: saved, sent, shown right to left. */
@@ -415,10 +418,10 @@ async function visible(page,selector){
       const n=await dp.evaluate(()=>window.__calls.length);
       await rightClick("Common",{en:true});
       assert.equal(await dp.evaluate(()=>window.__cm),false,"English text keeps the browser menu");
-      await dp.keyboard.down("Shift");await rightClick("personne");await dp.keyboard.up("Shift");
+      await dp.keyboard.down("Shift");await rightClick("personne",{ctx:"toujours féminin"});await dp.keyboard.up("Shift");
       assert.equal(await dp.evaluate(()=>window.__cm),false,"Shift + right-click keeps the browser menu");
       await dp.evaluate(()=>{window.__mock=TEF_EXAM.mockLive;TEF_EXAM.mockLive=()=>true});
-      await rightClick("personne");
+      await rightClick("personne",{ctx:"toujours féminin"});
       assert.equal(await dp.evaluate(()=>window.__cm),false,"no translation during an examen blanc");
       await dp.evaluate(()=>{TEF_EXAM.mockLive=window.__mock});
       assert.ok(await dp.locator(".tr-pane").isHidden());
@@ -439,6 +442,56 @@ async function visible(page,selector){
       await dp.evaluate(()=>{TEF_APP.S.custom=TEF_APP.S.custom.filter(c=>c.tag!=="trad");delete TEF_APP.S.trLangs;TEF_APP.save();TEF_TRANSLATE.clearCache()});
       assert.deepEqual(derr,[],"translation page errors: "+derr.join(" | "));
       await dp.close();
+    }
+
+    /* 📖 Fiche next to a question (build 30): the subject's fiche in a side panel; after answering, the rule is highlighted. */
+    {
+      const rp=await browser.newPage({viewport:{width:1280,height:820}});
+      const rerr=[];rp.on("pageerror",e=>rerr.push(e.message));
+      await rp.goto(base,{waitUntil:"networkidle"});
+      const found=await rp.evaluate(()=>{
+        const all=TEF_TOPIC.practiceItems("g5"),at=f=>{const i=all.findIndex(f);return i<0?null:{i,m:TEF_TOPIC.ruleMatch("g5",all[i])}};
+        const r={longues:at(x=>(x.answers||[]).includes("longues")),gentille:at(x=>/très gentil\./.test(x.prompt||"")),
+          mon:at(x=>/attestation/.test(x.prompt||"")&&(x.answers||[])[0]==="mon"),comprises:at(x=>/compris dans le loyer/.test(x.prompt||""))};
+        r.horaire={i:-1,m:TEF_TOPIC.ruleMatch("g5",{type:"mcq",prompt:"_____ horaire",choices:["une","un"],answer:1,explain:"« horaire » est masculin : un horaire."})};
+        r.spectacle={i:-1,m:TEF_TOPIC.ruleMatch("g5",{type:"mcq",prompt:"_____ spectacle",choices:["une","un"],answer:1,explain:"« spectacle » est masculin : un spectacle."})};
+        r.cantine={i:-1,m:TEF_TOPIC.ruleMatch("g5",{type:"mcq",prompt:"_____ cantine",choices:["une","un"],answer:0,explain:"« cantine » est féminin : une cantine."})};
+        let n=0,hit=0;for(const g of TEF_APP.D.grammar)for(const x of TEF_TOPIC.practiceItems(g.id)){n++;if(TEF_TOPIC.ruleMatch(g.id,x))hit++}
+        return {...Object.fromEntries(Object.entries(r).map(([k,v])=>[k,v&&{i:v.i,text:v.m&&v.m.text}])),n,hit};
+      });
+      assert.ok(found.longues?.text?.includes("long → longue"),"longues → the irregular row: "+found.longues?.text);
+      assert.ok(found.gentille?.text?.includes("gentil → gentille"),"gentille → the irregular row: "+found.gentille?.text);
+      assert.ok(found.mon?.text?.includes("mon adresse"),"mon (attestation) → before a vowel: "+found.mon?.text);
+      assert.ok(found.comprises?.text?.includes("comprises"),"comprises → participle after être: "+found.comprises?.text);
+      assert.ok(found.horaire?.text?.includes("l’horaire"),"un horaire → the -aire row: "+found.horaire?.text);
+      assert.ok(found.spectacle?.text?.includes("le spectacle"),"un spectacle → the -cle row: "+found.spectacle?.text);
+      assert.ok(found.cantine?.text?.includes("la cantine"),"une cantine → the -ine row: "+found.cantine?.text);
+      assert.ok(found.hit/found.n>=0.85,`most questions find their rule (${found.hit}/${found.n})`);
+      await rp.evaluate(i=>{const x=TEF_TOPIC.practiceItems("g5")[i];TEF_TOPIC.session({key:"qa-rule",title:"Genre et accord",topicId:"g5",items:[{tid:"g5",i,x},{tid:"g5",i,x}],back:{label:"Genre et accord",fn:()=>{}}})},found.longues.i);
+      await visible(rp,"#exRule");
+      await rp.click("#exRule");
+      await visible(rp,"#rulePanel .nb-fiche");
+      assert.equal(await rp.locator("#rulePanel .rule-hit").count(),0,"no highlight before answering");
+      assert.ok(await rp.evaluate(()=>{const b=document.querySelector("#rulePanel .rp-body"),h=[...b.querySelectorAll("h2")].find(e=>e.textContent.includes("Féminin des adjectifs"));
+        const r=h.getBoundingClientRect(),q=b.getBoundingClientRect();return r.top>=q.top-1&&r.top<q.bottom}),"opens at the matching section");
+      assert.ok(await rp.evaluate(()=>document.body.classList.contains("rp-open")));
+      await rp.fill("#exInput","longs");await rp.click("#exCheck");
+      await visible(rp,"#rulePanel .rule-hit");
+      assert.equal((await rp.locator("#rulePanel .rule-hit .rule-word").first().textContent()).trim(),"longue");
+      assert.ok(await rp.locator("#exRuleHit").isVisible(),"« Voir la règle » under the feedback");
+      await rp.click("#rulePanel .rp-x");
+      assert.ok(await rp.locator("#rulePanel").isHidden(),"× closes the panel");
+      await rp.click("#exRuleHit");
+      await visible(rp,"#rulePanel .rule-hit");
+      /* The next question keeps the panel open, without the highlight until it is answered; Esc closes it. */
+      await rp.click("#exNext");
+      await visible(rp,"#rulePanel .nb-fiche");
+      assert.equal(await rp.locator("#rulePanel .rule-hit").count(),0);
+      await rp.keyboard.press("Escape");
+      assert.ok(await rp.locator("#rulePanel").isHidden(),"Esc closes the panel");
+      assert.ok(!(await rp.evaluate(()=>document.body.classList.contains("rp-open"))));
+      assert.deepEqual(rerr,[],"rule panel page errors: "+rerr.join(" | "));
+      await rp.close();
     }
     console.log("UI QA OK");
   } finally {

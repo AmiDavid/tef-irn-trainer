@@ -116,7 +116,7 @@ function pickAt(x,y,target){
 }
 
 /* ---------- lookup: AI, else the app's word list ---------- */
-const KEY='tef-tr-cache-v1',MAXC=300;let MEM=null;
+const KEY='tef-tr-cache-v2',MAXC=300;let MEM=null; // v2: answers carry the gender
 function mem(){if(MEM)return MEM;MEM=new Map();try{for(const [k,v] of JSON.parse(localStorage.getItem(KEY)||'[]'))MEM.set(k,v)}catch{}return MEM}
 function remember(k,v){const m=mem();m.delete(k);m.set(k,v);while(m.size>MAXC)m.delete(m.keys().next().value);try{localStorage.setItem(KEY,JSON.stringify([...m]))}catch{}}
 const keyOf=(t,c,l)=>[t.toLowerCase(),c,l.join(',')].join('|');
@@ -124,7 +124,7 @@ const norm=s=>String(s||'').toLowerCase().replace(/'/g,'’').replace(/\s*\((?:m
 function fromVocab(text){
   const t=norm(text);if(!t)return null;
   const v=(app()?.vocab?.()||[]).find(x=>norm(x.front)===t);
-  return v?{lemma:v.front,grammar:'',en:v.back,other:{},note:'',src:'vocab'}:null;
+  return v?{lemma:v.front,gender:v.gender||'',grammar:'',en:v.back,other:{},note:'',src:'vocab'}:null;
 }
 const late=(ms,msg)=>new Promise((_,no)=>setTimeout(()=>no(new Error(msg)),ms));
 async function lookup(text,context,ls=langs()){
@@ -133,7 +133,7 @@ async function lookup(text,context,ls=langs()){
   if(c?.ready&&c.post){
     try{
       const r=await Promise.race([c.post('/api/translate',{text,context,langs:ls}),late(15000,'pas de réponse du serveur')]);
-      const v={lemma:r.lemma||'',grammar:r.grammar||'',en:r.en,other:r.other||{},note:r.note||'',src:'ai'};
+      const v={lemma:r.lemma||'',gender:r.gender||'',grammar:r.grammar||'',en:r.en,other:r.other||{},note:r.note||'',src:'ai'};
       if(v.en){remember(k,v);return v}
     }catch(e){why=e.message||''}
   }
@@ -159,7 +159,7 @@ function addCard(){
   const q=cur,r=q?.res,a=app();if(!r||!a)return;
   const card={id:'c'+Date.now(),front:clean(r.lemma||q.text).replace(/\s*\((?:m|f)\.\)$/,''),back:r.en,example:q.context&&q.context!==q.text?q.context:'',tag:'trad'};
   const pos=POS.find(([re])=>re.test(r.grammar||''));if(pos)card.pos=pos[1];
-  if(/^nom f/i.test(r.grammar||''))card.gender='f';else if(/^nom m/i.test(r.grammar||''))card.gender='m';
+  const g=r.gender||(/^nom f/i.test(r.grammar||'')?'f':/^nom m/i.test(r.grammar||'')?'m':'');if(g==='f'||g==='m')card.gender=g;
   a.S.custom=a.S.custom||[];a.S.custom.push(card);a.save();a.toast?.('Ajouté à tes cartes');render();
 }
 function render(){
@@ -173,9 +173,10 @@ function render(){
   if(q.loading)h+='<div class="tr-en tr-wait" aria-live="polite">…</div>';
   else if(q.error)h+=`<div class="tr-err" aria-live="polite">${esc(q.error)}</div><div class="tr-foot"><button type="button" class="tr-link" data-tr="retry">Réessayer</button></div>`;
   else if(r){
-    const lemma=r.lemma&&norm(r.lemma)!==norm(q.text)?r.lemma:'';
+    const lemma=r.lemma&&clean(r.lemma).toLowerCase()!==clean(q.text).toLowerCase()?r.lemma:''; // « la personne » for « personne »: the article shows the gender
     const meta=[lemma,r.grammar].filter(Boolean).join(' · ');
-    h+=(meta?`<div class="tr-meta" lang="fr">${esc(meta)}</div>`:'')
+    const G={f:['f','féminin'],m:['m','masculin'],'m/f':['mf','masculin ou féminin']}[r.gender];
+    h+=(G||meta?`<div class="tr-meta" lang="fr">${G?`<span class="tr-g ${G[0]}">${G[1]}</span>`:''}${esc(meta)}</div>`:'')
       +`<div class="tr-en" lang="en" aria-live="polite">${esc(r.en)}</div>`
       +(r.note?`<div class="tr-note" lang="en">${esc(r.note)}</div>`:'')
       +ls.filter(l=>r.other?.[l]).map(l=>`<div class="tr-other"><b lang="${l}">${LANGS[l][0]}</b><span lang="${l}" dir="${LANGS[l][1]||'auto'}">${esc(r.other[l])}</span></div>`).join('')
@@ -241,7 +242,7 @@ document.addEventListener('contextmenu',e=>{
   e.preventDefault();open(hit,{x:e.clientX,y:e.clientY});
 });
 document.addEventListener('selectionchange',()=>{if(lastPtr!=='touch')return;clearTimeout(selTimer);selTimer=setTimeout(fromSelection,450)});
-addEventListener('keydown',e=>{if(e.key==='Escape'&&cur)close()},true);
+addEventListener('keydown',e=>{if(e.key==='Escape'&&cur){close();e.stopPropagation()}},true); // one Esc closes one layer
 /* The pane follows its word when the page scrolls, and closes once the word leaves the screen. */
 function follow(){
   if(!cur||cur.sheet||!cur.range)return;
