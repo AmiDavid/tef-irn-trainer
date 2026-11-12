@@ -268,6 +268,7 @@
       ["-ette","féminin","la recette, la serviette (mais le squelette m.)"],
       ["-ade","féminin","la salade, la promenade (mais le stade m.)"],
       ["-esse, -tude","féminin","l’adresse, la jeunesse, l’habitude, la solitude"],
+      ["-ine, -ise","féminin","la cantine, la cuisine, la piscine, l’usine, la valise, l’entreprise (mais le magazine m.)"],
       ["-ment","masculin","le logement, le document"],
       ["-age","masculin","le chômage, le garage (mais la page, la plage, l’image f.)"],
       ["-eau","masculin","le bureau, le tableau (mais l’eau f., la peau)"],
@@ -276,7 +277,8 @@
       ["-er, -ier","masculin","le loyer, le dossier, le quartier, le métier (mais la mer f.)"],
       ["-et","masculin","le billet, le projet, le budget"],
       ["-al, -ail","masculin","le journal, l’hôpital, le travail, le détail"],
-      ["-ème","masculin","le problème, le système (mais la crème f.)"]
+      ["-ème","masculin","le problème, le système (mais la crème f.)"],
+      ["-aire, -cle, -ège, -at","masculin","le salaire, l’horaire, le spectacle, l’article, le collège, le contrat (mais la grammaire, une affaire, la boucle f. ; une personne : le / la locataire)"]
     ]},
     tables:[
       {title:"Féminin des adjectifs", head:["Masculin", "Féminin", "Exemples"], rows:[

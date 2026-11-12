@@ -82,15 +82,26 @@ The app does not redistribute CCI/TEF audio. Official resources are linked separ
 
 ## Word translation (build 29)
 
-- **Computer**: right-click a French word (or a selected phrase) → a small pane next to it: the dictionary form and grammar,
+- **Computer**: right-click a French word (or a selected phrase) → a small pane next to it: a **masculin / féminin** tag (for an
+  adjective or participle, the gender of that form), the dictionary form with its article and the grammar,
   the English meaning *in that sentence*, a note when something is easy to miss, and 🔊. Shift + right-click keeps the
   browser's menu; English notes and fields keep it too. **Phone**: long-press a word (drag the handles for a phrase) → the
   same pane at the bottom of the screen.
 - 🌐 adds up to two more languages (Hebrew, Arabic, Spanish…; `S.trLangs`, synced with the rest of the state). « ＋ Mes cartes »
   turns the word into a flashcard (`S.custom`, theme « Mots traduits ») with the sentence as its example.
 - `translate.js` sends `{text, context, langs}` to `api/translate.js` (Claude Haiku, signed-in allowed accounts only) and keeps
-  the last 300 answers in `localStorage` (`tef-tr-cache-v1`). Without the AI (signed out, offline) it falls back to the app's
+  the last 300 answers in `localStorage` (`tef-tr-cache-v2`). Without the AI (signed out, offline) it falls back to the app's
   word list, else asks to sign in. Off during a timed examen blanc.
+
+## 📖 Fiche next to every question (build 30)
+
+- Each practice question has a **📖 Fiche** button: the subject's one-page summary opens in a side panel (a bottom sheet on
+  phones) at the section that fits the question, so the learner looks up the rule, as in the paper notebook. After answering,
+  **📖 Voir la règle dans la fiche** (or the open panel) highlights the line or table row and the words of the answer in it.
+- `ruleMatch(tid, x)` in `topic.js`: the words the answer changes (weight 3; 1 for small words unless that is all there is),
+  plus the cue and the explanation (1, or 0.75 when only the section title has them), against the fiche's lines and table rows,
+  ignoring accents and final -s/-x/-e. A match needs 2 points; UI QA checks known questions and that ≥ 85 % of the bank match.
+- The panel stays open from question to question (no highlight before answering); × or Esc closes it.
 
 ## Running locally
 

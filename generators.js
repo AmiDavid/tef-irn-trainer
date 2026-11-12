@@ -98,11 +98,18 @@ function imperItem(){
 const nouns=()=>(D().vocab||[]).filter(v=>v.pos==='nom'&&/^(le |la |l’|les )/.test(v.front)&&['m','f'].includes(v.gender));
 const adjs=()=>(D().vocab||[]).filter(v=>v.pos==='adj'&&v.fem&&v.fem!==v.front);
 const bare=f=>f.replace(/^(le |la |l’|les )/,'');
+/* People named by the same word for a man or a woman (un / une locataire): « un / une ? » has two right answers, so they are not asked. */
+const BOTH=new Set(['propriétaire','locataire','bénévole','maire','médecin','médecin traitant','ministre','juge','secrétaire','élève','collègue','fonctionnaire','stagiaire','responsable','enfant','notaire','partenaire','camarade','adulte','interprète','architecte','pédiatre','psychologue','comptable','gendarme','guide']);
 function genderItem(){
   const v=pick(nouns()),sing=bare(v.front);
   if(/^les /.test(v.front))return null;
   const r=Math.random();
-  if(r<.45){const ch=['un','une'];return {type:'mcq',lvl:1,gen:true,prompt:`___ ${sing}`,choices:ch,answer:v.gender==='f'?1:0,explain:`« ${sing} » est ${v.gender==='f'?'féminin':'masculin'} : ${v.gender==='f'?'une':'un'} ${sing}.`}}
+  if(r<.45&&!BOTH.has(sing)&&!/iste$/.test(sing)){
+    /* The meaning goes with the word: some nouns have both genders with two meanings (le poste = job ≠ la poste = post office). */
+    const back=String(v.back||''),meaning=back.replace(/\s*\(.*$/,'').trim(),twin=((back.match(/\(≠\s*([^)]*)\)/)||[])[1]||'').match(/^(?:(?:le|la|un|une) |l’).*/)?.[0];
+    const ch=['un','une'];
+    return {type:'mcq',lvl:1,gen:true,prompt:`___ ${sing}${meaning?` (${meaning})`:''}`,choices:ch,answer:v.gender==='f'?1:0,
+      explain:`« ${sing} » est ${v.gender==='f'?'féminin':'masculin'} : ${v.gender==='f'?'une':'un'} ${sing}.${twin?` Attention : ${twin.replace(/,\s*/,' = ')}.`:''}`}}
   if(r<.75&&v.plural&&v.plural!=='les '+sing)return {type:'fill',lvl:1,gen:true,prompt:`Pluriel de « ${v.front} » : ___`,answers:[v.plural,v.plural.replace(/^les /,'')],explain:`Pluriel : ${v.plural}.`};
   const a=pick(adjs());if(!a)return null;
   return {type:'fill',lvl:1,gen:true,prompt:`Féminin de l’adjectif « ${a.front} » : ___`,answers:[a.fem],explain:`${a.front} → ${a.fem}.`};
