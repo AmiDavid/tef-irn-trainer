@@ -203,6 +203,8 @@ for(const g of D.grammar){
   const tables=[p.table,...(p.tables||[])].filter(Boolean);
   assert.ok(tables.length>=1,g.id+" needs a table");
   tables.forEach((t,ti)=>{
+    /* Exceptions go at the end of the last cell as « (mais …) »: the app shows them in their own « Mais » column. */
+    t.rows.forEach((r,ri)=>r.forEach((c,ci)=>{if(/\(mais\b/i.test(c))assert.ok(ci===r.length-1&&/\(mais\s+[^()]+\)\s*$/i.test(c),`${g.id} table ${ti} row ${ri}: « (mais …) » must end the last cell: ${c}`)}));
     assert.ok(Array.isArray(t.head)&&t.head.length>=2&&t.rows.length>=2,g.id+" table "+ti);
     if(ti>0)assert.ok(nonempty(t.title),g.id+" extra table "+ti+" needs a title");
     t.rows.forEach((r,ri)=>{assert.equal(r.length,t.head.length,g.id+" table "+ti+" row "+ri+" columns");r.forEach(c=>{assert.ok(nonempty(c),g.id+" table "+ti+" row "+ri+" empty cell");safe(c,g.id+" table")})});

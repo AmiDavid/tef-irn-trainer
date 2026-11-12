@@ -290,7 +290,7 @@
         ["-eur", "-euse ou -rice", "travailleur → travailleuse, conservateur → conservatrice (mais meilleur → meilleure, supérieur → supérieure, extérieur → extérieure)"],
         ["-el, -eil", "-elle, -eille", "professionnel → professionnelle, pareil → pareille"],
         ["-en, -on", "-enne, -onne", "ancien → ancienne, bon → bonne"],
-        ["-et", "-ette, mais -ète pour complet, concret, discret, inquiet, secret", "muet → muette, net → nette ; complet → complète, inquiet → inquiète, secret → secrète"],
+        ["-et", "-ette", "muet → muette, net → nette (mais -ète : complet → complète, concret, discret, inquiet, secret)"],
         ["irréguliers", "à apprendre", "beau → belle, nouveau → nouvelle, vieux → vieille, gros → grosse, blanc → blanche, frais → fraîche, long → longue, gentil → gentille, faux → fausse, doux → douce, public → publique, sec → sèche"]
       ]},
       {title:"Pluriel des noms et des adjectifs", head:["Singulier", "Pluriel", "Exemples"], rows:[

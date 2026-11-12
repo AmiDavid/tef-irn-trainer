@@ -103,6 +103,12 @@ The app does not redistribute CCI/TEF audio. Official resources are linked separ
   ignoring accents and final -s/-x/-e. A match needs 2 points; UI QA checks known questions and that ≥ 85 % of the bank match.
 - The panel stays open from question to question (no highlight before answering); × or Esc closes it.
 
+## « Mais » column (build 31)
+
+- In lesson and fiche tables, exceptions are written at the end of the last cell as `(mais …)`; `tableHTML` shows them in their
+  own **Mais** column (only in tables that have exceptions). Line keys keep the original row text, so copies made before are
+  not asked to recopy anything. Content QA rejects `(mais …)` anywhere else in a row.
+
 ## Running locally
 
 Serve this folder over HTTP, e.g. `python -m http.server 8000`, then open `http://localhost:8000`.
