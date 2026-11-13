@@ -456,8 +456,17 @@ async function visible(page,selector){
         r.horaire={i:-1,m:TEF_TOPIC.ruleMatch("g5",{type:"mcq",prompt:"_____ horaire",choices:["une","un"],answer:1,explain:"« horaire » est masculin : un horaire."})};
         r.spectacle={i:-1,m:TEF_TOPIC.ruleMatch("g5",{type:"mcq",prompt:"_____ spectacle",choices:["une","un"],answer:1,explain:"« spectacle » est masculin : un spectacle."})};
         r.cantine={i:-1,m:TEF_TOPIC.ruleMatch("g5",{type:"mcq",prompt:"_____ cantine",choices:["une","un"],answer:0,explain:"« cantine » est féminin : une cantine."})};
+        r.douleur={i:-1,m:TEF_TOPIC.ruleMatch("g5",{type:"mcq",prompt:"___ douleur (pain)",choices:["un","une"],answer:1,explain:"« douleur » est féminin : une douleur."})};
+        r.poste=TEF_TOPIC.ruleMatch("g5",{type:"mcq",prompt:"___ poste (job / position)",choices:["un","une"],answer:0,explain:"« poste » est masculin : un poste."});
+        r.voyelle={i:-1,m:TEF_TOPIC.ruleMatch("g5",{type:"fill",prompt:"C’est ___ attestation.",hint:"possessif, je",answers:["mon"],explain:"« attestation » est féminin, mais commence par une voyelle (ou un h muet) : ma → mon attestation."})};
+        localStorage.removeItem("tef-gen-recent-v1");
+        const b1=TEF_GEN.make("g5",15).map(o=>o.x),b2=TEF_GEN.make("g5",15).map(o=>o.x),p1=new Set(b1.map(x=>x.prompt));
+        r.gen={overlap:b2.filter(x=>p1.has(x.prompt)).length,n1:b1.length,n2:b2.length};
+        let poss=null;for(let k=0;k<30&&!poss;k++)poss=TEF_GEN.make("g5",15).map(o=>o.x).find(x=>/^C’est ___ /.test(x.prompt))||null;
+        r.poss=poss&&{hint:poss.hint,answers:poss.answers,explain:poss.explain};
         let n=0,hit=0;for(const g of TEF_APP.D.grammar)for(const x of TEF_TOPIC.practiceItems(g.id)){n++;if(TEF_TOPIC.ruleMatch(g.id,x))hit++}
-        return {...Object.fromEntries(Object.entries(r).map(([k,v])=>[k,v&&{i:v.i,text:v.m&&v.m.text}])),n,hit};
+        const plain=["poste","gen","poss"];
+        return {...Object.fromEntries(Object.entries(r).map(([k,v])=>[k,plain.includes(k)?v:v&&{i:v.i,text:v.m&&v.m.text}])),n,hit};
       });
       assert.ok(found.longues?.text?.includes("long → longue"),"longues → the irregular row: "+found.longues?.text);
       assert.ok(found.gentille?.text?.includes("gentil → gentille"),"gentille → the irregular row: "+found.gentille?.text);
@@ -466,6 +475,12 @@ async function visible(page,selector){
       assert.ok(found.horaire?.text?.includes("l’horaire"),"un horaire → the -aire row: "+found.horaire?.text);
       assert.ok(found.spectacle?.text?.includes("le spectacle"),"un spectacle → the -cle row: "+found.spectacle?.text);
       assert.ok(found.cantine?.text?.includes("la cantine"),"une cantine → the -ine row: "+found.cantine?.text);
+      assert.ok(found.douleur?.text?.includes("la douleur"),"une douleur → the -eur (sentiment, qualité) row: "+found.douleur?.text);
+      assert.ok(found.poste?.none&&found.poste.noun==="poste"&&!found.poste.key,"poste: no ending rule, nothing highlighted");
+      assert.ok(found.voyelle?.text?.includes("mon adresse"),"mon attestation → before a vowel: "+found.voyelle?.text);
+      assert.equal(found.gen.n1,15);assert.equal(found.gen.n2,15);
+      assert.ok(found.gen.overlap<=1,"the next automatic series brings new questions: "+found.gen.overlap+" repeated");
+      assert.ok(found.poss&&/^possessif, /.test(found.poss.hint)&&["mon","ton","son","ma","ta","sa"].includes(found.poss.answers[0]),"possessive drills: "+JSON.stringify(found.poss));
       assert.ok(found.hit/found.n>=0.85,`most questions find their rule (${found.hit}/${found.n})`);
       await rp.evaluate(i=>{const x=TEF_TOPIC.practiceItems("g5")[i];TEF_TOPIC.session({key:"qa-rule",title:"Genre et accord",topicId:"g5",items:[{tid:"g5",i,x},{tid:"g5",i,x}],back:{label:"Genre et accord",fn:()=>{}}})},found.longues.i);
       await visible(rp,"#exRule");

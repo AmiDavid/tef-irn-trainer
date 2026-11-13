@@ -269,6 +269,7 @@
       ["-ade","féminin","la salade, la promenade (mais le stade m.)"],
       ["-esse, -tude","féminin","l’adresse, la jeunesse, l’habitude, la solitude"],
       ["-ine, -ise","féminin","la cantine, la cuisine, la piscine, l’usine, la valise, l’entreprise (mais le magazine m.)"],
+      ["-eur (sentiment, qualité)","féminin","la douleur, la peur, la couleur, la valeur, la chaleur (mais le bonheur, le malheur, l’honneur m.)"],
       ["-ment","masculin","le logement, le document"],
       ["-age","masculin","le chômage, le garage (mais la page, la plage, l’image f.)"],
       ["-eau","masculin","le bureau, le tableau (mais l’eau f., la peau)"],
@@ -278,6 +279,7 @@
       ["-et","masculin","le billet, le projet, le budget"],
       ["-al, -ail","masculin","le journal, l’hôpital, le travail, le détail"],
       ["-ème","masculin","le problème, le système (mais la crème f.)"],
+      ["-eur (personne, machine)","masculin","le directeur, le chauffeur, l’ordinateur, le moteur"],
       ["-aire, -cle, -ège, -at","masculin","le salaire, l’horaire, le spectacle, l’article, le collège, le contrat (mais la grammaire, une affaire, la boucle f. ; une personne : le / la locataire)"]
     ]},
     tables:[
