@@ -9,7 +9,7 @@ const app=()=>window.TEF_APP,S=()=>app().S,D=()=>app().D;
 const esc=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 /* Daily amounts: questions on the new topic (b) and review questions (r). */
-const SIZES={10:{b:10,r:8},15:{b:15,r:12},25:{b:25,r:20}};
+const SIZES={10:{b:10,r:8,c:10},15:{b:15,r:12,c:15},25:{b:25,r:20,c:20}}; // b: basic questions, r: review, c: contrôle
 const MORE=10;
 
 /* Local calendar day (Paris time on his phone), overridable in tests. */
@@ -23,7 +23,7 @@ const lvl=(id,i)=>window.TEF_TOPIC?TEF_TOPIC.levelOf(id,i):1;
 
 function C(){
   const s=S();s.course=s.course||{};const c=s.course;
-  c.done=c.done||{};c.seq=c.seq||[];c.qlog=c.qlog||{};c.lastReview=c.lastReview||{};
+  c.done=c.done||{};c.seq=c.seq||[];c.qlog=c.qlog||{};c.lastReview=c.lastReview||{};c.ctrl=c.ctrl||{};
   if(!SIZES[c.size])c.size=15;
   return c;
 }
@@ -33,7 +33,7 @@ const save=()=>app().save();
 /* ---------- the day ---------- */
 function newDay(topicId,date){
   const c=C();
-  c.day={date,topicId,n:c.seq.length+1,read:false,copy:false,practice:null,review:null,complete:false};
+  c.day={date,topicId,n:c.seq.length+1,read:false,copy:false,practice:null,ctrl:null,review:null,complete:false};
   return c.day;
 }
 function ensureDay(){
@@ -49,12 +49,12 @@ function ensureDay(){
 }
 const earlier=d=>C().seq.filter(id=>id!==d.topicId);
 const hasReview=d=>earlier(d).length>0;
-function isComplete(d){return !!(d.read&&d.copy&&d.practice&&(d.review||!hasReview(d)))}
+function isComplete(d){return !!(d.read&&d.copy&&d.practice&&d.ctrl&&(d.review||!hasReview(d)))}
 function checkComplete(){
   const c=C(),d=c.day;
   if(!d||d.complete||!d.topicId||!isComplete(d))return;
   d.complete=true;
-  c.done[d.topicId]={date:d.date,practice:d.practice,review:d.review||null};
+  c.done[d.topicId]={date:d.date,practice:d.practice,ctrl:d.ctrl||null,review:d.review||null};
   if(!c.seq.includes(d.topicId))c.seq.push(d.topicId);
   S().done.lesson=true;
   save();app().toast('Leçon du jour terminée. Bravo !');
@@ -95,6 +95,42 @@ function pickBasic(id,n){
   grab(o=>o.lv===1,n1);grab(o=>o.lv===2,n-take.length);grab(o=>o.lv<=2,n-take.length);grab(()=>true,n-take.length);
   return take.sort((a,b)=>a.lv-b.lv||a.r-b.r).map(o=>o.i);
 }
+/* ---------- the contrôle (build 33) ----------
+   End-of-subject test: n questions of every level, past mistakes first (up to 40 %), a quarter automatic drills when the
+   topic has some, shuffled; no fiche during the test. 80 % validates the subject (and ticks « Questions de base »). */
+const PASS=.8;
+function pickControl(id,n){
+  const all=shuffle(ranked(id)),mist=all.filter(o=>o.pr===0).slice(0,Math.ceil(n*.4)),used=new Set(mist.map(o=>o.key));
+  const gen=window.TEF_GEN?.has(id)?Math.round(n/4):0,take=[...mist];
+  const byLv=[1,2,3].map(l=>all.filter(o=>o.lv===l&&!used.has(o.key)));
+  for(let k=0;take.length<n-gen&&byLv.some(a=>a.length);k++){const a=byLv[[1,0,2][k%3]];if(a.length)take.push(a.shift())}
+  let list=asItems(id,take.map(o=>o.i));
+  if(list.length<n)list=[...list,...(window.TEF_GEN?.make(id,n-list.length)||[])];
+  return shuffle(list).slice(0,n);
+}
+function control(id,fromToday){
+  if(!card(id))return false;
+  const d=ensureDay(),today=!!fromToday&&d.topicId===id,n=size().c,list=pickControl(id,n);
+  if(!list.length){app().toast('Pas encore assez de questions pour un contrôle sur ce sujet.');return false}
+  window.TEF_TOPIC.session({key:today?'daily-ctrl':'ctrl-'+id,title:'Contrôle · '+card(id).title,items:list,test:true,topicId:id,
+    back:today?{label:'Leçon du jour',fn:toToday}:{label:card(id).title,fn:()=>window.TEF_TOPIC.open(id)},
+    endPrimary:today?{label:'Retour à la leçon du jour',fn:toToday}:null,
+    more:{label:'Refaire un contrôle',fn:()=>control(id,today)},
+    onEnd:({ok,total})=>{
+      const c=C(),pass=total>0&&ok/total>=PASS,res={ok,total,date:localDay()},k=c.ctrl[id]||{tries:0};
+      k.tries=(k.tries||0)+1;k.last=res;if(!k.best||ok/total>k.best.ok/k.best.total)k.best=res;if(pass&&!k.passed)k.passed=localDay();
+      c.ctrl[id]=k;
+      const day=c.day;
+      if(today&&day&&day.date===localDay()&&day.topicId===id){
+        if(pass){day.ctrl={ok,total};if(!day.practice)day.practice={ok,total,via:'ctrl'}}else day.ctrlTry={ok,total};
+      }
+      save();checkComplete();
+      const need=Math.ceil(total*PASS);
+      return {pass,msg:pass?`✓ Sujet validé (il fallait ${need}/${total}).${today?' Tu peux passer au suivant.':''}`
+        :`Il faut ${need}/${total} pour valider. Revois les règles ci-dessous dans ta fiche, puis refais le contrôle${today?' (aujourd’hui ou demain)':''}.`};
+    }});
+  return true;
+}
 function pickItems(id,q,avoid){
   return ranked(id,avoid).filter(o=>!o.today).slice(0,q).map(o=>o.key);
 }
@@ -107,6 +143,7 @@ function pickReview(d,total){
     const age=L.length-ix; // 1 = the most recent lesson
     let s=age===1?6:age<=3?4:(age>=6&&age<=8)?4:(age>=13&&age<=15)?3:(age>=27&&age<=29)?3:1;
     const a=acc(id);if(a!==null){if(a<.6)s+=4;else if(a<.8)s+=2}
+    const k=c.ctrl[id];if(k&&!k.passed)s+=4;
     const last=c.lastReview[id]||c.done[id]?.date;if(last)s+=Math.min(30,Math.max(0,dayDiff(last,today)))/10;
     return {id,s};
   }).sort((a,b)=>b.s-a.s);
@@ -146,6 +183,8 @@ function start(kind){
     list=fromKeys(keys);
     title=kind==='daily-review'?'Révision des sujets précédents':'Encore de la révision';
     more={label:`Encore ${MORE} questions de révision`,fn:()=>start('daily-review-more')};
+  }else if(kind==='daily-ctrl'){
+    return d.topicId?control(d.topicId,true):false;
   }else return false;
   if(!list.length){app().toast('Plus de nouvelles questions pour aujourd’hui : reviens demain !');return false}
   const counts=kind==='daily-basic'||kind==='daily-review';
@@ -160,7 +199,7 @@ function start(kind){
     }:null});
   return true;
 }
-const resume=kind=>/^daily-(basic|more|review|review-more)$/.test(kind)?start(kind):false;
+const resume=kind=>/^daily-(basic|more|review|review-more|ctrl)$/.test(kind)?start(kind):/^ctrl-g\d+$/.test(kind)?control(kind.slice(5)):false;
 
 /* ---------- navigation helpers ---------- */
 function advance(id){
@@ -201,6 +240,7 @@ function render(){
     {k:'copy',t:'Recopier dans mon cahier',s:'La fiche d’une page qui résume tout le sujet, à recopier à la main (ou la version complète, au choix).',done:d.copy,go:()=>TEF_TOPIC.copy(d.topicId,'today'),cta:'Ouvrir la version cahier',again:'Revoir'},
     {k:'practice',t:'Questions de base',s:d.practice?`Score : ${d.practice.ok}/${d.practice.total} · ${bank} exercices sur ce sujet en tout.`:`${Math.min(sz.b,bank)} questions sur ce sujet, des plus simples aux plus difficiles, corrigées tout de suite.`,done:!!d.practice,go:()=>start(d.practice?'daily-more':'daily-basic'),cta:'Commencer',again:`Encore ${MORE}`},
   ];
+  steps.push({k:'ctrl',t:'Contrôle',s:d.ctrl?`Réussi : ${d.ctrl.ok}/${d.ctrl.total} ✓ Sujet validé.`:d.ctrlTry?`Dernier essai : ${d.ctrlTry.ok}/${d.ctrlTry.total}. Il faut 80 % : revois les règles indiquées, puis réessaie.`:`${sz.c} questions sur tout le sujet, sans la fiche. 80 % pour valider le sujet et passer au suivant.`,done:!!d.ctrl,go:()=>start('daily-ctrl'),cta:'Commencer',again:'Refaire'});
   if(rev)steps.push({k:'review',t:'Révision',s:d.review?`Score : ${d.review.ok}/${d.review.total}`:`${reviewKeys(d).length} questions sur : ${revTopics.join(', ')}.`,done:!!d.review,go:()=>start(d.review?'daily-review-more':'daily-review'),cta:'Commencer',again:`Encore ${MORE}`});
   const curIdx=steps.findIndex(s=>!s.done);
   const next=P.find(id=>!c.done[id]&&id!==d.topicId);
@@ -228,6 +268,6 @@ function bindCommon(root){
 }
 
 function init(){render()}
-window.TEF_DAILY={init,render,mark,start,resume,isTodayTopic,stepDone,logAnswer,ensureDay,pickFrom,seenCount,coverage,setSize,
+window.TEF_DAILY={init,render,mark,start,resume,control,pickControl,isTodayTopic,stepDone,logAnswer,ensureDay,pickFrom,seenCount,coverage,setSize,
   pickReview:()=>pickReview(ensureDay()),_localDay:localDay};
 })();
