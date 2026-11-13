@@ -538,3 +538,15 @@ body.rp-open .rule-btn{border-color:var(--brand);color:var(--brand)}
 th.mais-col{white-space:nowrap}
 td.mais-col{font-style:italic}
 .notebook td.mais-col{color:#1f7a4d}
+
+/* 🎯 Contrôle de fin de sujet (build 33) */
+.test-chip{margin-left:8px;font-size:12px}
+.ctrl-verdict{margin:0 0 4px;font-weight:800;font-size:15px}
+.ctrl-verdict.ok{color:#6ee7a8}
+.ctrl-verdict.ko{color:#f3c66d}
+.rv-box{text-align:left;margin:14px auto 4px;max-width:560px;border-top:1px solid var(--line);padding-top:12px}
+.rv-box h3{margin:0 0 6px;font-size:15px}
+.rv-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.rv-list .linklike{text-align:left;font-size:14px;line-height:1.4}
+.ctrl-line{margin:8px 0 0;color:var(--muted);font-size:13.5px}
+.ctrl-line.ok{color:#6ee7a8;font-weight:700}

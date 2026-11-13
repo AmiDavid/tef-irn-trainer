@@ -224,7 +224,7 @@ async function visible(page,selector){
     await page.evaluate(()=>{delete TEF_APP.S.course;window.__TEF_TODAY__="2026-11-08";TEF_APP.save()});
     await page.locator('#bottomNav [data-view="today"]').click();
     const firstId=await page.evaluate(()=>TEF_APP.D.grammar[0].id);
-    assert.equal(await page.locator("#lessonDay .ld-step").count(),3,"day 1 has no review step");
+    assert.equal(await page.locator("#lessonDay .ld-step").count(),4,"day 1: read, copy, practice and contrôle (no review yet)");
     assert.ok((await page.locator("#lessonDay .plaque-name").textContent()).length>3);
     await page.locator('#lessonDay [data-step="read"]').click();
     await visible(page,"#view-gtopic.active .today-banner");
@@ -251,17 +251,35 @@ async function visible(page,selector){
     await answerSession(1);
     assert.match(await page.locator("#gpracticeBody .intro-card h2").textContent(),/^14\/15$/);
     await page.locator("#endPrimary").click();
+    await visible(page,'#lessonDay [data-step="ctrl"]');
+    assert.equal(await page.locator("#lessonDay .ld-done").count(),0,"the day waits for the contrôle");
+    assert.deepEqual(await page.evaluate(id=>{const v=TEF_DAILY.coverage(id);return [v.seen,v.wrong]},firstId),[15,1],"coverage counts seen and wrong questions");
+    /* Contrôle (build 33): 15 questions without the fiche, the mistake comes back; 80 % validates the subject. */
+    await page.locator('#lessonDay [data-step="ctrl"]').click();
+    await visible(page,"#view-gpractice.active .exercise .test-chip");
+    assert.equal(await page.locator("#exRule").count(),0,"no fiche during a contrôle");
+    const ctrlItems=await page.evaluate(()=>TEF_TOPIC.current().items.map(o=>o.tid+":"+o.i));
+    assert.equal(ctrlItems.length,15,"15 contrôle questions by default");
+    assert.ok(ctrlItems.includes(wrongKey),"the contrôle brings back the question answered wrong");
+    await answerSession(ctrlItems.indexOf(wrongKey));
+    assert.ok((await page.locator("#gpracticeBody .ctrl-verdict").textContent()).includes("réussi"),"14/15 passes");
+    assert.equal(await page.locator("#gpracticeBody [data-rv]").count(),1,"the missed rule is listed");
+    await page.locator("#gpracticeBody [data-rv]").click();
+    await visible(page,"#rulePanel .nb-fiche");
+    await page.locator("#rulePanel .rp-x").click();
+    await page.locator("#endPrimary").click();
     await visible(page,"#lessonDay .ld-done");
     let course=await page.evaluate(()=>TEF_APP.S.course);
     assert.deepEqual(course.seq,[firstId]);
     assert.deepEqual(course.done[firstId].practice,{ok:14,total:15});
-    assert.deepEqual(await page.evaluate(id=>{const v=TEF_DAILY.coverage(id);return [v.seen,v.wrong]},firstId),[15,1],"coverage counts seen and wrong questions");
-    assert.ok((await page.locator("#lessonDay .course-list li.is-done").first().textContent()).includes("15/"),"Mon parcours shows how much of the bank was seen");
+    assert.deepEqual(course.done[firstId].ctrl,{ok:14,total:15});
+    assert.ok(course.ctrl[firstId].passed&&course.ctrl[firstId].tries===1);
+    assert.ok(/\d+\//.test(await page.locator("#lessonDay .course-list li.is-done").first().textContent()),"Mon parcours shows how much of the bank was seen");
     /* Day 2: new topic + review that only uses day-1 questions, starting with the one answered wrong. */
     await page.evaluate(()=>{window.__TEF_TODAY__="2026-11-09";TEF_DAILY.render()});
     course=await page.evaluate(()=>TEF_APP.S.course);
     assert.notEqual(course.day.topicId,firstId);assert.equal(course.day.n,2);
-    assert.equal(await page.locator("#lessonDay .ld-step").count(),4,"day 2 adds a review step");
+    assert.equal(await page.locator("#lessonDay .ld-step").count(),5,"day 2: read, copy, practice, contrôle and review");
     await page.locator('#lessonDay [data-step="review"]').click();
     await visible(page,"#view-gpractice.active .exercise .topic-chip");
     const rev=await page.evaluate(()=>TEF_TOPIC.current().items.map(o=>o.tid+":"+o.i));

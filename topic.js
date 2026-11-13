@@ -87,7 +87,8 @@ function renderLesson(id){
       <h1>${esc(g.title)}</h1>
       <p>${esc(g.short)}</p>
       <div class="topic-meta"><span class="status ${stt}">${STATUS_LABEL[stt]||stt}${st?` · ${st.ok}/${st.n} justes`:''}</span>${best?`<span class="chip">Meilleur score : ${best.score}/${best.total}</span>`:''}</div>
-      <div class="button-row"><button class="btn" data-practice>S’entraîner : ${Math.min(SERIES,count)} questions</button><button class="btn secondary" data-copy>📓 Version cahier</button></div>
+      <div class="button-row"><button class="btn" data-practice>S’entraîner : ${Math.min(SERIES,count)} questions</button><button class="btn secondary" data-copy>📓 Version cahier</button><button class="btn secondary" data-ctrl title="Contrôle de fin de sujet : 80 % pour valider">🎯 Contrôle</button></div>
+      ${(k=>k?.last?`<p class="ctrl-line ${k.passed?'ok':''}">${k.passed?`✓ Sujet validé au contrôle (${k.best.ok}/${k.best.total})`:`Contrôle : ${k.last.ok}/${k.last.total}, il faut 80 % pour valider`}</p>`:'')(S().course?.ctrl?.[id])}
       ${(n=>n?`<button class="nb-update-mini" data-copy>📌 ${n} ${n>1?'ajouts':'ajout'} à recopier dans ton cahier</button>`:'')(updatesOf(id).length)}
       <p class="bank-line">${count} exercices sur ce sujet${seen?` · ${seen} déjà faits`:''}. Chaque série prend d’abord ceux que tu n’as pas encore faits ou que tu as ratés.</p>
       <div class="button-row more-row">${window.TEF_GEN?.has(id)?'<button class="btn ghost small" id="genBtn">♾️ Exercices illimités</button>':''}<button class="btn ghost small" id="aiBtn">✨ 10 nouvelles questions (IA)</button></div>
@@ -112,6 +113,7 @@ function renderLesson(id){
   $$('[data-back]',root).forEach(b=>b.onclick=backHome);
   $$('[data-practice]',root).forEach(b=>b.onclick=()=>go('#gp/'+id));
   $$('[data-copy]',root).forEach(b=>b.onclick=()=>go('#c/'+id));
+  $$('[data-ctrl]',root).forEach(b=>b.onclick=()=>daily()?.control(id,daily()?.isTodayTopic(id)));
   $('#genBtn')&&($('#genBtn').onclick=()=>unlimited(id));
   $('#aiBtn').onclick=e=>generateAI(id,e.currentTarget);
   $('#readDone')&&($('#readDone').onclick=()=>{daily()?.mark('read');go('#c/'+id)});
@@ -380,6 +382,7 @@ function renderPractice(id,only){
 /* cfg: {key,title,items:[{tid,i,x}],mixed?,topicId?,back:{label,fn},onEnd?(summary),endPrimary?{label,fn}} */
 function session(cfg,viaRoute){
   P={...cfg,idx:0,results:[]};
+  if(cfg.test)closeRule(); // a contrôle is done without the fiche
   if(!viaRoute&&location.hash!=='#gs/'+cfg.key){location.hash='#gs/'+cfg.key;return}
   app().show('gpractice');window.scrollTo(0,0);renderExercise();
 }
@@ -412,11 +415,12 @@ function renderExercise(){
     body=`<p class="ex-instruction">Touche les mots dans le bon ordre pour former la phrase.</p><div class="order-line" id="orderLine"><span class="muted">Ta phrase apparaîtra ici</span></div><div class="order-bank" id="orderBank">${shuffle(x.words.map((w,i)=>({w,i}))).map(o=>`<button class="token" data-t="${o.i}">${esc(o.w)}</button>`).join('')}</div><div class="button-row"><button class="btn ghost small" id="orderReset">Recommencer</button><button class="btn" id="exCheck">Vérifier</button></div>`;
   }
   const topicChip=(P.mixed?`<span class="chip topic-chip">${esc(card(it.tid).title)}</span>`:'')+(x.ai?'<span class="chip ai-chip">IA</span>':x.gen?'<span class="chip ai-chip">auto</span>':'');
-  const ruleBtn=ficheOf(it.tid)?'<button type="button" class="rule-btn" id="exRule" title="Ouvrir la fiche de ce sujet">📖 Fiche</button>':'';
+  const ruleBtn=!P.test&&ficheOf(it.tid)?'<button type="button" class="rule-btn" id="exRule" title="Ouvrir la fiche de ce sujet">📖 Fiche</button>':'';
   root.innerHTML=head()+`<div class="card exercise"><div class="exercise-top"><span class="kicker">${TYPE_LABEL[x.type]||''}</span><span class="ex-top-end">${topicChip}${ruleBtn}</span></div>${body}<div id="exFb"></div><div class="runner-nav" id="exNav" hidden><span></span><button class="btn" id="exNext">${P.idx<P.items.length-1?'Suivant ›':'Voir mon score'}</button></div></div>`;
   $('[data-lesson]',root).onclick=()=>P.back.fn();
   $('#exRule')&&($('#exRule').onclick=()=>RP?closeRule():rulePanel(it.tid,x,P.results.length>P.idx));
-  if(RP){if(ficheOf(it.tid))rulePanel(it.tid,x,false);else closeRule()}
+  if(RP){if(!P.test&&ficheOf(it.tid))rulePanel(it.tid,x,false);else closeRule()}
+  if(P.test)$('.exercise-top .kicker',root)?.insertAdjacentHTML('afterend','<span class="chip test-chip">🎯 Contrôle · sans la fiche</span>');
   $('#exHint')&&($('#exHint').onclick=()=>{$('#exHintText').hidden=false;$('#exHint').hidden=true});
   $$('.accent-key',root).forEach(k=>k.onmousedown=e=>{e.preventDefault();const i=$('#exInput');if(!i)return;const s=i.selectionStart??i.value.length,en=i.selectionEnd??s;i.value=i.value.slice(0,s)+k.textContent+i.value.slice(en);i.selectionStart=i.selectionEnd=s+k.textContent.length;i.focus()});
   if(x.type==='mcq'){
@@ -464,7 +468,7 @@ function feedback(verdict,x,expected,diffHTML,others){
   const title={ok:'✓ Correct',accents:'≈ Presque : vérifie les accents',wrong:'✕ Pas tout à fait'}[verdict];
   $('#exFb').innerHTML=`<div class="feedback ex-feedback v-${verdict}"><strong>${title}</strong>${expected?`<div>Réponse attendue : ${expected}</div>`:''}${diffHTML?`<div class="diff">${diffHTML}</div>`:''}${others?.length?`<div class="muted">Aussi accepté : ${others.map(esc).join(' · ')}</div>`:''}${x.explain?`<div class="ex-explain">${esc(x.explain)}</div>`:''}</div>`;
   const cur=P.items[P.idx];
-  if(ficheOf(cur.tid)){$('#exFb .ex-feedback').insertAdjacentHTML('beforeend','<button type="button" class="link-btn rule-link" id="exRuleHit">📖 Voir la règle dans la fiche</button>');$('#exRuleHit').onclick=()=>rulePanel(cur.tid,cur.x,true);if(RP)rulePanel(cur.tid,cur.x,true)}
+  if(!P.test&&ficheOf(cur.tid)){$('#exFb .ex-feedback').insertAdjacentHTML('beforeend','<button type="button" class="link-btn rule-link" id="exRuleHit">📖 Voir la règle dans la fiche</button>');$('#exRuleHit').onclick=()=>rulePanel(cur.tid,cur.x,true);if(RP)rulePanel(cur.tid,cur.x,true)}
   if(!P.items[P.idx]?.x?.gen)$('#exFb').insertAdjacentHTML('beforeend','<button class="link-btn flag-btn" id="exFlag">Signaler une erreur dans cette question</button>');
   $('#exFlag')&&($('#exFlag').onclick=()=>{
     const it=P.items[P.idx],st=S();st.flags=st.flags||{};
@@ -495,13 +499,22 @@ function renderEnd(){
   const by={};P.results.forEach(r=>{const t=P.items[r.k].tid;by[t]=by[t]||{ok:0,n:0};by[t].n++;if(r.ok)by[t].ok++});
   const breakdown=P.mixed?`<div class="breakdown">${Object.entries(by).map(([t,v])=>`<div class="bd-row"><span>${esc(card(t).title)}</span><strong class="${v.ok===v.n?'ok':v.ok/v.n>=.5?'mid':'low'}">${v.ok}/${v.n}</strong></div>`).join('')}</div>`:'';
   const cb=P.onEnd;P.onEnd=null; // only the first full pass counts for the daily plan
-  cb?.({ok,total,by});
+  const custom=cb?.({ok,total,by})||null;
   const pct=total?Math.round(100*ok/total):0;
-  const msg=pct>=85?'Excellent : c’est en place.':pct>=60?'Bien. Refais tes erreurs maintenant, puis relis la partie « À retenir ».':'Relis la règle et les exemples, puis refais tes erreurs. Elles sont aussi dans « Mes erreurs ».';
+  const msg=custom?.msg||(pct>=85?'Excellent : c’est en place.':pct>=60?'Bien. Refais tes erreurs maintenant, puis relis la partie « À retenir ».':'Relis la règle et les exemples, puis refais tes erreurs. Elles sont aussi dans « Mes erreurs ».');
   const primary=P.endPrimary,more=P.more,extra=P.extraMore;
-  $('#gpracticeBody').innerHTML=`<div class="practice-head"><button class="back-link" data-lesson>‹ ${esc(P.back.label)}</button></div><div class="card intro-card"><h2>${ok}/${total}</h2><p>${msg}</p>${breakdown}<div class="button-row" style="justify-content:center">${primary?`<button class="btn" id="endPrimary">${esc(primary.label)}</button>`:''}${wrongK.length?`<button class="btn ${primary?'secondary':''}" id="redoWrong">Refaire mes erreurs (${wrongK.length})</button>`:''}${more?`<button class="btn ${wrongK.length||primary?'secondary':''}" id="moreQ">${esc(more.label)}</button>`:''}${extra?`<button class="btn ghost" id="extraQ">${esc(extra.label)}</button>`:''}<button class="btn ghost" data-lesson>${P.topicId?'Revoir le cours':'Retour'}</button></div></div>`;
+  /* Contrôle: the rules behind the mistakes, each one opening the fiche at its line. */
+  const rv=[];
+  if(P.test){const seen=new Set();for(const k of wrongK){const it=P.items[k],m=ruleMatch(it.tid,it.x),F=ficheOf(it.tid)||[],id=m?(m.key||'s'+m.sec):'?';
+    if(seen.has(id))continue;seen.add(id);
+    const what=m?.none?`« ${m.noun} » : à apprendre avec son article`:m?.text?(m.text.includes(' | ')?m.text.split(' | ')[0]:m.text).replace(/\*/g,''):'';const cut=t=>t.length>80?t.slice(0,t.lastIndexOf(' ',78)).replace(/[\s,;:·(]+$/,'')+'…':t;
+    rv.push({it,label:[m&&F[m.sec]?F[m.sec].h:'',cut(what)].filter(Boolean).join(' · ')||'La fiche du sujet'})}}
+  const review=rv.length?`<div class="rv-box"><h3>À revoir dans ta fiche</h3><ul class="rv-list">${rv.map((r,i)=>`<li><button type="button" class="linklike" data-rv="${i}">📖 ${esc(r.label)}</button></li>`).join('')}</ul></div>`:'';
+  const verdict=P.test&&custom?`<p class="ctrl-verdict ${custom.pass?'ok':'ko'}">${custom.pass?'✓ Contrôle réussi':'Contrôle pas encore réussi'}</p>`:'';
+  $('#gpracticeBody').innerHTML=`<div class="practice-head"><button class="back-link" data-lesson>‹ ${esc(P.back.label)}</button></div><div class="card intro-card">${verdict}<h2>${ok}/${total}</h2><p>${msg}</p>${breakdown}${review}<div class="button-row" style="justify-content:center">${primary?`<button class="btn" id="endPrimary">${esc(primary.label)}</button>`:''}${wrongK.length?`<button class="btn ${primary?'secondary':''}" id="redoWrong">Refaire mes erreurs (${wrongK.length})</button>`:''}${more?`<button class="btn ${wrongK.length||primary?'secondary':''}" id="moreQ">${esc(more.label)}</button>`:''}${extra?`<button class="btn ghost" id="extraQ">${esc(extra.label)}</button>`:''}<button class="btn ghost" data-lesson>${P.topicId?'Revoir le cours':'Retour'}</button></div></div>`;
   $$('[data-lesson]').forEach(b=>b.onclick=()=>P.back.fn());
   $('#endPrimary')&&($('#endPrimary').onclick=()=>primary.fn());
+  $$('[data-rv]').forEach(b=>b.onclick=()=>{const r=rv[+b.dataset.rv];rulePanel(r.it.tid,r.it.x,true)});
   $('#redoWrong')&&($('#redoWrong').onclick=()=>session({...P,key:P.key+'-r',title:P.title,items:wrongK.map(k=>P.items[k]),onEnd:null},false));
   $('#moreQ')&&($('#moreQ').onclick=e=>more.fn(e.currentTarget));
   $('#extraQ')&&($('#extraQ').onclick=e=>extra.fn(e.currentTarget));

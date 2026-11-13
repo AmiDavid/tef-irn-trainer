@@ -113,6 +113,16 @@ The app does not redistribute CCI/TEF audio. Official resources are linked separ
   own **Mais** column (only in tables that have exceptions). Line keys keep the original row text, so copies made before are
   not asked to recopy anything. Content QA rejects `(mais …)` anywhere else in a row.
 
+## 🎯 Contrôle de fin de sujet (build 33)
+
+- Each day now has a **Contrôle** step after « Questions de base »: 10 / 15 / 20 questions (with the daily size), every level,
+  past mistakes first (up to 40 %), a quarter automatic drills when the topic has some, shuffled, **without the fiche**.
+  **80 %** validates the subject: the step is ticked (and « Questions de base » too if it was not), and the day can complete.
+  Below 80 %, the end screen lists « À revoir dans ta fiche » (one link per rule behind a mistake, opening the fiche at that line)
+  and the subject comes back more often in Révision (+4 in `pickReview`) until it is passed.
+- The lesson page has a **🎯 Contrôle** button for any subject, and shows the result (« ✓ Sujet validé au contrôle (18/20) »).
+- State: `S.course.ctrl[id] = {tries, last, best, passed}`; the day keeps `ctrl` (passed) or `ctrlTry` (last failed attempt).
+
 ## Running locally
 
 Serve this folder over HTTP, e.g. `python -m http.server 8000`, then open `http://localhost:8000`.
