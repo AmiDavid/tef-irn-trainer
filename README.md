@@ -102,6 +102,10 @@ The app does not redistribute CCI/TEF audio. Official resources are linked separ
   plus the cue and the explanation (1, or 0.75 when only the section title has them), against the fiche's lines and table rows,
   ignoring accents and final -s/-x/-e. A match needs 2 points; UI QA checks known questions and that ≥ 85 % of the bank match.
 - The panel stays open from question to question (no highlight before answering); × or Esc closes it.
+- « un ou une ? » questions (build 32) only look at the gender table: the row whose ending fits the noun (longest ending wins,
+  the explanation breaks ties, e.g. -eur feeling vs person); if no ending fits, the panel says the noun is learnt with its article.
+- Automatic exercises (build 32): `TEF_GEN.make` draws 3× more than needed and serves first those not generated in the last
+  200 on this device (`localStorage` `tef-gen-recent-v1`); Genre adds possessive drills (« C’est ___ attestation » → mon).
 
 ## « Mais » column (build 31)
 

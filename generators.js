@@ -100,11 +100,20 @@ const adjs=()=>(D().vocab||[]).filter(v=>v.pos==='adj'&&v.fem&&v.fem!==v.front);
 const bare=f=>f.replace(/^(le |la |l’|les )/,'');
 /* People named by the same word for a man or a woman (un / une locataire): « un / une ? » has two right answers, so they are not asked. */
 const BOTH=new Set(['propriétaire','locataire','bénévole','maire','médecin','médecin traitant','ministre','juge','secrétaire','élève','collègue','fonctionnaire','stagiaire','responsable','enfant','notaire','partenaire','camarade','adulte','interprète','architecte','pédiatre','psychologue','comptable','gendarme','guide']);
+/* « C’est ___ attestation (possessif, je) » → mon: ma, ta, sa become mon, ton, son before a vowel or a silent h. */
+const POSS={je:['mon','ma'],tu:['ton','ta'],il:['son','sa'],elle:['son','sa']};
+function possessiveItem(v,sing){
+  const who=pick(Object.keys(POSS)),[m,f]=POSS[who],vowel=/^l’/.test(v.front),ans=vowel||v.gender==='m'?m:f;
+  const explain=vowel&&v.gender==='f'?`« ${sing} » est féminin, mais commence par une voyelle (ou un h muet) : ${f} → ${m} ${sing}.`
+    :`« ${sing} » est ${v.gender==='f'?'féminin':'masculin'} : ${ans} ${sing}.`;
+  return {type:'fill',lvl:1,gen:true,prompt:`C’est ___ ${sing}.`,hint:`possessif, ${who}`,answers:[ans],explain};
+}
 function genderItem(){
   const v=pick(nouns()),sing=bare(v.front);
   if(/^les /.test(v.front))return null;
   const r=Math.random();
-  if(r<.45&&!BOTH.has(sing)&&!/iste$/.test(sing)){
+  if(r>=.3&&r<.48)return possessiveItem(v,sing);
+  if(r<.3&&!BOTH.has(sing)&&!/iste$/.test(sing)){
     /* The meaning goes with the word: some nouns have both genders with two meanings (le poste = job ≠ la poste = post office). */
     const back=String(v.back||''),meaning=back.replace(/\s*\(.*$/,'').trim(),twin=((back.match(/\(≠\s*([^)]*)\)/)||[])[1]||'').match(/^(?:(?:le|la|un|une) |l’).*/)?.[0];
     const ch=['un','une'];
@@ -147,10 +156,21 @@ const GEN={
   g20:conjGen(['subjonctif'],[V.subj]),
   g31:n=>{const out=[];for(let g=0;out.length<n&&g<n*8;g++){const x=imperItem();if(x&&!out.some(o=>o.prompt===x.prompt))out.push(x)}return out},
 };
+/* The last 200 generated prompts per topic, on this device only (not synced). */
+const RKEY='tef-gen-recent-v1';
+function recentAll(){try{return JSON.parse(localStorage.getItem(RKEY)||'{}')||{}}catch{return {}}}
+const recent=tid=>new Set(recentAll()[tid]||[]);
+function remember(tid,prompts){try{const all=recentAll(),l=[...(all[tid]||[]).filter(p=>!prompts.includes(p)),...prompts];all[tid]=l.slice(-200);localStorage.setItem(RKEY,JSON.stringify(all))}catch{}}
 window.TEF_GEN={
   has:tid=>!!GEN[tid]&&!!C(),
-  /* n generated exercises for a topic, as session items (i = 'gen': not part of the review history). */
-  make:(tid,n)=>GEN[tid]&&C()?GEN[tid](n).map(x=>({tid,i:'gen',x})):[],
+  /* n generated exercises for a topic, as session items (i = 'gen': not part of the review history).
+     Questions already generated recently on this device come last, so « Encore 15 questions » brings new ones. */
+  make:(tid,n)=>{
+    if(!GEN[tid]||!C())return [];
+    const seen=recent(tid),pool=GEN[tid](n*3),fresh=pool.filter(x=>!seen.has(x.prompt)),old=pool.filter(x=>seen.has(x.prompt));
+    const out=[...fresh,...old].slice(0,n);remember(tid,out.map(x=>x.prompt));
+    return out.map(x=>({tid,i:'gen',x}));
+  },
   _variants:variants,
 };
 })();

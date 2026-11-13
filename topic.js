@@ -193,9 +193,22 @@ function ruleMatch(tid,x){
   /* The words right around a gap (« ___ horaire ») say what the question is about. */
   const gap=String(x.prompt||'').split(/_{3,}/),near=new Set(gap.length>1?[...rWords(gap[0]).filter(w=>!RSTOP.has(w)).slice(-2),...rWords(gap[1]).filter(w=>!RSTOP.has(w)).slice(0,2)].map(rStem):[]);
   const ctx=new Set([...rWords(x.explain),...rWords(x.hint)].filter(w=>w.length>2&&!RSTOP.has(w)).map(rStem));
-  let best=null,sec=-1,head=new Set();
+  /* « un ou une ? » (« ___ douleur »): only the gender table's row whose ending fits the noun; none → say so. */
+  const choices=(x.choices||[]).map(c=>String(c).trim().toLowerCase().replace(/'/g,'’'));
+  const genderQ=x.type==='mcq'&&choices.length>=2&&choices.every(c=>['un','une','le','la','l’'].includes(c));
+  const noun=genderQ?((/_{3,}\s*([^\s(.,;!?]+)/.exec(String(x.prompt||''))||[])[1]||'').toLowerCase():'';
+  let best=null,sec=-1,head=new Set(),inGender=false,gsec=-1;
   for(const l of lines){
-    if(l.k==='fh'){sec++;head=new Set(rWords(l.t).map(rStem));continue}
+    if(l.k==='fh'){sec++;head=new Set(rWords(l.t).map(rStem));inGender=false;continue}
+    if(l.k==='fth'){inGender=/genre/i.test(l.t);if(inGender&&gsec<0)gsec=sec;continue}
+    if(genderQ){
+      if(l.k!=='ftr'||!inGender||!noun)continue;
+      const ends=l.t.split(' | ')[0].replace(/\([^)]*\)/g,'').split(/[,;]\s*/).map(e=>e.trim().toLowerCase()).filter(e=>/^-\S+$/.test(e)&&noun.endsWith(e.slice(1)));
+      if(!ends.length)continue;
+      const ws=new Set(rWords(l.t).map(rStem)),sc=5+Math.max(...ends.map(e=>e.length))/10+[...ctx].filter(w=>ws.has(w)).length;
+      if(sc>(best?best.score:0))best={score:sc,key:l.key,sec,text:l.t,words:[rStem(strip(noun))]};
+      continue;
+    }
     if(l.k!=='fl'&&l.k!=='ftr')continue;
     const ws=new Set(rWords(l.t).map(rStem));let sc=0;
     for(const [w,v] of tw)if(ws.has(w))sc+=v;
@@ -203,6 +216,7 @@ function ruleMatch(tid,x){
     for(const w of near)if(ws.has(w))sc+=1.5;
     if(sc>(best?best.score:0))best={score:sc,key:l.key,sec,text:l.t,words:[...tw].filter(([,v])=>v>=2).map(([w])=>w)};
   }
+  if(genderQ)return best||(gsec>=0?{score:0,key:null,sec:gsec,none:true,noun}:null);
   return best&&best.score>=2?best:null;
 }
 let RP=null;
@@ -214,7 +228,7 @@ function rulePanel(tid,x,hit){
     el.addEventListener('click',e=>{if(e.target.closest('[data-rp-close]'))closeRule()})}
   el.setAttribute('aria-label','Fiche : '+card(tid).title);
   el.innerHTML=`<div class="rp-head"><span class="rp-title">📖 ${esc(card(tid).title)}</span><button type="button" class="rp-x" data-rp-close aria-label="Fermer la fiche" title="Fermer (Échap)">×</button></div>
-    <div class="rp-body">${hit&&!m?'<p class="rp-miss">La ligne exacte n’a pas été trouvée : la règle est dans cette fiche.</p>':''}<article class="notebook rp-note"><div class="nb-fiche">${F.map((f,i)=>`<section data-sec="${i}"><h2>${ficheText(f.h)}</h2>${f.t?.head?.length?tableHTML(f.t,'nb-table nb-ftable',(k,t)=>mk(k==='thead'?'fth':'ftr',t)):''}${f.l?.length?`<ul class="nb-fl">${f.l.map(l=>`<li${clsAttr(mk('fl',l))}>${ficheText(l)}</li>`).join('')}</ul>`:''}</section>`).join('')}</div></article></div>`;
+    <div class="rp-body">${hit&&m?.none?`<p class="rp-miss">Pas de règle de terminaison pour « ${esc(m.noun)} » : ce nom s’apprend avec son article.</p>`:hit&&!m?'<p class="rp-miss">La ligne exacte n’a pas été trouvée : la règle est dans cette fiche.</p>':''}<article class="notebook rp-note"><div class="nb-fiche">${F.map((f,i)=>`<section data-sec="${i}"><h2>${ficheText(f.h)}</h2>${f.t?.head?.length?tableHTML(f.t,'nb-table nb-ftable',(k,t)=>mk(k==='thead'?'fth':'ftr',t)):''}${f.l?.length?`<ul class="nb-fl">${f.l.map(l=>`<li${clsAttr(mk('fl',l))}>${ficheText(l)}</li>`).join('')}</ul>`:''}</section>`).join('')}</div></article></div>`;
   el.hidden=false;document.body.classList.add('rp-open');RP={tid,hit:!!hit};
   const body=$('.rp-body',el),target=$('.rule-hit',el)||(m?$(`[data-sec="${m.sec}"]`,el):null);
   const hitEl=hk&&$('.rule-hit',el),want=new Set(m?.words||[]);
