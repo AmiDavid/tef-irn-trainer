@@ -125,8 +125,8 @@ async function init(){
     await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
     C.supabase=window.supabase.createClient(C.config.supabaseUrl,C.config.supabaseKey);
     const {data}=await C.supabase.auth.getSession();C.session=data.session;C.ready=Boolean(C.session&&C.config.ai);
-    C.supabase.auth.onAuthStateChange((_e,s)=>{C.session=s;C.ready=Boolean(s&&C.config.ai);updateBadge();if(s)syncState(false)});
-    updateBadge();if(C.session)syncState(false);
+    C.supabase.auth.onAuthStateChange((_e,s)=>{const was=C.session?.user?.id;C.session=s;C.ready=Boolean(s&&C.config.ai);updateBadge();if(s)syncState(false);if(s?.user?.id!==was)dispatchEvent(new CustomEvent('tef:session'))});
+    updateBadge();if(C.session)syncState(false);dispatchEvent(new CustomEvent('tef:session'));
   }catch(e){console.warn('Connected mode unavailable',e);status(base()?'Serveur IA injoignable : vérifie l’adresse et APP_ORIGIN (CORS).':'Mode local (aucun serveur IA configuré).')}
 }
 function status(t){const e=document.querySelector('#aiStatus');if(e)e.textContent=t}

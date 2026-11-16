@@ -92,7 +92,7 @@ function renderLesson(id){
       ${(k=>k?.last?`<p class="ctrl-line ${k.passed?'ok':''}">${k.passed?`✓ Sujet validé au contrôle (${k.best.ok}/${k.best.total})`:`Contrôle : ${k.last.ok}/${k.last.total}, il faut 80 % pour valider`}</p>`:'')(S().course?.ctrl?.[id])}
       ${(n=>n?`<button class="nb-update-mini" data-copy>📌 ${n} ${n>1?'ajouts':'ajout'} à recopier dans ton cahier</button>`:'')(updatesOf(id).length)}
       <p class="bank-line">${count} exercices sur ce sujet${seen?` · ${seen} déjà faits`:''}. Chaque série prend d’abord ceux que tu n’as pas encore faits ou que tu as ratés.</p>
-      <div class="button-row more-row">${window.TEF_GEN?.has(id)?'<button class="btn ghost small" id="genBtn">♾️ Exercices illimités</button>':''}<button class="btn ghost small" id="aiBtn">✨ 10 nouvelles questions (IA)</button></div>
+      <div class="button-row more-row">${window.TEF_GEN?.has(id)?'<button class="btn ghost small" id="genBtn">♾️ Exercices illimités</button>':''}<button class="btn ghost small" id="aiBtn">✨ 10 nouvelles questions (IA)</button><button class="btn ghost small" id="aiBulk" title="Fabrique 50 questions en arrière-plan, gardées pour plus tard">✨ Préparer 50 questions</button></div><p class="muted ai-stock" data-tid="${id}"${aiReady()||practiceItems(id).some(x=>x.ai)?'':' hidden'}>${stockText(id)}</p>
     </div>
     ${p.intro?`<section class="card topic-sec"><h2>Pourquoi c’est utile au TEF</h2><p>${esc(p.intro)}</p></section>`:''}
     <section class="card topic-sec"><div class="sec-head"><h2>La règle</h2>${E?`<button class="en-toggle" data-en aria-pressed="${enOn}" title="Explications en anglais sous chaque règle">🇬🇧 English</button>`:''}</div>
@@ -117,6 +117,8 @@ function renderLesson(id){
   $$('[data-ctrl]',root).forEach(b=>b.onclick=()=>daily()?.control(id,daily()?.isTodayTopic(id)));
   $('#genBtn')&&($('#genBtn').onclick=()=>unlimited(id));
   $('#aiBtn').onclick=e=>generateAI(id,e.currentTarget);
+  $('#aiBulk').onclick=()=>{if(!aiReady())return app().toast('Connecte-toi (☁️ Sync) pour les questions IA.');if(!queueAI(id,5))app().toast('Déjà 400 questions en attente : laisse-les finir.')};
+  topUp(id);
   $('#readDone')&&($('#readDone').onclick=()=>{daily()?.mark('read');go('#c/'+id)});
   const exs=examplesOf(id);
   $$('[data-say]',root).forEach(b=>b.onclick=()=>window.TEF_EXAM?.speakItem({text:exs[+b.dataset.say].fr}));
@@ -333,38 +335,109 @@ function practiceItems(id){
   const base=own.length?[...own,...extra.filter(d=>!own.some(o=>sig(o)===sig(d)))]:extra;
   const seenSig=new Set(base.map(sig));
   const more=((D().grammarMore||{})[id]||[]).filter(m=>{const k=sig(m);if(seenSig.has(k))return false;seenSig.add(k);return true});
-  const ai=((S().aiBank||{})[id]||[]); // questions generated for this learner, appended so their history keys stay stable
+  const old=(S().aiBank||{})[id]; // questions generated for this learner, appended so their history keys stay stable
+  const ai=old?.length?old:(window.TEF_AIBANK?.items(id)||[]);
   const all=[...base,...more,...ai];
   bankCache.set(id,all);return all;
 }
 const invalidate=id=>id?bankCache.delete(id):bankCache.clear();
-/* ---------- new questions: unlimited automatic drills (generators.js) and AI questions (Claude, verified) ---------- */
+/* ---------- new questions: unlimited automatic drills (generators.js) and AI questions (Claude, verified) ----------
+   Build 37: every AI batch goes straight into the account's question bank (aibank.js), so nothing is lost and the bank can grow
+   to thousands. A small queue makes batches in the background, one request at a time: « ✨ Préparer 50 questions », the mixed
+   batches of the mélange, and automatic top-ups whenever a subject has fewer than 15 AI questions not yet done.
+   « ✨ 10 nouvelles questions » then plays unseen ones at once (it only waits when none are ready). */
 const aiReady=()=>!!window.TEF_CONNECTED?.ready;
-/* AI batches (build 35): the next one is prepared in the background while the learner answers, so « ✨ nouvelles questions »
-   usually starts at once instead of after ≈30 s. One batch at a time per topic; a failed one is simply dropped. */
-const AIQ={};
-function fetchAI(id){
-  const g=card(id),p=plus(id);
-  return window.TEF_CONNECTED.generateExercises({topic:{id,title:g.title,short:g.short,rule:p.rule||[g.details],mistakes:(g.mistakes||[]).map(m=>`${m.wrong} → ${m.right}`)},n:10,level:'mix',
-    avoid:practiceItems(id).map(x=>x.prompt||(x.answers||[])[0]).filter(Boolean)});
+/* Variety for a bank of thousands: each batch leans on the next line of the subject's fiche (so every rule, every table row and
+   its « mais » get their questions in turn) and on the next everyday context; the avoid list mixes the latest questions with
+   older ones picked at random. */
+const CONTEXTS=['la préfecture et les démarches administratives','le logement (bail, voisins, travaux)','le travail (entretien, collègues, réunions)','la santé (médecin, pharmacie, hôpital)','l’école et les enfants','les transports (train, métro, voiture, vélo)','la banque, les impôts et les factures','les courses et le marché','le sport et les loisirs','les vacances et les voyages','l’environnement et le recyclage','les médias et le numérique','la vie associative et la citoyenneté','la famille et les amis','le restaurant et la cuisine','la culture (musée, cinéma, lecture)','la météo et les saisons','la ville et le quartier'];
+function turn(key,len){if(!len)return -1;let m={};try{m=JSON.parse(localStorage.getItem('tef-ai-turn-v1')||'{}')}catch{}const n=(m[key]||0)%len;m[key]=n+1;try{localStorage.setItem('tef-ai-turn-v1',JSON.stringify(m))}catch{}return n}
+function focusLines(id){
+  const out=[],T=t=>lineText(t||'').replace(/\*/g,'');
+  (ficheOf(id)||[]).forEach(s=>{const h=T(s.h);if(s.t?.rows?.length){const head=(s.t.head||[]).map(T).join(' | ');s.t.rows.forEach(r=>out.push(`${h} — ${head} : ${r.map(T).join(' | ')}`))}(s.l||[]).forEach(l=>out.push(`${h} — ${T(l)}`))});
+  return (out.length?out:(plus(id).rule||[]).map(T)).filter(t=>t.length>12);
 }
-function prefetchAI(id){if(aiReady()&&card(id)&&!AIQ[id])AIQ[id]=fetchAI(id).catch(()=>null)}
+function avoidOf(list){const p=list.map(x=>x.prompt||(x.answers||[])[0]||(x.words||[]).join(' ')).filter(Boolean);return p.length<=80?p:[...shuffle(p.slice(0,-40)).slice(0,40),...p.slice(-40)]}
+function fetchAI(id){
+  const g=card(id),p=plus(id),f=focusLines(id),fi=turn(id,f.length);
+  return window.TEF_CONNECTED.generateExercises({topic:{id,title:g.title,short:g.short,rule:p.rule||[g.details],mistakes:(g.mistakes||[]).map(m=>`${m.wrong} → ${m.right}`)},n:10,level:'mix',
+    focus:fi<0?'':f[fi],theme:CONTEXTS[turn('ctx',CONTEXTS.length)],avoid:avoidOf(practiceItems(id))});
+}
+function fetchMix(){
+  const ids=studied().slice(-8);
+  const topics=ids.map(id=>{const g=card(id),p=plus(id);return {id,title:g.title,short:g.short,rule:(p.rule||[g.details]).slice(0,6),mistakes:(g.mistakes||[]).slice(0,2).map(m=>`${m.wrong} → ${m.right}`)}});
+  return window.TEF_CONNECTED.generateExercises({mix:true,topics,n:10,level:'mix',theme:CONTEXTS[turn('ctx',CONTEXTS.length)],avoid:avoidOf(ids.flatMap(id=>practiceItems(id).filter(x=>x.also)))});
+}
+/* Keep a batch: one subject, or (mix) the main subject of each question with the others in also. → [{tid,i,x}] */
+async function storeBatch(r,tid){
+  const known=new Set(D().grammar.map(g=>g.id));
+  const list=(r?.exercises||[]).filter(x=>x&&x.type).map(x=>{const t=tid?[tid]:(x.topics||[]).filter(id=>known.has(id));const q={...x};delete q.topics;return t.length?{tid:t[0],also:t.slice(1),x:q}:null}).filter(Boolean);
+  let added;
+  if(window.TEF_AIBANK)added=await window.TEF_AIBANK.add(list);
+  else{const st=S();st.aiBank=st.aiBank||{};added=list.map(o=>{const x={...o.x,ai:true,...(o.also.length?{also:o.also}:{})};(st.aiBank[o.tid]=st.aiBank[o.tid]||[]).push(x);invalidate(o.tid);return {tid:o.tid,x}});app().save()}
+  return added.map(o=>({tid:o.tid,i:practiceItems(o.tid).indexOf(o.x),x:o.x})).filter(o=>o.i>=0);
+}
+const unseenAI=id=>{const log=S().course?.qlog||{};return practiceItems(id).map((x,i)=>({tid:id,i,x})).filter(o=>o.x.ai&&!log[id+':'+o.i]&&!isFlagged(o.x))};
+const unseenMix=()=>studied().flatMap(id=>unseenAI(id).filter(o=>o.x.also?.length));
+const stockText=id=>{const u=unseenAI(id).length,t=practiceItems(id).filter(x=>x.ai).length;return `✨ ${u} question${u>1?'s':''} IA pas encore faite${u>1?'s':''} · ${t} gardée${t>1?'s':''} sur ce sujet`};
+addEventListener('tef:aibank',()=>{const el=document.querySelector('.ai-stock[data-tid]');if(el&&card(el.dataset.tid)){el.textContent=stockText(el.dataset.tid);if(aiReady()||practiceItems(el.dataset.tid).some(x=>x.ai))el.hidden=false}});
+/* The background queue: jobs {k: subject id or 'mix', u: 1 when the learner asked for it}. Automatic top-ups run silently; the
+   learner's own requests show a pill with progress and ×. The queue survives closing the app (localStorage), max 40 batches.
+   An account the server refuses (not on the AI list) stops the automatic requests on this device. */
+const JOBS=[],JK='tef-ai-jobs-v2',DK='tef-ai-denied',JMAX=40;let jobRun=null,jobDone=0,jobFail=0;
+const who=()=>window.TEF_CONNECTED?.session?.user?.id||'';
+const denied=()=>{try{return !!who()&&localStorage.getItem(DK)===who()}catch{return false}};
+const aiAuto=()=>aiReady()&&!denied();
+const saveJobs=()=>{try{JOBS.length?localStorage.setItem(JK,JSON.stringify(JOBS)):localStorage.removeItem(JK)}catch{}};
+function queueAI(kind,n=1,user=true){
+  if(!aiReady()||(kind!=='mix'&&!card(kind)))return 0;
+  const k=Math.max(0,Math.min(n,JMAX-JOBS.length));
+  for(let j=0;j<k;j++)JOBS.push({k:kind,u:user?1:0});
+  saveJobs();pill();if(k&&!jobRun)jobRun=runJobs();return k;
+}
+async function runJobs(){
+  while(JOBS.length&&aiReady()){
+    const kind=JOBS[0].k;
+    try{const r=kind==='mix'?await fetchMix():await fetchAI(kind);jobDone+=(await storeBatch(r,kind==='mix'?null:kind)).length;jobFail=0;try{localStorage.removeItem(DK)}catch{}}
+    catch(e){const m=e?.message||'';console.warn('AI batch',m);jobFail++;
+      if(/autoris/i.test(m)){try{localStorage.setItem(DK,who())}catch{};const asked=JOBS.some(j=>j.u);JOBS.splice(1);jobDone=0;if(asked)app().toast(m)}
+      else if(jobFail>=3||/connect|401|session/i.test(m)){JOBS.splice(1);jobFail=0}}
+    JOBS.shift();saveJobs();pill();
+  }
+  jobRun=null;
+}
+/* Batches left when the app was closed start again once the learner is signed in. */
+addEventListener('tef:session',()=>{if(!aiReady()||jobRun)return;let left=[];try{left=JSON.parse(localStorage.getItem(JK)||'[]')}catch{}
+  left=(Array.isArray(left)?left:[]).filter(j=>j&&(j.k==='mix'||(typeof j.k==='string'&&card(j.k))));JOBS.length=0;saveJobs();left.forEach(j=>queueAI(j.k,1,!!j.u))});
+const queued=kind=>JOBS.some(j=>j.k===kind);
+const topUp=id=>{if(aiAuto()&&card(id)&&!queued(id)&&unseenAI(id).length<15)queueAI(id,1,false)};
+const topUpMix=()=>{if(aiAuto()&&studied().length>1&&!queued('mix')&&unseenMix().length<10)queueAI('mix',1,false)};
+function pill(){
+  let el=document.getElementById('aiPill');
+  if(!el&&!JOBS.some(j=>j.u)){if(!JOBS.length)jobDone=0;return} // automatic top-ups stay silent
+  if(!JOBS.length){
+    if(el){el.querySelector('.ap-t').textContent=jobDone?`✨ ${jobDone} nouvelles questions prêtes et gardées`:'✨ Terminé';el.querySelector('.ap-x').hidden=true;setTimeout(()=>{if(!JOBS.length)document.getElementById('aiPill')?.remove()},6000)}
+    jobDone=0;return;
+  }
+  if(!el){el=document.createElement('div');el.id='aiPill';el.className='ai-pill';el.setAttribute('role','status');el.innerHTML='<span class="ap-t"></span><button type="button" class="ap-x" title="Arrêter" aria-label="Arrêter la préparation">×</button>';document.body.appendChild(el);el.querySelector('.ap-x').onclick=()=>{JOBS.splice(1);saveJobs();pill()}}
+  el.querySelector('.ap-x').hidden=false;
+  el.querySelector('.ap-t').textContent=`✨ ${JOBS.length*10} questions IA en préparation${jobDone?` · ${jobDone} prêtes`:''}`;
+}
 async function generateAI(id,btn){
   if(!aiReady())return app().toast('Connecte-toi (☁️ Sync) pour les questions IA.');
   const g=card(id);
-  if(btn){btn.disabled=true;btn.dataset.label=btn.textContent;btn.textContent='Génération et vérification… (≈30 s)'}
   try{
-    const ready=AIQ[id];delete AIQ[id];
-    const r=(ready&&await ready)||await fetchAI(id);
-    const got=(r.exercises||[]).filter(x=>x&&x.type);
+    let got=unseenAI(id);
+    if(got.length<10){
+      if(btn){btn.disabled=true;btn.dataset.label=btn.textContent;btn.textContent='Génération et vérification… (≈30 s)'}
+      got=[...got,...await storeBatch(await fetchAI(id),id)];
+    }
     if(!got.length)throw new Error('Aucune question validée. Réessaie.');
-    const st=S();st.aiBank=st.aiBank||{};const prev=st.aiBank[id]||[];
-    st.aiBank[id]=[...prev,...got].slice(-300);invalidate(id);app().save();
-    const all=practiceItems(id),start=all.length-got.length;
-    session({key:'ai-'+id,title:`Nouvelles questions (IA) · ${g.title}`,topicId:null,ai:true,items:got.map((x,k)=>({tid:id,i:start+k,x:all[start+k]})),back:P?.back||{label:g.title,fn:()=>go('#g/'+id)},
+    try{localStorage.removeItem(DK)}catch{}
+    session({key:'ai-'+id,title:`Nouvelles questions (IA) · ${g.title}`,topicId:null,ai:true,items:got.slice(0,10),back:P?.back||{label:g.title,fn:()=>go('#g/'+id)},
       more:{label:'✨ 10 autres questions (IA)',fn:(b)=>generateAI(id,b)},extraMore:moreFor(id)},false);
-    prefetchAI(id);
-  }catch(e){app().toast(e.message||'Génération impossible.');if(btn){btn.disabled=false;btn.textContent=btn.dataset.label}}
+    topUp(id);
+  }catch(e){app().toast(e.message||'Génération impossible.');if(btn){btn.disabled=false;btn.textContent=btn.dataset.label||btn.textContent}}
 }
 function unlimited(id){
   const n=15,items=window.TEF_GEN?.make(id,n)||[];if(!items.length)return;
@@ -398,42 +471,26 @@ function mixItems(n){
 function mix(){
   const ids=studied();if(!ids.length)return app().toast('Commence par une leçon : le mélange reprend les sujets que tu as étudiés.');
   const items=mixItems(MIXN);if(!items.length)return app().toast('Pas encore de questions sur tes sujets.');
-  origin='grammar';prefetchMix();
+  origin='grammar';topUpMix();
   session({key:'mix',title:`🎲 Mélange · ${ids.length} sujet${ids.length>1?'s':''}`,mixed:true,topicId:null,items,
     back:{label:'Grammaire',fn:()=>app().show('grammar')},more:{label:'🎲 25 autres questions',fn:()=>mix()},
     extraMore:aiReady()&&ids.length>1?{label:'✨ 10 questions IA qui mêlent les sujets',fn:(b)=>generateMix(b)}:null},false);
 }
-/* AI questions that mix the subjects: one batch prepared in the background, stored as soon as it arrives. */
-let MIXQ=null;
-function fetchMix(){
-  const ids=studied().slice(-8);
-  const topics=ids.map(id=>{const g=card(id),p=plus(id);return {id,title:g.title,short:g.short,rule:(p.rule||[g.details]).slice(0,6),mistakes:(g.mistakes||[]).slice(0,2).map(m=>`${m.wrong} → ${m.right}`)}});
-  const avoid=ids.flatMap(id=>practiceItems(id).filter(x=>x.also).map(x=>x.prompt||(x.answers||[])[0])).filter(Boolean).slice(-80);
-  return window.TEF_CONNECTED.generateExercises({mix:true,topics,n:10,level:'mix',avoid});
-}
-function storeMix(r){
-  const ids=new Set(studied()),st=S(),out=[];st.aiBank=st.aiBank||{};
-  for(const x of (r?.exercises||[])){
-    const t=(x.topics||[]).filter(id=>ids.has(id));if(!t.length||!x.type)continue;
-    const q={...x,also:t.slice(1)};delete q.topics;(st.aiBank[t[0]]=st.aiBank[t[0]]||[]).push(q);invalidate(t[0]);out.push({tid:t[0],x:q});
-  }
-  if(out.length)app().save();
-  return out.map(o=>({tid:o.tid,i:practiceItems(o.tid).indexOf(o.x),x:o.x})).filter(o=>o.i>=0);
-}
-function prefetchMix(){if(aiReady()&&!MIXQ&&studied().length>1)MIXQ=fetchMix().then(storeMix).catch(()=>null)}
+/* AI questions that mix the subjects: unseen ones first, a new batch only when none are ready. */
 async function generateMix(btn){
   if(!aiReady())return app().toast('Connecte-toi (☁️ Sync) pour les questions IA.');
-  if(btn){btn.disabled=true;btn.dataset.label=btn.textContent;btn.textContent='Génération et vérification… (≈30 s)'}
   try{
-    const ready=MIXQ;MIXQ=null;
-    let got=(ready&&await ready)||[];
-    if(!got.length)got=storeMix(await fetchMix());
+    let got=unseenMix();
+    if(got.length<10){
+      if(btn){btn.disabled=true;btn.dataset.label=btn.textContent;btn.textContent='Génération et vérification… (≈30 s)'}
+      got=[...got,...(await storeBatch(await fetchMix(),null)).filter(o=>o.x.also?.length)];
+    }
     if(!got.length)throw new Error('Aucune question validée. Réessaie.');
-    session({key:'mix-ai',title:'✨ Questions IA qui mêlent les sujets',mixed:true,topicId:null,ai:true,items:got,
+    session({key:'mix-ai',title:'✨ Questions IA qui mêlent les sujets',mixed:true,topicId:null,ai:true,items:shuffle(got).slice(0,10),
       back:{label:'Grammaire',fn:()=>app().show('grammar')},more:{label:'✨ 10 autres questions (IA)',fn:(b)=>generateMix(b)},
       extraMore:{label:'🎲 Mélange : 25 questions',fn:()=>mix()}},false);
-    prefetchMix();
-  }catch(e){app().toast(e.message||'Génération impossible.');if(btn){btn.disabled=false;btn.textContent=btn.dataset.label}}
+    topUpMix();
+  }catch(e){app().toast(e.message||'Génération impossible.');if(btn){btn.disabled=false;btn.textContent=btn.dataset.label||btn.textContent}}
 }
 /* Secondary « new questions » button shown on end screens. */
 const moreFor=id=>aiReady()?{label:'✨ 10 nouvelles questions (IA)',fn:(b)=>generateAI(id,b)}:window.TEF_GEN?.has(id)?{label:'♾️ Exercices automatiques',fn:()=>unlimited(id)}:null;
@@ -449,12 +506,12 @@ function renderPractice(id,only){
   const idx=only||(daily()?.pickFrom(id,SERIES,{fresh:true})||all.map((_,i)=>i).slice(0,SERIES));
   if(origin!=='today'||!daily()?.isTodayTopic(id))origin='grammar';
   let list=idx.map(i=>({tid:id,i,x:all[i]})).filter(o=>o.x);
-  if(!only&&idx.length<SERIES*2)prefetchAI(id); // the topic's new questions are running out today
+  if(!only)topUp(id); // keep AI questions ready for this subject
   if(!only&&list.length<SERIES)list=[...list,...(window.TEF_GEN?.make(id,SERIES-list.length)||[])];
   /* No more new questions today: never stop. Go round again (today's mistakes first, then the oldest) and get new AI ones ready. */
   if(!only&&list.length<SERIES){
     const have=new Set(list.map(o=>o.i)),again=(daily()?.pickAgain(id,SERIES-list.length,have)||[]).map(i=>({tid:id,i,x:all[i]})).filter(o=>o.x);
-    if(again.length){list=[...list,...again];app().toast(aiReady()?'Toutes les questions du sujet sont faites aujourd’hui : on refait tes erreurs, puis les plus anciennes. ✨ De nouvelles questions IA se préparent.':'Toutes les questions du sujet sont faites aujourd’hui : on refait tes erreurs, puis les plus anciennes.');prefetchAI(id)}
+    if(again.length){list=[...list,...again];app().toast(aiReady()?'Toutes les questions du sujet sont faites aujourd’hui : on refait tes erreurs, puis les plus anciennes. ✨ De nouvelles questions IA se préparent.':'Toutes les questions du sujet sont faites aujourd’hui : on refait tes erreurs, puis les plus anciennes.')}
   }
   if(!list.length){app().toast('Pas encore de questions sur ce sujet.');return}
   session({key:'topic-'+id,title:card(id).title,topicId:id,items:list,back:{label:card(id).title,fn:()=>go('#g/'+id)},extraMore:moreFor(id),
@@ -607,5 +664,5 @@ function init(){
   route();
 }
 window.TEF_TOPIC={init,open:(id,o)=>{origin=o||'grammar';go('#g/'+id)},copy:(id,o)=>{origin=o||'grammar';go('#c/'+id)},practice:id=>go('#gp/'+id),
-  session:(cfg)=>{origin='today';session(cfg,false)},check,norm,practiceItems,isFlagged,levelOf,lessonLines,notebookLines:linesFor,ruleMatch,rulePanel,closeRule,prefetchAI,aiQueued:id=>!!AIQ[id],mix,mixItems,studied,updatesOf,markCopied,notebookUpdates,invalidate,moreFor,unlimited,generateAI,route,current:()=>P&&{key:P.key,items:P.items.map(o=>({tid:o.tid,i:o.i,x:o.x})),idx:P.idx}};
+  session:(cfg)=>{origin='today';session(cfg,false);const t=window.TEF_DAILY?.ensureDay?.()?.topicId;if(t)topUp(t)},check,norm,practiceItems,isFlagged,levelOf,lessonLines,notebookLines:linesFor,ruleMatch,rulePanel,closeRule,queueAI,queued,topUp,aiQueued:queued,invalidate,unseenAI,mix,mixItems,studied,updatesOf,markCopied,notebookUpdates,invalidate,moreFor,unlimited,generateAI,route,current:()=>P&&{key:P.key,items:P.items.map(o=>({tid:o.tid,i:o.i,x:o.x})),idx:P.idx}};
 })();

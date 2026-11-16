@@ -556,3 +556,11 @@ td.mais-col{font-style:italic}
 .mix-card h3{margin:0 0 4px}
 .mix-card p{margin:0;max-width:640px}
 .ld-mix{margin-top:12px}
+
+/* ✨ Questions IA prepared in the background (build 37) */
+.ai-pill{position:fixed;left:16px;bottom:16px;z-index:70;display:flex;align-items:center;gap:8px;background:#1e2e58;color:var(--text);border:1px solid var(--line);border-radius:999px;padding:7px 8px 7px 14px;font-size:13px;font-weight:700;box-shadow:0 10px 26px rgba(0,0,0,.4);max-width:calc(100vw - 32px)}
+.ai-pill .ap-x{border:0;background:transparent;color:var(--muted);font-size:18px;line-height:1;width:26px;height:26px;border-radius:50%;cursor:pointer}
+.ai-pill .ap-x:hover{background:rgba(143,176,255,.16);color:var(--text)}
+@media(max-width:900px){.ai-pill{bottom:calc(74px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:max-content;font-size:12.5px;padding:5px 6px 5px 12px}}
+.ai-stock{margin:6px 0 0;font-size:13px}
+.mix-card .button-row{margin:0}
