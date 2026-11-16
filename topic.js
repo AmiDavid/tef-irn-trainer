@@ -60,6 +60,7 @@ function route(){
   if(m){
     if(P&&P.key===m[1]){app().show('gpractice');renderExercise();return true}
     if(daily()?.resume(m[1]))return true;
+    if(m[1]==='mix'){mix();return true}
   }
   if(/^#(g|gp|c|gs)\//.test(h))history.replaceState(null,'',location.pathname+location.search);
   return false;
@@ -370,6 +371,70 @@ function unlimited(id){
   session({key:'gen-'+id,title:`Exercices illimités · ${card(id).title}`,topicId:null,items,back:{label:card(id).title,fn:()=>go('#g/'+id)},
     more:{label:`Encore ${n} exercices`,fn:()=>unlimited(id)}},false);
 }
+/* ---------- 🎲 Mélange (build 36): 25 questions on every subject studied so far, shuffled ----------
+   Subjects = those finished in the course, those with answers, and today's. About 30 % are AI questions that mix two subjects
+   in one sentence (stored in the bank of their main subject, with x.also = the others), the rest a round-robin over the
+   subjects (mistakes, unseen, then the oldest first), plus a few automatic drills. */
+const MIXN=25;
+function studied(){
+  const c=S().course||{},ids=new Set(c.seq||[]);
+  for(const k in (c.qlog||{}))ids.add(k.split(':')[0]);
+  if(c.day?.topicId&&(c.day.read||c.day.practice||c.day.ctrl))ids.add(c.day.topicId);
+  return D().grammar.map(g=>g.id).filter(id=>ids.has(id));
+}
+function mixItems(n){
+  const ids=studied(),dl=daily(),pools={},cross=[];
+  for(const id of ids){
+    const all=practiceItems(id),order=dl?.order?dl.order(id):all.map((_,i)=>i);
+    pools[id]=[];for(const i of order){if(!all[i])continue;(all[i].also?.length?cross:pools[id]).push({tid:id,i,x:all[i]})}
+  }
+  const take=cross.slice(0,ids.length>1?Math.round(n*.3):0);
+  const gen=ids.filter(id=>window.TEF_GEN?.has(id)),nGen=gen.length?Math.min(3,Math.round(n/8)):0;
+  const ring=shuffle(ids);let k=0;
+  while(take.length<n-nGen&&ring.some(id=>pools[id].length)){const p=pools[ring[k++%ring.length]];if(p.length)take.push(p.shift())}
+  for(let j=0;j<nGen&&take.length<n;j++)take.push(...(window.TEF_GEN.make(gen[j%gen.length],1)||[]));
+  return shuffle(take).slice(0,n);
+}
+function mix(){
+  const ids=studied();if(!ids.length)return app().toast('Commence par une leçon : le mélange reprend les sujets que tu as étudiés.');
+  const items=mixItems(MIXN);if(!items.length)return app().toast('Pas encore de questions sur tes sujets.');
+  origin='grammar';prefetchMix();
+  session({key:'mix',title:`🎲 Mélange · ${ids.length} sujet${ids.length>1?'s':''}`,mixed:true,topicId:null,items,
+    back:{label:'Grammaire',fn:()=>app().show('grammar')},more:{label:'🎲 25 autres questions',fn:()=>mix()},
+    extraMore:aiReady()&&ids.length>1?{label:'✨ 10 questions IA qui mêlent les sujets',fn:(b)=>generateMix(b)}:null},false);
+}
+/* AI questions that mix the subjects: one batch prepared in the background, stored as soon as it arrives. */
+let MIXQ=null;
+function fetchMix(){
+  const ids=studied().slice(-8);
+  const topics=ids.map(id=>{const g=card(id),p=plus(id);return {id,title:g.title,short:g.short,rule:(p.rule||[g.details]).slice(0,6),mistakes:(g.mistakes||[]).slice(0,2).map(m=>`${m.wrong} → ${m.right}`)}});
+  const avoid=ids.flatMap(id=>practiceItems(id).filter(x=>x.also).map(x=>x.prompt||(x.answers||[])[0])).filter(Boolean).slice(-80);
+  return window.TEF_CONNECTED.generateExercises({mix:true,topics,n:10,level:'mix',avoid});
+}
+function storeMix(r){
+  const ids=new Set(studied()),st=S(),out=[];st.aiBank=st.aiBank||{};
+  for(const x of (r?.exercises||[])){
+    const t=(x.topics||[]).filter(id=>ids.has(id));if(!t.length||!x.type)continue;
+    const q={...x,also:t.slice(1)};delete q.topics;(st.aiBank[t[0]]=st.aiBank[t[0]]||[]).push(q);invalidate(t[0]);out.push({tid:t[0],x:q});
+  }
+  if(out.length)app().save();
+  return out.map(o=>({tid:o.tid,i:practiceItems(o.tid).indexOf(o.x),x:o.x})).filter(o=>o.i>=0);
+}
+function prefetchMix(){if(aiReady()&&!MIXQ&&studied().length>1)MIXQ=fetchMix().then(storeMix).catch(()=>null)}
+async function generateMix(btn){
+  if(!aiReady())return app().toast('Connecte-toi (☁️ Sync) pour les questions IA.');
+  if(btn){btn.disabled=true;btn.dataset.label=btn.textContent;btn.textContent='Génération et vérification… (≈30 s)'}
+  try{
+    const ready=MIXQ;MIXQ=null;
+    let got=(ready&&await ready)||[];
+    if(!got.length)got=storeMix(await fetchMix());
+    if(!got.length)throw new Error('Aucune question validée. Réessaie.');
+    session({key:'mix-ai',title:'✨ Questions IA qui mêlent les sujets',mixed:true,topicId:null,ai:true,items:got,
+      back:{label:'Grammaire',fn:()=>app().show('grammar')},more:{label:'✨ 10 autres questions (IA)',fn:(b)=>generateMix(b)},
+      extraMore:{label:'🎲 Mélange : 25 questions',fn:()=>mix()}},false);
+    prefetchMix();
+  }catch(e){app().toast(e.message||'Génération impossible.');if(btn){btn.disabled=false;btn.textContent=btn.dataset.label}}
+}
 /* Secondary « new questions » button shown on end screens. */
 const moreFor=id=>aiReady()?{label:'✨ 10 nouvelles questions (IA)',fn:(b)=>generateAI(id,b)}:window.TEF_GEN?.has(id)?{label:'♾️ Exercices automatiques',fn:()=>unlimited(id)}:null;
 /* 1 = basic, 2 = intermediate, 3 = B2. The first 12 exercises were written from easy to hard. */
@@ -430,7 +495,8 @@ function renderExercise(){
   }else if(x.type==='order'){
     body=`<p class="ex-instruction">Touche les mots dans le bon ordre pour former la phrase.</p><div class="order-line" id="orderLine"><span class="muted">Ta phrase apparaîtra ici</span></div><div class="order-bank" id="orderBank">${shuffle(x.words.map((w,i)=>({w,i}))).map(o=>`<button class="token" data-t="${o.i}">${esc(o.w)}</button>`).join('')}</div><div class="button-row"><button class="btn ghost small" id="orderReset">Recommencer</button><button class="btn" id="exCheck">Vérifier</button></div>`;
   }
-  const topicChip=(P.mixed?`<span class="chip topic-chip">${esc(card(it.tid).title)}</span>`:'')+(x.ai?'<span class="chip ai-chip">IA</span>':x.gen?'<span class="chip ai-chip">auto</span>':'');
+  const alsoT=(x.also||[]).map(id=>card(id)?.title).filter(Boolean);
+  const topicChip=(P.mixed?`<span class="chip topic-chip">${esc([card(it.tid).title,...alsoT].join(' + '))}</span>`:alsoT.length?`<span class="chip topic-chip">+ ${esc(alsoT.join(' + '))}</span>`:'')+(x.ai?'<span class="chip ai-chip">IA</span>':x.gen?'<span class="chip ai-chip">auto</span>':'');
   const ruleBtn=!P.test&&ficheOf(it.tid)?'<button type="button" class="rule-btn" id="exRule" title="Ouvrir la fiche de ce sujet">📖 Fiche</button>':'';
   root.innerHTML=head()+`<div class="card exercise"><div class="exercise-top"><span class="kicker">${TYPE_LABEL[x.type]||''}</span><span class="ex-top-end">${topicChip}${ruleBtn}</span></div>${body}<div id="exFb"></div><div class="runner-nav" id="exNav" hidden><span></span><button class="btn" id="exNext">${P.idx<P.items.length-1?'Suivant ›':'Voir mon score'}</button></div></div>`;
   $('[data-lesson]',root).onclick=()=>P.back.fn();
@@ -541,5 +607,5 @@ function init(){
   route();
 }
 window.TEF_TOPIC={init,open:(id,o)=>{origin=o||'grammar';go('#g/'+id)},copy:(id,o)=>{origin=o||'grammar';go('#c/'+id)},practice:id=>go('#gp/'+id),
-  session:(cfg)=>{origin='today';session(cfg,false)},check,norm,practiceItems,isFlagged,levelOf,lessonLines,notebookLines:linesFor,ruleMatch,rulePanel,closeRule,prefetchAI,aiQueued:id=>!!AIQ[id],updatesOf,markCopied,notebookUpdates,invalidate,moreFor,unlimited,generateAI,route,current:()=>P&&{key:P.key,items:P.items.map(o=>({tid:o.tid,i:o.i,x:o.x})),idx:P.idx}};
+  session:(cfg)=>{origin='today';session(cfg,false)},check,norm,practiceItems,isFlagged,levelOf,lessonLines,notebookLines:linesFor,ruleMatch,rulePanel,closeRule,prefetchAI,aiQueued:id=>!!AIQ[id],mix,mixItems,studied,updatesOf,markCopied,notebookUpdates,invalidate,moreFor,unlimited,generateAI,route,current:()=>P&&{key:P.key,items:P.items.map(o=>({tid:o.tid,i:o.i,x:o.x})),idx:P.idx}};
 })();

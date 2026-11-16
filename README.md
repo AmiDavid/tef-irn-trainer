@@ -130,6 +130,16 @@ The app does not redistribute CCI/TEF audio. Official resources are linked separ
 - AI batches are prepared in the background (`prefetchAI`) when a topic’s new questions run low and after each AI series,
   so « ✨ 10 nouvelles questions (IA) » usually starts at once instead of after ≈30 s. Used batches join `S.aiBank` as before.
 
+## 🎲 Mélange de révision (build 36)
+
+- On the Grammaire page and on Aujourd’hui: **25 questions on every subject studied so far** (finished in the course, answered
+  at least once, or today’s), shuffled. A round-robin over the subjects (mistakes, unseen, then the oldest first), a few
+  automatic drills, and about 30 % AI questions that **mix two subjects in one sentence**.
+- `api/generate-exercises.js` mix mode: `{mix:true, topics:[…]}` → at least half the exercises test two subjects at once; each
+  carries `topics` (main first). The client stores each one in the bank of its main subject with `x.also` = the others, so it
+  also appears in that subject’s practice, with a chip naming both subjects. A batch is prepared in the background
+  when a mélange starts; « ✨ 10 questions IA qui mêlent les sujets » on the end screen uses it.
+
 ## Running locally
 
 Serve this folder over HTTP, e.g. `python -m http.server 8000`, then open `http://localhost:8000`.

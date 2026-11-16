@@ -550,3 +550,9 @@ td.mais-col{font-style:italic}
 .rv-list .linklike{text-align:left;font-size:14px;line-height:1.4}
 .ctrl-line{margin:8px 0 0;color:var(--muted);font-size:13.5px}
 .ctrl-line.ok{color:#6ee7a8;font-weight:700}
+
+/* 🎲 Mélange de révision (build 36) */
+.mix-card{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-color:rgba(243,198,109,.45)}
+.mix-card h3{margin:0 0 4px}
+.mix-card p{margin:0;max-width:640px}
+.ld-mix{margin-top:12px}

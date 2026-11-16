@@ -1,5 +1,7 @@
 /* Generate fresh grammar exercises for one topic with Claude, then have a second pass verify every answer key.
-   Only structurally valid, verified exercises are returned. POST {topic:{id,title,short,rule[],examples[],mistakes[]}, n, level, avoid[]} */
+   Only structurally valid, verified exercises are returned. POST {topic:{id,title,short,rule[],examples[],mistakes[]}, n, level, avoid[]}
+   Mix mode (build 36): POST {mix:true, topics:[{id,title,short,rule[],mistakes[]}, …2–8], n, avoid[]} → exercises that mix the
+   subjects, at least half testing two of them at once; each exercise carries "topics": [ids, main one first]. */
 import {json,body,verifyUser,aiResponse,outputText,parseJSON,cors} from "./_lib.js";
 
 const TYPES=["mcq","fill","fix","transform","order"];
@@ -38,23 +40,33 @@ logement, travail, santé, transports, école, banque, loisirs, médias, environ
 typographic apostrophe ’; explanations in French, one short sentence.`;
 
 export default async function handler(req,res){cors(req,res);if(req.method==="OPTIONS")return res.status(204).end();if(req.method!=="POST")return json(res,405,{error:"POST only"});try{
-  const user=await verifyUser(req),b=await body(req),t=b.topic||{};
+  const user=await verifyUser(req),b=await body(req);
+  const mixList=Array.isArray(b.topics)?b.topics.filter(x=>x&&typeof x.id==="string"&&x.title).slice(0,8):[];
+  const mix=!!b.mix&&mixList.length>=2,t=mix?mixList[0]:(b.topic||{}),ids=new Set(mixList.map(x=>x.id));
   if(!t.title)return json(res,400,{error:"topic missing"});
   const n=Math.max(4,Math.min(12,parseInt(b.n,10)||10));
   const level=[1,2,3].includes(b.level)?`all at level ${b.level}`:"mixed levels (about 40% level 1, 40% level 2, 20% level 3)";
-  const topicText=`Topic: ${t.title} — ${t.short||""}\nRule:\n${(t.rule||[]).slice(0,14).map(r=>"- "+r).join("\n")}\nTypical mistakes:\n${(t.mistakes||[]).slice(0,4).map(m=>"- "+m).join("\n")}`;
+  const topicText=mix
+    ?`Subjects (use these ids):\n${mixList.map(x=>`[${x.id}] ${x.title} — ${x.short||""}\n  Rule: ${(x.rule||[]).slice(0,6).join(" / ")}\n  Typical mistakes: ${(x.mistakes||[]).slice(0,2).join(" / ")}`).join("\n")}`
+    :`Topic: ${t.title} — ${t.short||""}\nRule:\n${(t.rule||[]).slice(0,14).map(r=>"- "+r).join("\n")}\nTypical mistakes:\n${(t.mistakes||[]).slice(0,4).map(m=>"- "+m).join("\n")}`;
   const avoid=(b.avoid||[]).slice(0,80).map(s=>String(s).slice(0,160));
-  const instructions=`You write French grammar exercises for an adult learner preparing the TEF IRN (target B2). ${SPEC}
+  const instructions=mix
+    ?`You write French grammar exercises for an adult learner preparing the TEF IRN (target B2). ${SPEC}
+Write exactly ${n} NEW exercises that MIX the subjects below, ${level}, using at least 4 different types. At least half of them must test TWO different subjects in the same exercise (for example: choose the article AND make the adjective agree; a "fix" sentence with one error from each of two subjects — here a "fix" sentence may contain one or two errors; a gap whose answer depends on two rules). Spread the set over all the subjects.
+Add to every exercise "topics": [the ids of the subjects it tests, the main one first], using only the ids given.
+Do not reuse any sentence from the avoid list. Return ONLY JSON: {"exercises":[...]}`
+    :`You write French grammar exercises for an adult learner preparing the TEF IRN (target B2). ${SPEC}
 Write exactly ${n} NEW exercises on the topic below, ${level}, using at least 4 different types. Level 1 = basic application, 2 = intermediate with a typical trap, 3 = B2 nuance.
 Do not reuse any sentence from the avoid list. Return ONLY JSON: {"exercises":[...]}`;
+  const topicsOf=x=>[...new Set((Array.isArray(x?.topics)?x.topics:[]).filter(id=>ids.has(id)))];
   const draft=parseJSON(outputText(await aiResponse({user,json:true,instructions,input:`${topicText}\n\nAvoid these sentences:\n${avoid.join("\n")}`})));
-  let items=(draft?.exercises||[]).map(fixApos).filter(valid);
+  let items=(draft?.exercises||[]).map(x=>mix?{...fixApos({...x,topics:undefined}),topics:topicsOf(x)}:fixApos(x)).filter(x=>valid(x)&&(!mix||x.topics.length));
   if(!items.length)return json(res,502,{error:"Aucun exercice valide généré. Réessaie."});
   // Second pass: an independent strict check of every answer key.
   const verifyInstr=`You are a strict French teacher checking exercises before a learner sees them. For EACH exercise decide:
-"ok" if the marked answer is correct, no other choice/answer is also correct (or all correct variants are listed), the French is natural and it tests the topic;
-"fix" if a small correction makes it right (return the corrected exercise in the same format);
-"drop" otherwise. ${SPEC}
+"ok" if the marked answer is correct, no other choice/answer is also correct (or all correct variants are listed), the French is natural and it tests the topic${mix?" (or the subjects listed in its \"topics\")":""};
+"fix" if a small correction makes it right (return the corrected exercise in the same format${mix?", keeping its \"topics\"":""});
+"drop" otherwise. ${SPEC}${mix?"\nIn this set a \"fix\" sentence may contain one or two errors from different subjects; its answer is the fully corrected sentence.":""}
 Return ONLY JSON: {"results":[{"index":0,"verdict":"ok|fix|drop","exercise":{...only when fix...}}]}`;
   const check=parseJSON(outputText(await aiResponse({user,json:true,instructions:verifyInstr,input:`${topicText}\n\nExercises:\n${JSON.stringify(items)}`})));
   const results=Array.isArray(check?.results)?check.results:null;
@@ -63,7 +75,7 @@ Return ONLY JSON: {"results":[{"index":0,"verdict":"ok|fix|drop","exercise":{...
   for(const r of results){
     const i=Number(r?.index);if(!Number.isInteger(i)||!items[i])continue;
     if(r.verdict==="ok")verified.push(items[i]);
-    else if(r.verdict==="fix"){const f=fixApos(r.exercise);if(valid(f))verified.push({...f,lvl:f.lvl||items[i].lvl})}
+    else if(r.verdict==="fix"){const f=fixApos(r.exercise);if(valid(f))verified.push({...f,lvl:f.lvl||items[i].lvl,...(mix?{topics:topicsOf(r.exercise).length?topicsOf(r.exercise):items[i].topics}:{})})}
   }
   const avoidN=new Set(avoid.map(norm));
   const out=verified.filter(x=>!avoidN.has(norm(x.prompt||x.answers?.[0]))).map(x=>({...x,lvl:[1,2,3].includes(x.lvl)?x.lvl:2,ai:true}));
