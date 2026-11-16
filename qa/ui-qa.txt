@@ -475,6 +475,7 @@ async function visible(page,selector){
         r.spectacle={i:-1,m:TEF_TOPIC.ruleMatch("g5",{type:"mcq",prompt:"_____ spectacle",choices:["une","un"],answer:1,explain:"« spectacle » est masculin : un spectacle."})};
         r.cantine={i:-1,m:TEF_TOPIC.ruleMatch("g5",{type:"mcq",prompt:"_____ cantine",choices:["une","un"],answer:0,explain:"« cantine » est féminin : une cantine."})};
         r.douleur={i:-1,m:TEF_TOPIC.ruleMatch("g5",{type:"mcq",prompt:"___ douleur (pain)",choices:["un","une"],answer:1,explain:"« douleur » est féminin : une douleur."})};
+        r.citoyen={i:-1,m:TEF_TOPIC.ruleMatch("g5",{type:"mcq",prompt:"___ citoyen (citizen)",choices:["un","une"],answer:0,explain:"« citoyen » est masculin : un citoyen."})};
         r.poste=TEF_TOPIC.ruleMatch("g5",{type:"mcq",prompt:"___ poste (job / position)",choices:["un","une"],answer:0,explain:"« poste » est masculin : un poste."});
         r.voyelle={i:-1,m:TEF_TOPIC.ruleMatch("g5",{type:"fill",prompt:"C’est ___ attestation.",hint:"possessif, je",answers:["mon"],explain:"« attestation » est féminin, mais commence par une voyelle (ou un h muet) : ma → mon attestation."})};
         localStorage.removeItem("tef-gen-recent-v1");
@@ -494,6 +495,7 @@ async function visible(page,selector){
       assert.ok(found.spectacle?.text?.includes("le spectacle"),"un spectacle → the -cle row: "+found.spectacle?.text);
       assert.ok(found.cantine?.text?.includes("la cantine"),"une cantine → the -ine row: "+found.cantine?.text);
       assert.ok(found.douleur?.text?.includes("la douleur"),"une douleur → the -eur (sentiment, qualité) row: "+found.douleur?.text);
+      assert.ok(found.citoyen?.text?.includes("le citoyen"),"un citoyen → the -en row: "+found.citoyen?.text);
       assert.ok(found.poste?.none&&found.poste.noun==="poste"&&!found.poste.key,"poste: no ending rule, nothing highlighted");
       assert.ok(found.voyelle?.text?.includes("mon adresse"),"mon attestation → before a vowel: "+found.voyelle?.text);
       assert.equal(found.gen.n1,15);assert.equal(found.gen.n2,15);
