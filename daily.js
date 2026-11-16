@@ -87,6 +87,10 @@ function pickFrom(id,n,opt){
   const r=ranked(id),fresh=r.filter(o=>!o.today);
   return ((opt&&opt.fresh)?fresh:r).slice(0,n).sort((a,b)=>a.lv-b.lv||a.r-b.r).map(o=>o.i);
 }
+/* Everything already done today: go round again, today's mistakes first, then the questions answered longest ago. Easy → hard. */
+function pickAgain(id,n,avoid){
+  return ranked(id).filter(o=>!(avoid&&avoid.has(o.i))).slice(0,n).sort((a,b)=>a.lv-b.lv||a.r-b.r).map(o=>o.i);
+}
 /* The day's basic set: mostly level 1, then level 2; level 3 only to fill up. Easy → hard. */
 function pickBasic(id,n){
   const all=ranked(id),take=[],used=new Set();
@@ -268,6 +272,6 @@ function bindCommon(root){
 }
 
 function init(){render()}
-window.TEF_DAILY={init,render,mark,start,resume,control,pickControl,isTodayTopic,stepDone,logAnswer,ensureDay,pickFrom,seenCount,coverage,setSize,
+window.TEF_DAILY={init,render,mark,start,resume,control,pickControl,pickAgain,isTodayTopic,stepDone,logAnswer,ensureDay,pickFrom,seenCount,coverage,setSize,
   pickReview:()=>pickReview(ensureDay()),_localDay:localDay};
 })();

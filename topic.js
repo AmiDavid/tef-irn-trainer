@@ -339,13 +339,22 @@ function practiceItems(id){
 const invalidate=id=>id?bankCache.delete(id):bankCache.clear();
 /* ---------- new questions: unlimited automatic drills (generators.js) and AI questions (Claude, verified) ---------- */
 const aiReady=()=>!!window.TEF_CONNECTED?.ready;
+/* AI batches (build 35): the next one is prepared in the background while the learner answers, so « ✨ nouvelles questions »
+   usually starts at once instead of after ≈30 s. One batch at a time per topic; a failed one is simply dropped. */
+const AIQ={};
+function fetchAI(id){
+  const g=card(id),p=plus(id);
+  return window.TEF_CONNECTED.generateExercises({topic:{id,title:g.title,short:g.short,rule:p.rule||[g.details],mistakes:(g.mistakes||[]).map(m=>`${m.wrong} → ${m.right}`)},n:10,level:'mix',
+    avoid:practiceItems(id).map(x=>x.prompt||(x.answers||[])[0]).filter(Boolean)});
+}
+function prefetchAI(id){if(aiReady()&&card(id)&&!AIQ[id])AIQ[id]=fetchAI(id).catch(()=>null)}
 async function generateAI(id,btn){
   if(!aiReady())return app().toast('Connecte-toi (☁️ Sync) pour les questions IA.');
-  const g=card(id),p=plus(id);
+  const g=card(id);
   if(btn){btn.disabled=true;btn.dataset.label=btn.textContent;btn.textContent='Génération et vérification… (≈30 s)'}
   try{
-    const r=await window.TEF_CONNECTED.generateExercises({topic:{id,title:g.title,short:g.short,rule:p.rule||[g.details],mistakes:(g.mistakes||[]).map(m=>`${m.wrong} → ${m.right}`)},n:10,level:'mix',
-      avoid:practiceItems(id).map(x=>x.prompt||(x.answers||[])[0]).filter(Boolean)});
+    const ready=AIQ[id];delete AIQ[id];
+    const r=(ready&&await ready)||await fetchAI(id);
     const got=(r.exercises||[]).filter(x=>x&&x.type);
     if(!got.length)throw new Error('Aucune question validée. Réessaie.');
     const st=S();st.aiBank=st.aiBank||{};const prev=st.aiBank[id]||[];
@@ -353,6 +362,7 @@ async function generateAI(id,btn){
     const all=practiceItems(id),start=all.length-got.length;
     session({key:'ai-'+id,title:`Nouvelles questions (IA) · ${g.title}`,topicId:null,ai:true,items:got.map((x,k)=>({tid:id,i:start+k,x:all[start+k]})),back:P?.back||{label:g.title,fn:()=>go('#g/'+id)},
       more:{label:'✨ 10 autres questions (IA)',fn:(b)=>generateAI(id,b)},extraMore:moreFor(id)},false);
+    prefetchAI(id);
   }catch(e){app().toast(e.message||'Génération impossible.');if(btn){btn.disabled=false;btn.textContent=btn.dataset.label}}
 }
 function unlimited(id){
@@ -374,8 +384,14 @@ function renderPractice(id,only){
   const idx=only||(daily()?.pickFrom(id,SERIES,{fresh:true})||all.map((_,i)=>i).slice(0,SERIES));
   if(origin!=='today'||!daily()?.isTodayTopic(id))origin='grammar';
   let list=idx.map(i=>({tid:id,i,x:all[i]})).filter(o=>o.x);
+  if(!only&&idx.length<SERIES*2)prefetchAI(id); // the topic's new questions are running out today
   if(!only&&list.length<SERIES)list=[...list,...(window.TEF_GEN?.make(id,SERIES-list.length)||[])];
-  if(!list.length){app().toast('Tu as fait toutes les questions de ce sujet aujourd’hui. Reviens demain, ou essaie les questions IA.');return}
+  /* No more new questions today: never stop. Go round again (today's mistakes first, then the oldest) and get new AI ones ready. */
+  if(!only&&list.length<SERIES){
+    const have=new Set(list.map(o=>o.i)),again=(daily()?.pickAgain(id,SERIES-list.length,have)||[]).map(i=>({tid:id,i,x:all[i]})).filter(o=>o.x);
+    if(again.length){list=[...list,...again];app().toast(aiReady()?'Toutes les questions du sujet sont faites aujourd’hui : on refait tes erreurs, puis les plus anciennes. ✨ De nouvelles questions IA se préparent.':'Toutes les questions du sujet sont faites aujourd’hui : on refait tes erreurs, puis les plus anciennes.');prefetchAI(id)}
+  }
+  if(!list.length){app().toast('Pas encore de questions sur ce sujet.');return}
   session({key:'topic-'+id,title:card(id).title,topicId:id,items:list,back:{label:card(id).title,fn:()=>go('#g/'+id)},extraMore:moreFor(id),
     more:{label:`Encore ${SERIES} questions`,fn:()=>{P=null;renderPractice(id);if(location.hash!=='#gp/'+id)history.replaceState(null,'','#gp/'+id)}}},true);
 }
@@ -525,5 +541,5 @@ function init(){
   route();
 }
 window.TEF_TOPIC={init,open:(id,o)=>{origin=o||'grammar';go('#g/'+id)},copy:(id,o)=>{origin=o||'grammar';go('#c/'+id)},practice:id=>go('#gp/'+id),
-  session:(cfg)=>{origin='today';session(cfg,false)},check,norm,practiceItems,isFlagged,levelOf,lessonLines,notebookLines:linesFor,ruleMatch,rulePanel,closeRule,updatesOf,markCopied,notebookUpdates,invalidate,moreFor,unlimited,generateAI,route,current:()=>P&&{key:P.key,items:P.items.map(o=>({tid:o.tid,i:o.i,x:o.x})),idx:P.idx}};
+  session:(cfg)=>{origin='today';session(cfg,false)},check,norm,practiceItems,isFlagged,levelOf,lessonLines,notebookLines:linesFor,ruleMatch,rulePanel,closeRule,prefetchAI,aiQueued:id=>!!AIQ[id],updatesOf,markCopied,notebookUpdates,invalidate,moreFor,unlimited,generateAI,route,current:()=>P&&{key:P.key,items:P.items.map(o=>({tid:o.tid,i:o.i,x:o.x})),idx:P.idx}};
 })();

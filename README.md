@@ -123,6 +123,13 @@ The app does not redistribute CCI/TEF audio. Official resources are linked separ
 - The lesson page has a **🎯 Contrôle** button for any subject, and shows the result (« ✓ Sujet validé au contrôle (18/20) »).
 - State: `S.course.ctrl[id] = {tries, last, best, passed}`; the day keeps `ctrl` (passed) or `ctrlTry` (last failed attempt).
 
+## Never out of questions (build 35)
+
+- « S’entraîner » never stops: once every question of a topic was done today, the series goes round again
+  (`TEF_DAILY.pickAgain`: today’s mistakes first, then the questions answered longest ago).
+- AI batches are prepared in the background (`prefetchAI`) when a topic’s new questions run low and after each AI series,
+  so « ✨ 10 nouvelles questions (IA) » usually starts at once instead of after ≈30 s. Used batches join `S.aiBank` as before.
+
 ## Running locally
 
 Serve this folder over HTTP, e.g. `python -m http.server 8000`, then open `http://localhost:8000`.
