@@ -260,8 +260,10 @@ function render(){
     <ol class="ld-steps">${steps.map((s,i)=>`<li class="ld-step ${s.done?'done':''} ${i===curIdx?'current':''}"><span class="ld-num" aria-hidden="true">${s.done?'✓':i+1}</span><div class="ld-text"><strong>${s.t}</strong><span>${esc(s.s)}</span></div><button class="btn ${i===curIdx?'':'ghost'} small" data-step="${s.k}">${s.done?s.again:s.cta}</button></li>`).join('')}</ol>
     ${d.complete?`<div class="button-row">${next?`<button class="btn ghost small" id="ldAdvance">Prendre de l’avance : ${esc(card(next).title)}</button>`:''}</div>`:''}
     ${sizeHTML}
+    ${(window.TEF_TOPIC?.studied?.()||[]).length>1?'<div class="ld-mix"><button class="btn ghost small" id="ldMix">🎲 Mélange : 25 questions sur tout ce que j’ai étudié</button></div>':''}
     ${mapHTML}`;
   $$('[data-step]',root).forEach(b=>b.onclick=()=>steps.find(s=>s.k===b.dataset.step).go());
+  $('#ldMix')&&($('#ldMix').onclick=()=>window.TEF_TOPIC.mix());
   $('#ldAdvance')&&($('#ldAdvance').onclick=()=>{advance();TEF_TOPIC.open(C().day.topicId,'today')});
   bindCommon(root);
 }
@@ -272,6 +274,6 @@ function bindCommon(root){
 }
 
 function init(){render()}
-window.TEF_DAILY={init,render,mark,start,resume,control,pickControl,pickAgain,isTodayTopic,stepDone,logAnswer,ensureDay,pickFrom,seenCount,coverage,setSize,
+window.TEF_DAILY={init,render,mark,start,resume,control,pickControl,pickAgain,order:id=>ranked(id).map(o=>o.i),isTodayTopic,stepDone,logAnswer,ensureDay,pickFrom,seenCount,coverage,setSize,
   pickReview:()=>pickReview(ensureDay()),_localDay:localDay};
 })();

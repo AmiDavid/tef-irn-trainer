@@ -581,6 +581,43 @@ async function visible(page,selector){
       assert.deepEqual(qerr,[],"more-questions page errors: "+qerr.join(" | "));
       await qp.close();
     }
+    /* 🎲 Mélange (build 36): 25 questions over every subject studied; AI questions that mix two subjects join the mix. */
+    {
+      const xp=await browser.newPage({viewport:{width:1280,height:820}});
+      const xerr=[];xp.on("pageerror",e=>xerr.push(e.message));
+      await xp.goto(base,{waitUntil:"networkidle"});
+      await xp.evaluate(()=>{
+        window.__mix=0;Object.defineProperty(TEF_CONNECTED,"ready",{get:()=>true,set:()=>{},configurable:true});
+        TEF_CONNECTED.generateExercises=async(b)=>{window.__mix++;window.__mixBody=b;return {exercises:Array.from({length:10},(_,j)=>({type:"fix",prompt:`Les démarche ${j} est long.`,answers:[`Les démarches ${j} sont longues.`],explain:"Pluriel et accord.",topics:j%2?["g29","g5"]:["g5","g29"]}))}};
+        const c=TEF_DAILY.ensureDay()&&TEF_APP.S.course,log=c.qlog,old=Date.now()-3*864e5;
+        for(const id of ["g5","g29"])TEF_TOPIC.practiceItems(id).slice(0,10).forEach((_,i)=>{log[id+":"+i]={ok:1,t:old+i,d:"2026-11-01"}});
+        TEF_APP.save();TEF_APP.show("grammar");
+      });
+      await visible(xp,"#view-grammar.active #mixGo");
+      assert.ok((await xp.locator(".mix-card").textContent()).includes("2 sujets"),"the card counts the subjects studied");
+      await xp.locator("#mixGo").click();
+      await visible(xp,"#view-gpractice.active .exercise");
+      const m1=await xp.evaluate(()=>{const c=TEF_TOPIC.current();return {key:c.key,n:c.items.length,tids:[...new Set(c.items.map(o=>o.tid))].sort()}});
+      assert.equal(m1.key,"mix");assert.equal(m1.n,25,"25 questions");assert.deepEqual(m1.tids,["g29","g5"],"both subjects are mixed");
+      assert.equal(await xp.evaluate(()=>window.__mix),1,"AI questions mixing the subjects are prepared");
+      assert.deepEqual(await xp.evaluate(()=>window.__mixBody.topics.map(t=>t.id).sort()),["g29","g5"]);
+      await xp.waitForFunction(()=>(TEF_APP.S.aiBank?.g5||[]).some(x=>x.also?.length));
+      assert.deepEqual(await xp.evaluate(()=>[(TEF_APP.S.aiBank.g5||[]).length,(TEF_APP.S.aiBank.g29||[]).length,TEF_APP.S.aiBank.g5[0].also]),[5,5,["g29"]],"each question goes to its main subject, the other one in also");
+      /* The next mélange includes them, and their chip names both subjects. */
+      await xp.evaluate(()=>TEF_TOPIC.mix());
+      await xp.waitForFunction(()=>TEF_TOPIC.current()?.items.some(o=>o.x.also?.length));
+      const cross=await xp.evaluate(()=>TEF_TOPIC.current().items.filter(o=>o.x.also?.length).length);
+      assert.ok(cross>=5,"about 30 % of the mélange mixes two subjects: "+cross);
+      await xp.evaluate(()=>{const c=TEF_TOPIC.current();const k=c.items.findIndex(o=>o.x.also?.length);c.items.unshift(...c.items.splice(k,1));location.hash="#gs/mix"});
+      await xp.evaluate(()=>{TEF_APP.show("grammar")});await xp.locator("#mixGo").click();
+      await visible(xp,"#view-gpractice.active .exercise");
+      /* Aujourd’hui also offers it. */
+      await xp.evaluate(()=>{TEF_APP.show("today")});
+      await visible(xp,"#lessonDay #ldMix");
+      await xp.evaluate(()=>{delete TEF_CONNECTED.ready;TEF_CONNECTED.ready=false;delete TEF_APP.S.aiBank;TEF_APP.save()});
+      assert.deepEqual(xerr,[],"mélange page errors: "+xerr.join(" | "));
+      await xp.close();
+    }
     console.log("UI QA OK");
   } finally {
     await browser.close();
