@@ -140,6 +140,25 @@ The app does not redistribute CCI/TEF audio. Official resources are linked separ
   also appears in that subject’s practice, with a chip naming both subjects. A batch is prepared in the background
   when a mélange starts; « ✨ 10 questions IA qui mêlent les sujets » on the end screen uses it.
 
+## ✨ AI question bank (build 37)
+
+- Every AI question is kept for good in the learner’s account: Supabase table `tef_ai_questions` (own rows only, RLS:
+  select/insert where `auth.uid() = user_id`; `unique (user_id, sig)`; `q` jsonb under 6 kB), cached on the device in IndexedDB
+  (`aibank.js`, `window.TEF_AIBANK`). The synced progress no longer carries them, so the bank can grow to thousands and works
+  offline. Order inside a subject = row id, identical on every device (the answer history is keyed by position).
+- `sig` = a hash of type + instruction + prompt + answer: the same question is never stored twice, even from two devices.
+  A question is shown at once; if saving fails it stays pending on the device and is sent at the next sync, on `online`,
+  or when the app comes back to the front (which also brings in questions made on the other device).
+- The questions that lived in `S.aiBank` move to the bank in the same order (repeats included) the first time a signed-in
+  build 37 starts; `S.aiBank` is then removed and `S.aiMigrated` set.
+- Background queue (`TEF_TOPIC.queueAI(kind, n)`, kind = subject id or `'mix'`): one batch of 10 at a time, a pill with progress
+  and ×, saved in localStorage so it resumes after a restart, capped at 40 batches. « ✨ Préparer 50 questions » on each lesson
+  page and « ✨ Préparer 50 questions mélangées » on the mélange card; automatic top-up when a subject has fewer than 15 AI
+  questions not yet answered (practice, lesson page, Aujourd’hui) or the mélange fewer than 10. « ✨ 10 nouvelles questions »
+  plays unanswered ones first and only waits for the AI when none are ready.
+- Variety: each batch leans on the next line of the subject’s fiche (`focus`, so every rule and table row gets its turn) and on
+  the next everyday context (`theme`); the avoid list mixes the newest prompts with older ones picked at random.
+
 ## Running locally
 
 Serve this folder over HTTP, e.g. `python -m http.server 8000`, then open `http://localhost:8000`.

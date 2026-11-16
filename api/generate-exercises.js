@@ -1,7 +1,8 @@
 /* Generate fresh grammar exercises for one topic with Claude, then have a second pass verify every answer key.
    Only structurally valid, verified exercises are returned. POST {topic:{id,title,short,rule[],examples[],mistakes[]}, n, level, avoid[]}
    Mix mode (build 36): POST {mix:true, topics:[{id,title,short,rule[],mistakes[]}, …2–8], n, avoid[]} → exercises that mix the
-   subjects, at least half testing two of them at once; each exercise carries "topics": [ids, main one first]. */
+   subjects, at least half testing two of them at once; each exercise carries "topics": [ids, main one first].
+   Variety (build 37): optional "focus" (one line of the subject's fiche to lean on) and "theme" (an everyday context). */
 import {json,body,verifyUser,aiResponse,outputText,parseJSON,cors} from "./_lib.js";
 
 const TYPES=["mcq","fill","fix","transform","order"];
@@ -50,13 +51,16 @@ export default async function handler(req,res){cors(req,res);if(req.method==="OP
     ?`Subjects (use these ids):\n${mixList.map(x=>`[${x.id}] ${x.title} — ${x.short||""}\n  Rule: ${(x.rule||[]).slice(0,6).join(" / ")}\n  Typical mistakes: ${(x.mistakes||[]).slice(0,2).join(" / ")}`).join("\n")}`
     :`Topic: ${t.title} — ${t.short||""}\nRule:\n${(t.rule||[]).slice(0,14).map(r=>"- "+r).join("\n")}\nTypical mistakes:\n${(t.mistakes||[]).slice(0,4).map(m=>"- "+m).join("\n")}`;
   const avoid=(b.avoid||[]).slice(0,80).map(s=>String(s).slice(0,160));
+  const clean=(v,max)=>String(v||"").replace(/[\u0000-\u001f]/g," ").replace(/\s+/g," ").trim().slice(0,max);
+  const focus=mix?"":clean(b.focus,300),theme=clean(b.theme,80);
+  const steer=`${focus?`\nThis time give priority to this point of the rule (about 6 of the ${n} exercises; the others cover the rest of the topic): ${focus}`:""}${theme?`\nSet most sentences in this everyday context: ${theme}.`:""}`;
   const instructions=mix
     ?`You write French grammar exercises for an adult learner preparing the TEF IRN (target B2). ${SPEC}
 Write exactly ${n} NEW exercises that MIX the subjects below, ${level}, using at least 4 different types. At least half of them must test TWO different subjects in the same exercise (for example: choose the article AND make the adjective agree; a "fix" sentence with one error from each of two subjects — here a "fix" sentence may contain one or two errors; a gap whose answer depends on two rules). Spread the set over all the subjects.
-Add to every exercise "topics": [the ids of the subjects it tests, the main one first], using only the ids given.
+Add to every exercise "topics": [the ids of the subjects it tests, the main one first], using only the ids given.${steer}
 Do not reuse any sentence from the avoid list. Return ONLY JSON: {"exercises":[...]}`
     :`You write French grammar exercises for an adult learner preparing the TEF IRN (target B2). ${SPEC}
-Write exactly ${n} NEW exercises on the topic below, ${level}, using at least 4 different types. Level 1 = basic application, 2 = intermediate with a typical trap, 3 = B2 nuance.
+Write exactly ${n} NEW exercises on the topic below, ${level}, using at least 4 different types. Level 1 = basic application, 2 = intermediate with a typical trap, 3 = B2 nuance.${steer}
 Do not reuse any sentence from the avoid list. Return ONLY JSON: {"exercises":[...]}`;
   const topicsOf=x=>[...new Set((Array.isArray(x?.topics)?x.topics:[]).filter(id=>ids.has(id)))];
   const draft=parseJSON(outputText(await aiResponse({user,json:true,instructions,input:`${topicText}\n\nAvoid these sentences:\n${avoid.join("\n")}`})));

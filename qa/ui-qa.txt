@@ -552,8 +552,8 @@ async function visible(page,selector){
       assert.deepEqual(merr,[],"Mais column page errors: "+merr.join(" | "));
       await mp.close();
     }
-    /* More questions (build 35): a topic done in full today goes round again instead of stopping, and the next AI batch is
-       prepared in the background so « ✨ 10 nouvelles questions » starts at once. */
+    /* More questions (build 35 → 37): a topic done in full today goes round again instead of stopping; AI questions are made in
+       the background and kept in the question bank, so « ✨ 10 nouvelles questions » starts at once. */
     {
       const qp=await browser.newPage({viewport:{width:1280,height:820}});
       const qerr=[];qp.on("pageerror",e=>qerr.push(e.message));
@@ -569,15 +569,37 @@ async function visible(page,selector){
       const s1=await qp.evaluate(()=>TEF_TOPIC.current().items.map(o=>o.i));
       assert.equal(s1.length,15,"a topic done in full today still gives 15 questions");
       assert.ok(s1.every(i=>typeof i==="number"),"repeats come from the topic's own questions");
-      assert.ok(await qp.evaluate(()=>window.__gen===1&&TEF_TOPIC.aiQueued("g29")),"the next AI batch is being prepared");
+      await qp.waitForFunction(()=>window.__gen===1&&TEF_AIBANK.count("g29")===10&&!TEF_TOPIC.queued("g29"));
+      assert.equal(await qp.evaluate(()=>TEF_TOPIC.unseenAI("g29").length),10,"a batch was made in the background and kept in the bank");
       await qp.evaluate(()=>{location.hash="#g/g29"});
       await visible(qp,"#view-gtopic.active #aiBtn");
+      await qp.waitForFunction(()=>window.__gen===2&&!TEF_TOPIC.queued("g29"));
+      assert.match(await qp.locator(".ai-stock").textContent(),/20 questions IA pas encore faites · 20 gardées/,"the lesson page counts the questions ready");
       await qp.locator("#aiBtn").click();
       await visible(qp,"#view-gpractice.active .exercise");
       const s2=await qp.evaluate(()=>({key:TEF_TOPIC.current().key,n:TEF_TOPIC.current().items.length,first:TEF_TOPIC.current().items[0].x.prompt}));
-      assert.equal(s2.key,"ai-g29");assert.equal(s2.n,10);assert.ok(s2.first.startsWith("Phrase IA 1-"),"the prepared batch is used: "+s2.first);
-      assert.equal(await qp.evaluate(()=>window.__gen),2,"and the following batch is prepared");
-      await qp.evaluate(()=>{delete TEF_CONNECTED.ready;TEF_CONNECTED.ready=false;delete TEF_APP.S.aiBank;TEF_APP.save()});
+      assert.equal(s2.key,"ai-g29");assert.equal(s2.n,10);assert.ok(s2.first.startsWith("Phrase IA 1-"),"questions already made are used first: "+s2.first);
+      assert.equal(await qp.evaluate(()=>window.__gen),2,"no new request while 20 are ready");
+      /* « ✨ Préparer 50 questions »: five batches in the background, with a pill to follow them. */
+      await qp.evaluate(()=>{location.hash="#g/g29"});
+      await visible(qp,"#view-gtopic.active #aiBulk");
+      await qp.evaluate(()=>{const g=TEF_CONNECTED.generateExercises;TEF_CONNECTED.generateExercises=async b=>{window.__body=b;await new Promise(r=>setTimeout(r,300));return g(b)}});
+      await qp.locator("#aiBulk").click();
+      await visible(qp,"#aiPill");
+      assert.match(await qp.locator("#aiPill .ap-t").textContent(),/^✨ [45]0 questions IA en préparation/);
+      assert.ok(JSON.parse(await qp.evaluate(()=>localStorage.getItem("tef-ai-jobs-v2"))).filter(j=>j.u).length>=4,"the queue survives closing the app");
+      await qp.waitForFunction(()=>TEF_AIBANK.count("g29")===70,null,{timeout:20000});
+      await qp.waitForFunction(()=>/prêtes/.test(document.querySelector("#aiPill .ap-t")?.textContent||""));
+      assert.equal(await qp.evaluate(()=>localStorage.getItem("tef-ai-jobs-v2")),null);
+      const body=await qp.evaluate(()=>window.__body);
+      assert.ok(body.focus&&body.theme&&body.avoid.length>0&&body.avoid.length<=80,"each batch leans on a line of the fiche and a context: "+JSON.stringify([body.focus,body.theme,body.avoid.length]));
+      assert.match(await qp.locator(".ai-stock").textContent(),/70 questions IA pas encore faites · 70 gardées/);
+      /* The device cache: after a restart the same questions are back, in the same places (the answer history depends on it). */
+      const before=await qp.evaluate(()=>TEF_TOPIC.practiceItems("g29").map(x=>x.prompt||""));
+      await qp.reload({waitUntil:"networkidle"});
+      await qp.waitForFunction(()=>window.TEF_AIBANK?.ready&&TEF_AIBANK.count("g29")===70);
+      assert.deepEqual(await qp.evaluate(()=>TEF_TOPIC.practiceItems("g29").map(x=>x.prompt||"")),before,"same order after a restart");
+      await qp.evaluate(()=>{TEF_APP.S.course.qlog={};TEF_APP.save()});
       assert.deepEqual(qerr,[],"more-questions page errors: "+qerr.join(" | "));
       await qp.close();
     }
@@ -601,8 +623,8 @@ async function visible(page,selector){
       assert.equal(m1.key,"mix");assert.equal(m1.n,25,"25 questions");assert.deepEqual(m1.tids,["g29","g5"],"both subjects are mixed");
       assert.equal(await xp.evaluate(()=>window.__mix),1,"AI questions mixing the subjects are prepared");
       assert.deepEqual(await xp.evaluate(()=>window.__mixBody.topics.map(t=>t.id).sort()),["g29","g5"]);
-      await xp.waitForFunction(()=>(TEF_APP.S.aiBank?.g5||[]).some(x=>x.also?.length));
-      assert.deepEqual(await xp.evaluate(()=>[(TEF_APP.S.aiBank.g5||[]).length,(TEF_APP.S.aiBank.g29||[]).length,TEF_APP.S.aiBank.g5[0].also]),[5,5,["g29"]],"each question goes to its main subject, the other one in also");
+      await xp.waitForFunction(()=>TEF_AIBANK.items("g5").some(x=>x.also?.length));
+      assert.deepEqual(await xp.evaluate(()=>[TEF_AIBANK.count("g5"),TEF_AIBANK.count("g29"),TEF_AIBANK.items("g5")[0].also]),[5,5,["g29"]],"each question goes to its main subject, the other one in also");
       /* The next mélange includes them, and their chip names both subjects. */
       await xp.evaluate(()=>TEF_TOPIC.mix());
       await xp.waitForFunction(()=>TEF_TOPIC.current()?.items.some(o=>o.x.also?.length));
@@ -617,6 +639,57 @@ async function visible(page,selector){
       await xp.evaluate(()=>{delete TEF_CONNECTED.ready;TEF_CONNECTED.ready=false;delete TEF_APP.S.aiBank;TEF_APP.save()});
       assert.deepEqual(xerr,[],"mélange page errors: "+xerr.join(" | "));
       await xp.close();
+    }
+    /* AI question bank (build 37), account side, against a stand-in for Supabase: the questions kept in the progress move to
+       the bank in the same order (the history is keyed by position), questions from another device come in, and a question made
+       offline is kept on the device and sent later. */
+    {
+      const bp=await browser.newPage({viewport:{width:1280,height:820}});
+      const berr=[];bp.on("pageerror",e=>berr.push(e.message));
+      await bp.goto(base,{waitUntil:"networkidle"});
+      const q=(p,a,extra={})=>({type:"fill",prompt:p,answers:[a],explain:"Test.",lvl:2,ai:true,...extra});
+      const old={g29:[q("A : je bois ___ café.","du"),q("B : elle mange ___ pain.","du"),q("A : je bois ___ café.","du"),q("C : il faut ___ patience.","de la")],
+                 g5:[q("D : ___ problème est grave.","le",{also:["g29"]})]};
+      const before=await bp.evaluate(o=>{TEF_APP.S.aiBank=o;TEF_APP.save();TEF_TOPIC.invalidate();return TEF_TOPIC.practiceItems("g29").map(x=>x.prompt)},old);
+      assert.equal(before.slice(-4).join("|"),old.g29.map(x=>x.prompt).join("|"),"before build 37 the questions come from the progress");
+      /* Sign in: the stand-in table keeps rows with an id sequence and a unique signature, like tef_ai_questions. */
+      await bp.evaluate(()=>{const db=window.__db={rows:[],seq:0,offline:false};class Q{constructor(t){this.t=t;this.f=[];this.op="select"}
+          select(){return this}upsert(rows){this.op="upsert";this.rows=Array.isArray(rows)?rows:[rows];return this}
+          eq(c,v){if(c!=="user_id")this.f.push(r=>r[c]===v);return this}gt(c,v){this.f.push(r=>r[c]>v);return this}
+          in(c,vs){this.f.push(r=>vs.includes(r[c]));return this}order(){return this}limit(n){this.n=n;return this}maybeSingle(){return this}
+          then(ok,no){return Promise.resolve(this.run()).then(ok,no)}
+          run(){if(this.t!=="tef_ai_questions")return {data:null,error:null};
+            if(db.offline)return {data:null,error:{message:"TypeError: Failed to fetch",code:""}};
+            if(this.op==="upsert"){const out=[];for(const r of this.rows){if(db.rows.some(x=>x.sig===r.sig))continue;const row={id:++db.seq,...JSON.parse(JSON.stringify(r))};db.rows.push(row);out.push({id:row.id,sig:row.sig})}return {data:out,error:null}}
+            let d=db.rows.filter(r=>this.f.every(f=>f(r))).sort((a,b)=>a.id-b.id);if(this.n)d=d.slice(0,this.n);return {data:JSON.parse(JSON.stringify(d)),error:null}}}
+        TEF_CONNECTED.supabase={from:t=>new Q(t)};TEF_CONNECTED.session={user:{id:"u-test"}};dispatchEvent(new CustomEvent("tef:session"));});
+      await bp.waitForFunction(()=>!TEF_APP.S.aiBank&&TEF_APP.S.aiMigrated);
+      const m=await bp.evaluate(()=>({items:TEF_TOPIC.practiceItems("g29").map(x=>x.prompt),rows:__db.rows.map(r=>[r.id,r.topic_id,r.q.prompt,r.also]),pending:TEF_AIBANK.pending(),g5:TEF_AIBANK.items("g5")[0].also}));
+      assert.deepEqual(m.items,before,"after the move every question keeps its place, repeats included");
+      assert.deepEqual(m.rows.map(r=>r[0]),[1,2,3,4,5]);assert.equal(m.rows.filter(r=>r[1]==="g29").length,4);
+      assert.deepEqual(m.g5,["g29"]);assert.equal(m.pending,0);
+      /* Another device made a question: it arrives at the next sync, after the others. */
+      await bp.evaluate(()=>{__db.rows.push({id:++__db.seq,topic_id:"g29",also:[],sig:"hautre",q:{type:"fill",prompt:"E : autre appareil ___.",answers:["x"],explain:"."}})});
+      await bp.evaluate(()=>TEF_AIBANK.sync());
+      assert.equal(await bp.evaluate(()=>TEF_TOPIC.practiceItems("g29").at(-1).prompt),"E : autre appareil ___.");
+      /* Offline: kept on the device, sent when the connection is back; nothing is made twice. */
+      await bp.evaluate(()=>{__db.offline=true;return TEF_AIBANK.add([{tid:"g29",x:{type:"mcq",prompt:"F : ___ eau.",choices:["de l’","du","de la"],answer:0,explain:"."}}])});
+      await bp.waitForTimeout(150);
+      assert.deepEqual(await bp.evaluate(()=>[TEF_AIBANK.pending(),TEF_TOPIC.practiceItems("g29").at(-1).prompt,__db.rows.length]),[1,"F : ___ eau.",6]);
+      await bp.evaluate(()=>{__db.offline=false;dispatchEvent(new Event("online"))});
+      await bp.waitForFunction(()=>TEF_AIBANK.pending()===0);
+      assert.equal(await bp.evaluate(()=>__db.rows.length),7);
+      assert.deepEqual(await bp.evaluate(()=>TEF_AIBANK.add([{tid:"g29",x:{type:"mcq",prompt:"F : ___ eau.",choices:["de l’","du","de la"],answer:0,explain:"."}}])),[],"a question already in the bank is not added twice");
+      /* An account the server refuses (not on the AI list): one silent try, then no more automatic requests on this device. */
+      await bp.evaluate(()=>{Object.defineProperty(TEF_CONNECTED,"ready",{get:()=>true,set:()=>{},configurable:true});window.__deny=0;
+        TEF_CONNECTED.generateExercises=async()=>{window.__deny++;throw new Error("Accès réservé : ce compte n’est pas autorisé à utiliser l’IA.")};TEF_TOPIC.topUp("g5")});
+      await bp.waitForFunction(()=>window.__deny===1&&!TEF_TOPIC.queued("g5"));
+      await bp.evaluate(()=>{TEF_TOPIC.topUp("g5");TEF_TOPIC.topUp("g29")});
+      await bp.waitForTimeout(150);
+      assert.equal(await bp.evaluate(()=>window.__deny),1,"no more automatic requests for a refused account");
+      assert.equal(await bp.locator("#aiPill").count(),0,"and nothing is shown");
+      assert.deepEqual(berr,[],"question bank page errors: "+berr.join(" | "));
+      await bp.close();
     }
     console.log("UI QA OK");
   } finally {
