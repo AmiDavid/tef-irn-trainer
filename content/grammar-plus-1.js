@@ -280,6 +280,7 @@
       ["-al, -ail","masculin","le journal, l’hôpital, le travail, le détail"],
       ["-ème","masculin","le problème, le système (mais la crème f.)"],
       ["-eur (personne, machine)","masculin","le directeur, le chauffeur, l’ordinateur, le moteur"],
+      ["-en, -ien","masculin","le citoyen, l’examen, le moyen, l’entretien (une femme : -enne, la citoyenne)"],
       ["-aire, -cle, -ège, -at","masculin","le salaire, l’horaire, le spectacle, l’article, le collège, le contrat (mais la grammaire, une affaire, la boucle f. ; une personne : le / la locataire)"]
     ]},
     tables:[
