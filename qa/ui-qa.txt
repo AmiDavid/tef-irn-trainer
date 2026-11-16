@@ -552,6 +552,35 @@ async function visible(page,selector){
       assert.deepEqual(merr,[],"Mais column page errors: "+merr.join(" | "));
       await mp.close();
     }
+    /* More questions (build 35): a topic done in full today goes round again instead of stopping, and the next AI batch is
+       prepared in the background so « ✨ 10 nouvelles questions » starts at once. */
+    {
+      const qp=await browser.newPage({viewport:{width:1280,height:820}});
+      const qerr=[];qp.on("pageerror",e=>qerr.push(e.message));
+      await qp.goto(base,{waitUntil:"networkidle"});
+      await qp.evaluate(()=>{
+        window.__gen=0;Object.defineProperty(TEF_CONNECTED,"ready",{get:()=>true,set:()=>{},configurable:true});
+        TEF_CONNECTED.generateExercises=async()=>{window.__gen++;const k=window.__gen;return {exercises:Array.from({length:10},(_,j)=>({type:"fill",prompt:`Phrase IA ${k}-${j} : je bois ___ café.`,answers:["du"],explain:"Quantité non comptée : du."}))}};
+        TEF_DAILY.ensureDay();const log=TEF_APP.S.course.qlog,today=TEF_DAILY.ensureDay().date;
+        TEF_TOPIC.practiceItems("g29").forEach((_,i)=>{log["g29:"+i]={ok:i%7?1:0,t:Date.now()-i*1000,d:today}});
+        TEF_APP.save();location.hash="#gp/g29";
+      });
+      await visible(qp,"#view-gpractice.active .exercise");
+      const s1=await qp.evaluate(()=>TEF_TOPIC.current().items.map(o=>o.i));
+      assert.equal(s1.length,15,"a topic done in full today still gives 15 questions");
+      assert.ok(s1.every(i=>typeof i==="number"),"repeats come from the topic's own questions");
+      assert.ok(await qp.evaluate(()=>window.__gen===1&&TEF_TOPIC.aiQueued("g29")),"the next AI batch is being prepared");
+      await qp.evaluate(()=>{location.hash="#g/g29"});
+      await visible(qp,"#view-gtopic.active #aiBtn");
+      await qp.locator("#aiBtn").click();
+      await visible(qp,"#view-gpractice.active .exercise");
+      const s2=await qp.evaluate(()=>({key:TEF_TOPIC.current().key,n:TEF_TOPIC.current().items.length,first:TEF_TOPIC.current().items[0].x.prompt}));
+      assert.equal(s2.key,"ai-g29");assert.equal(s2.n,10);assert.ok(s2.first.startsWith("Phrase IA 1-"),"the prepared batch is used: "+s2.first);
+      assert.equal(await qp.evaluate(()=>window.__gen),2,"and the following batch is prepared");
+      await qp.evaluate(()=>{delete TEF_CONNECTED.ready;TEF_CONNECTED.ready=false;delete TEF_APP.S.aiBank;TEF_APP.save()});
+      assert.deepEqual(qerr,[],"more-questions page errors: "+qerr.join(" | "));
+      await qp.close();
+    }
     console.log("UI QA OK");
   } finally {
     await browser.close();
