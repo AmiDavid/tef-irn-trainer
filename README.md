@@ -159,6 +159,12 @@ The app does not redistribute CCI/TEF audio. Official resources are linked separ
 - Variety: each batch leans on the next line of the subject’s fiche (`focus`, so every rule and table row gets its turn) and on
   the next everyday context (`theme`); the avoid list mixes the newest prompts with older ones picked at random.
 
+## One verb table (build 38)
+
+- « Présent des verbes irréguliers fréquents » (g11): the two tables (je / nous / ils, then tu / il / vous) are now one table
+  in the usual order: je, tu, il / elle, nous, vous, ils / elles. « Autres verbes fréquents » keeps its three key forms.
+- Tables with 6+ columns get the class `wide`: on a phone they scroll sideways with the first column (the verb) kept in view.
+
 ## Running locally
 
 Serve this folder over HTTP, e.g. `python -m http.server 8000`, then open `http://localhost:8000`.

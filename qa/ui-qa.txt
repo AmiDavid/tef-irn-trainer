@@ -311,8 +311,9 @@ async function visible(page,selector){
     /* Extra tables (titled) are shown on the lesson page and on the notebook page. */
     await page.evaluate(()=>{TEF_APP.S.nbMode="full";TEF_TOPIC.copy("g11")});
     await visible(page,"#view-gcopy.active .notebook");
-    assert.equal(await page.locator("#gcopyBody table").count(),3,"g11 full notebook shows its three tables");
-    assert.ok((await page.locator("#gcopyBody .table-title").allTextContents()).includes("Les autres personnes : tu, il, vous"));
+    assert.equal(await page.locator("#gcopyBody table").count(),2,"g11 full notebook shows its two tables");
+    assert.deepEqual(await page.locator("#gcopyBody table").first().locator("th").allTextContents(),["Verbe","je","tu","il / elle","nous","vous","ils / elles"],"one verb table, persons in the usual order");
+    assert.ok((await page.locator("#gcopyBody .table-title").allTextContents()).includes("Autres verbes fréquents"));
     /* English layer: one explanation per rule, table, tip and summary line; the button hides them and the choice is kept. */
     await page.evaluate(()=>{delete TEF_APP.S.ruleEn;TEF_TOPIC.open("g5")});
     await visible(page,"#view-gtopic.active [data-en]");
@@ -362,7 +363,7 @@ async function visible(page,selector){
     await visible(page,'#view-gcopy.active [data-nbmode="fiche"][aria-pressed="true"]');
     assert.equal((await page.locator("#gcopyBody .notebook h2").first().textContent()).trim(),"À retenir","short page starts with « À retenir »");
     assert.equal(await page.locator("#gcopyBody details.nb-fold:not([open]) .nb-rule").count(),1,"detailed rules folded");
-    assert.equal(await page.locator("#gcopyBody table").count(),3,"tables kept in the short page");
+    assert.equal(await page.locator("#gcopyBody table").count(),2,"tables kept in the short page");
     const shortCopy=await page.evaluate(()=>{TEF_TOPIC.markCopied("g11");const c=TEF_APP.S.copied.g11;return {mode:c.mode,n:c.keys.length,want:TEF_TOPIC.notebookLines("g11","short").length,full:TEF_TOPIC.notebookLines("g11","full").length,upd:TEF_TOPIC.updatesOf("g11").length}});
     assert.equal(shortCopy.mode,"short");assert.equal(shortCopy.n,shortCopy.want);assert.ok(shortCopy.full>shortCopy.want);
     assert.equal(shortCopy.upd,0,"rules left out of a short copy are never asked for");

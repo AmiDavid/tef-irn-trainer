@@ -12,33 +12,20 @@ g11:{
     "Verbes en -er à changement d’orthographe : nous mangeons, nous commençons (pour garder le son) ; j’achète, je préfère, j’appelle, je jette, mais nous achetons, nous préférons, nous appelons ; je paie (ou je paye), j’envoie, mais nous payons, nous envoyons.",
     "Partir, sortir, dormir, servir, sentir : au singulier, le radical perd sa consonne finale (je pars, il part ; je dors, il dort) ; au pluriel, elle revient (nous partons, ils dorment). Ouvrir, offrir, découvrir et souffrir se conjuguent au présent comme parler : j’ouvre, il offre."
   ],
-  table:{head:["Verbe","je","nous","ils / elles"],rows:[
-    ["être","suis","sommes","sont"],
-    ["avoir","ai","avons","ont"],
-    ["aller","vais","allons","vont"],
-    ["faire","fais","faisons","font"],
-    ["pouvoir","peux","pouvons","peuvent"],
-    ["vouloir","veux","voulons","veulent"],
-    ["devoir","dois","devons","doivent"],
-    ["prendre","prends","prenons","prennent"],
-    ["venir","viens","venons","viennent"],
-    ["savoir","sais","savons","savent"],
-    ["dire","dis","disons","disent"]
+  table:{head:["Verbe","je","tu","il / elle","nous","vous","ils / elles"],rows:[
+    ["être","suis","es","est","sommes","êtes","sont"],
+    ["avoir","ai","as","a","avons","avez","ont"],
+    ["aller","vais","vas","va","allons","allez","vont"],
+    ["faire","fais","fais","fait","faisons","faites","font"],
+    ["pouvoir","peux","peux","peut","pouvons","pouvez","peuvent"],
+    ["vouloir","veux","veux","veut","voulons","voulez","veulent"],
+    ["devoir","dois","dois","doit","devons","devez","doivent"],
+    ["prendre","prends","prends","prend","prenons","prenez","prennent"],
+    ["venir","viens","viens","vient","venons","venez","viennent"],
+    ["savoir","sais","sais","sait","savons","savez","savent"],
+    ["dire","dis","dis","dit","disons","dites","disent"]
   ]},
   tables:[
-    {title:"Les autres personnes : tu, il, vous", head:["Verbe", "tu", "il / elle", "vous"], rows:[
-      ["être", "es", "est", "êtes"],
-      ["avoir", "as", "a", "avez"],
-      ["aller", "vas", "va", "allez"],
-      ["faire", "fais", "fait", "faites"],
-      ["pouvoir", "peux", "peut", "pouvez"],
-      ["vouloir", "veux", "veut", "voulez"],
-      ["devoir", "dois", "doit", "devez"],
-      ["prendre", "prends", "prend", "prenez"],
-      ["venir", "viens", "vient", "venez"],
-      ["savoir", "sais", "sait", "savez"],
-      ["dire", "dis", "dit", "dites"]
-    ]},
     {title:"Autres verbes fréquents", head:["Verbe", "je", "nous", "ils / elles"], rows:[
       ["mettre (permettre, promettre)", "mets", "mettons", "mettent"],
       ["voir", "vois", "voyons", "voient"],

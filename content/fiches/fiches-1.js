@@ -39,9 +39,8 @@ g29:[
   ]}
 ],
 g11:[
-  {h:"Les formes à savoir : je, nous, ils",tab:0},
-  {h:"Les autres personnes : tu, il, vous",tab:1},
-  {h:"Autres verbes fréquents",tab:2},
+  {h:"Les formes à savoir",tab:0},
+  {h:"Autres verbes fréquents",tab:1},
   {h:"Repères",l:[
     "*Vous êtes, vous faites, vous dites* : les seules formes en -es ; sinon *-ez* (vous prenez, vous allez).",
     "Les composés suivent leur verbe : comprendre (prendre), devenir, obtenir (venir), refaire (faire).",
