@@ -141,7 +141,7 @@ function maisView(t){
 function tableHTML(t,cls,mk,en){
   if(!t?.head?.length)return '';
   const m=mk||(()=>''),hc=m('thead',tableHead(t)),v=maisView(t),last=v.head.length-1;
-  return `${t.title?`<h3 class="table-title${hc}">${esc(t.title)}</h3>`:''}${enNote(en,'en-table')}<div class="table-wrap"><table class="${cls}${v.mais?' has-mais':''}"><thead><tr${clsAttr(hc)}>${v.head.map((h,i)=>`<th${v.mais&&i===last?' class="mais-col"':''}>${esc(h)}</th>`).join('')}</tr></thead><tbody>${v.rows.map((r,ri)=>`<tr${clsAttr(m('row',t.rows[ri].join(' | ')))}>${r.map((c,i)=>`<td${v.mais&&i===last?' class="mais-col"':''}>${keepEndings(esc(c))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  return `${t.title?`<h3 class="table-title${hc}">${esc(t.title)}</h3>`:''}${enNote(en,'en-table')}<div class="table-wrap"><table class="${cls}${v.mais?' has-mais':''}${v.head.length>=6?' wide':''}"><thead><tr${clsAttr(hc)}>${v.head.map((h,i)=>`<th${v.mais&&i===last?' class="mais-col"':''}>${esc(h)}</th>`).join('')}</tr></thead><tbody>${v.rows.map((r,ri)=>`<tr${clsAttr(m('row',t.rows[ri].join(' | ')))}>${r.map((c,i)=>`<td${v.mais&&i===last?' class="mais-col"':''}>${keepEndings(esc(c))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 }
 
 /* lines:start — the notebook page as a list of lines, so the app can tell what was added after the learner copied it.

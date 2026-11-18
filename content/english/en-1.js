@@ -78,8 +78,7 @@ g11:{
     "*Partir* (to leave), *sortir* (to go out), *dormir* (to sleep), *servir* (to serve), *sentir* (to feel): in the singular the stem loses its last consonant (*je pars, il part*; *je dors, il dort*); in the plural it comes back (*nous partons, ils dorment*). *Ouvrir* (to open), *offrir* (to offer), *découvrir* (to discover) and *souffrir* (to suffer) take the *-er* endings: *j’ouvre, il offre*."
   ],
   tables:[
-    "The three key forms of each irregular verb: *je*, *nous* and *ils / elles*.",
-    "The other persons of the same verbs: *tu*, *il / elle* and *vous*.",
+    "Each irregular verb in the usual order: *je, tu, il / elle, nous, vous, ils / elles*. The three key forms are *je*, *nous* and *ils / elles*.",
     "More common irregular verbs with their *je*, *nous* and *ils / elles* forms; the verbs in brackets follow the same model."
   ],
   tips:[

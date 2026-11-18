@@ -564,3 +564,13 @@ td.mais-col{font-style:italic}
 @media(max-width:900px){.ai-pill{bottom:calc(74px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:max-content;font-size:12.5px;padding:5px 6px 5px 12px}}
 .ai-stock{margin:6px 0 0;font-size:13px}
 .mix-card .button-row{margin:0}
+
+/* Wide tables (6+ columns: a verb with its six persons, build 38). On a phone they scroll sideways, so they get a little
+   tighter and the first column (the verb) stays in view. Sticky cells need an opaque background and draw their own edge. */
+@media(max-width:680px){
+  .topic-table.wide th,.topic-table.wide td{padding:7px 7px;white-space:nowrap}
+  .nb-table.wide th,.nb-table.wide td{padding:0 6px;white-space:nowrap}
+  .topic-table.wide th:first-child,.topic-table.wide td:first-child{position:sticky;left:0;z-index:1;background:#162344;border-left:0;box-shadow:inset 1px 0 0 var(--line),inset -1px 0 0 var(--line)}
+  .topic-table.wide th:first-child{background:linear-gradient(rgba(143,176,255,.1),rgba(143,176,255,.1)),#162344}
+  .nb-table.wide th:first-child,.nb-table.wide td:first-child{position:sticky;left:0;z-index:1;background:#fbfaf3;border-left:0;box-shadow:inset 1.5px 0 0 var(--ink),inset -1.5px 0 0 var(--ink)}
+}
