@@ -62,7 +62,7 @@ B.grammarPlus=Object.assign(B.grammarPlus||{},{g40:{
     {type:"fill", lvl:1, prompt:"Ils font ___ une maison à la campagne.", answers:["construire"], hint:"construire", explain:"Faire + infinitif : une entreprise construit la maison."},
     {type:"fill", lvl:1, prompt:"Ce document ? Je ___ fais traduire.", answers:["le"], hint:"pronom : le document", explain:"Le pronom se place devant faire."},
     {type:"order", lvl:1, words:["les","Je","laisse","sortir"], answers:["Je les laisse sortir."], explain:"Pronom devant laisser + infinitif."},
-    {type:"fix", lvl:2, prompt:"J’ai fait entrer eux dans le salon.", answers:["Je les ai fait entrer dans le salon."], explain:"Le pronom COD se place devant l’auxiliaire ; fait reste invariable."},
+    {type:"fix", lvl:2, errors:1, prompt:"J’ai fait entrer eux dans le salon.", answers:["Je les ai fait entrer dans le salon."], explain:"Le pronom COD se place devant l’auxiliaire ; fait reste invariable."},
     {type:"fix", lvl:2, prompt:"La facture que j’ai faite corriger est arrivée.", answers:["La facture que j’ai fait corriger est arrivée."], explain:"Fait suivi d’un infinitif reste invariable."},
     {type:"transform", lvl:2, instruction:"Reformulez avec « faire » + infinitif : vous ne faites pas l’action vous-même.", prompt:"Un électricien vérifie mon installation.", answers:["Je fais vérifier mon installation par un électricien.","Je fais vérifier mon installation à un électricien."], explain:"Faire + infinitif + par (ou à) + la personne qui agit."},
     {type:"transform", lvl:2, instruction:"Reformulez avec « se faire » + infinitif.", prompt:"On a volé le téléphone de Paul.", answers:["Paul s’est fait voler son téléphone."], explain:"Se faire + infinitif : le sujet subit l’action."},
