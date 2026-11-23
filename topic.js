@@ -548,7 +548,9 @@ function renderExercise(){
     const cue=x.hint?` <span class="ex-cue">(${esc(cueText(x.hint))})</span>`:'';
     body=`<p class="ex-prompt">${promptHTML(x.prompt,'<input class="gap-input" id="exInput" autocomplete="off" autocapitalize="none" spellcheck="false" enterkeyhint="done">'+cue)}</p>${accentBar()}<button class="btn" id="exCheck">Vérifier</button>`;
   }else if(x.type==='fix'||x.type==='transform'){
-    body=`${x.instruction?`<p class="ex-instruction">${esc(x.instruction)}</p>`:'<p class="ex-instruction">Cette phrase contient une erreur. Réécris-la correctement.</p>'}<div class="doc-box ex-source">${esc(x.prompt)}</div><textarea class="writing-area ex-area" id="exInput" rows="3" autocomplete="off" autocapitalize="sentences" spellcheck="false">${x.type==='fix'?esc(x.prompt):''}</textarea>${x.hint?`<button class="hint-btn" id="exHint">Indice</button><span class="muted" id="exHintText" hidden>${esc(x.hint)}</span>`:''}${accentBar()}<button class="btn" id="exCheck">Vérifier</button>`;
+    /* « Corrige l’erreur » says how many errors there are, counted from the wrong and corrected sentences (AI questions can hold more than one). */
+    const instr=x.type==='fix'?(window.TEF_ERRCOUNT?.instruction(x)||x.instruction||'Cette phrase contient une erreur. Réécris-la correctement.'):(x.instruction||'Réécris la phrase.');
+    body=`${instr?`<p class="ex-instruction">${esc(instr)}</p>`:''}<div class="doc-box ex-source">${esc(x.prompt)}</div><textarea class="writing-area ex-area" id="exInput" rows="3" autocomplete="off" autocapitalize="sentences" spellcheck="false">${x.type==='fix'?esc(x.prompt):''}</textarea>${x.hint?`<button class="hint-btn" id="exHint">Indice</button><span class="muted" id="exHintText" hidden>${esc(x.hint)}</span>`:''}${accentBar()}<button class="btn" id="exCheck">Vérifier</button>`;
   }else if(x.type==='order'){
     body=`<p class="ex-instruction">Touche les mots dans le bon ordre pour former la phrase.</p><div class="order-line" id="orderLine"><span class="muted">Ta phrase apparaîtra ici</span></div><div class="order-bank" id="orderBank">${shuffle(x.words.map((w,i)=>({w,i}))).map(o=>`<button class="token" data-t="${o.i}">${esc(o.w)}</button>`).join('')}</div><div class="button-row"><button class="btn ghost small" id="orderReset">Recommencer</button><button class="btn" id="exCheck">Vérifier</button></div>`;
   }
@@ -589,7 +591,7 @@ function gradeTyped(x,given){
   if(P.results.length>P.idx)return;
   const r=check(given,x.answers);
   if(r.verdict==='empty')return app().toast('Écris ta réponse.');
-  if(x.type==='fix'&&norm(given)===norm(x.prompt)&&r.verdict!=='ok')return app().toast('Il y a une erreur à corriger dans la phrase.');
+  if(x.type==='fix'&&norm(given)===norm(x.prompt)&&r.verdict!=='ok')return app().toast((window.TEF_ERRCOUNT?.count(x.prompt,x.answers,x.errors)||1)>1?'Il y a des erreurs à corriger dans la phrase.':'Il y a une erreur à corriger dans la phrase.');
   const ok=r.verdict==='ok',best=closest(given,x.answers);
   $('#exInput')&&($('#exInput').disabled=true);$('#exCheck').disabled=true;
   record(ok,given,best);
