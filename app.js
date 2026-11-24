@@ -81,8 +81,31 @@ async function init(){cityBackdrop();
   $('#scanText').value=S.scanText||'';
   msg('Bonjour ! Ton diagnostic est déjà chargé. Demande-moi ton plan ou une révision de tes erreurs.');
   show(/^g(topic|practice|copy)$/.test(S.view)?'today':(S.view||'today'));window.TEF_TOPIC?.init();window.TEF_DAILY?.init();
-  if('serviceWorker'in navigator&&!new URLSearchParams(location.search).has('native'))navigator.serviceWorker.register('./sw.js?v=39').catch(()=>{});
-  const v=document.querySelector('#buildVersion');if(v)v.textContent='v2.6 • build 39';
+  if('serviceWorker'in navigator&&!new URLSearchParams(location.search).has('native'))navigator.serviceWorker.register('./sw.js?v=40').catch(()=>{});
+  const v=document.querySelector('#buildVersion');if(v)v.textContent='v2.6 • build '+BUILD;
+  watchUpdates();
+}
+/* A tab left open keeps running the build it was opened with. When the site has a newer build, say so and offer a reload
+   (checked when the app comes back to the screen, and every 30 minutes). */
+const BUILD=40;
+function watchUpdates(){
+  let shown=false;
+  const check=async()=>{
+    if(shown||document.hidden||navigator.onLine===false)return;
+    try{
+      const t=await (await fetch('./index.html?fresh='+Date.now(),{cache:'no-store'})).text();
+      const n=+((t.match(/id="buildVersion">[^<]*build (\d+)/)||[])[1]||0);
+      if(n>BUILD){shown=true;showUpdate(n)}
+    }catch{}
+  };
+  document.addEventListener('visibilitychange',check);setInterval(check,30*60*1000);setTimeout(check,8000);
+}
+function showUpdate(n){
+  const d=document.createElement('div');d.className='update-bar';d.setAttribute('role','status');
+  d.innerHTML=`<span>Nouvelle version de l’app (build ${n}).</span><button class="btn small" id="updateReload">Mettre à jour</button><button class="close" id="updateLater" aria-label="Plus tard">×</button>`;
+  document.body.appendChild(d);
+  d.querySelector('#updateReload').onclick=()=>location.reload();
+  d.querySelector('#updateLater').onclick=()=>d.remove();
 }
 window.TEF_APP={D,S,save,show,toast,modal,close,say,addMin,today,known,timer,errors,vocab,mergeAIErrors,writeTask,speakTask,esc,practice,examinerBriefFor:examinerBrief};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init()})();

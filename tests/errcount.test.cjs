@@ -32,3 +32,10 @@ test('instruction states the number', () => {
   assert.equal(E.instruction({instruction: 'Cette phrase contient une erreur : corrigez le verbe en gardant le passé simple.', prompt: 'Ils voulèrent et prenèrent.', answers: ['Ils voulurent et prirent.']}),
     'Cette phrase contient deux erreurs : corrigez le verbe en gardant le passé simple.');
 });
+
+test('AI mix question with one error from each subject says two (reported 24 Nov)', () => {
+  const x = { type: 'fix', prompt: 'Les bureaux de la préfecture sont ouvert tous les matins, mais il n’y a pas des rendez-vous disponibles.',
+    answers: ['Les bureaux de la préfecture sont ouverts tous les matins, mais il n’y a pas de rendez-vous disponibles.'] };
+  assert.equal(E.count(x.prompt, x.answers), 2);
+  assert.equal(E.instruction(x), 'Cette phrase contient deux erreurs. Réécris-la correctement.');
+});

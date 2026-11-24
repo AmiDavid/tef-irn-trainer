@@ -574,3 +574,7 @@ td.mais-col{font-style:italic}
   .topic-table.wide th:first-child{background:linear-gradient(rgba(143,176,255,.1),rgba(143,176,255,.1)),#162344}
   .nb-table.wide th:first-child,.nb-table.wide td:first-child{position:sticky;left:0;z-index:1;background:#fbfaf3;border-left:0;box-shadow:inset 1.5px 0 0 var(--ink),inset -1.5px 0 0 var(--ink)}
 }
+/* build 40: « Nouvelle version » bar for a tab left open on an older build */
+.update-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:75;display:flex;align-items:center;gap:10px;width:min(460px,calc(100vw - 32px));box-sizing:border-box;background:#111827;color:#fff;border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:10px 12px;box-shadow:0 10px 40px rgba(0,0,0,.35);font-size:14px}
+.update-bar span{flex:1}.update-bar .btn{flex:none}.update-bar .close{width:30px;height:30px;font-size:16px;flex:none}
+@media (min-width:900px){.update-bar{bottom:24px}}
