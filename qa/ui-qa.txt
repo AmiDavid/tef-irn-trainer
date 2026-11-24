@@ -692,6 +692,16 @@ async function visible(page,selector){
       assert.deepEqual(berr,[],"question bank page errors: "+berr.join(" | "));
       await bp.close();
     }
+    { // build 40: a tab on an older build offers the update
+      const up=await browser.newPage({viewport:{width:360,height:800}});
+      await up.route(/index\.html\?fresh=/,async r=>{const res=await r.fetch();const t=(await res.text()).replace(/(id="buildVersion">[^<]*build )(\d+)/,(m,a,n)=>a+(+n+1));await r.fulfill({response:res,body:t})});
+      await up.goto(base,{waitUntil:"networkidle"});
+      await up.locator(".update-bar").waitFor({state:"visible",timeout:15000});
+      assert.ok(await up.evaluate(()=>document.documentElement.scrollWidth-innerWidth)<=1,"update bar overflows");
+      await up.locator("#updateLater").click();
+      assert.equal(await up.locator(".update-bar").count(),0,"update bar closes");
+      await up.close();
+    }
     console.log("UI QA OK");
   } finally {
     await browser.close();
