@@ -81,13 +81,13 @@ async function init(){cityBackdrop();
   $('#scanText').value=S.scanText||'';
   msg('Bonjour ! Ton diagnostic est déjà chargé. Demande-moi ton plan ou une révision de tes erreurs.');
   show(/^g(topic|practice|copy)$/.test(S.view)?'today':(S.view||'today'));window.TEF_TOPIC?.init();window.TEF_DAILY?.init();
-  if('serviceWorker'in navigator&&!new URLSearchParams(location.search).has('native'))navigator.serviceWorker.register('./sw.js?v=40').catch(()=>{});
+  if('serviceWorker'in navigator&&!new URLSearchParams(location.search).has('native'))navigator.serviceWorker.register('./sw.js?v=41').catch(()=>{});
   const v=document.querySelector('#buildVersion');if(v)v.textContent='v2.6 • build '+BUILD;
   watchUpdates();
 }
 /* A tab left open keeps running the build it was opened with. When the site has a newer build, say so and offer a reload
    (checked when the app comes back to the screen, and every 30 minutes). */
-const BUILD=40;
+const BUILD=41;
 function watchUpdates(){
   let shown=false;
   const check=async()=>{

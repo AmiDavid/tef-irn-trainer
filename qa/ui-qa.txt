@@ -641,6 +641,46 @@ async function visible(page,selector){
       assert.deepEqual(xerr,[],"mélange page errors: "+xerr.join(" | "));
       await xp.close();
     }
+    /* Spaced repetition (build 41): a right answer rests 4, 10, 25, 60, then 120 days; a wrong one resets it. The Mélange and
+       topic series leave resting questions out and only take them back, soonest first, when nothing else is left. */
+    {
+      const sp=await browser.newPage({viewport:{width:1280,height:820}});
+      const serr=[];sp.on("pageerror",e=>serr.push(e.message));
+      await sp.goto(base,{waitUntil:"networkidle"});
+      const r=await sp.evaluate(()=>{
+        window.__TEF_TODAY__="2026-11-27";TEF_DAILY.ensureDay();const c=TEF_APP.S.course;c.qlog={};
+        const L=k=>c.qlog[k],out={};
+        TEF_DAILY.logAnswer("g5",0,true);out.n1=L("g5:0").n;out.rest1=TEF_DAILY.restLeft("g5",0);
+        TEF_DAILY.logAnswer("g5",0,true);out.n2=L("g5:0").n;out.rest2=TEF_DAILY.restLeft("g5",0);
+        TEF_DAILY.logAnswer("g5",0,false);out.n0=L("g5:0").n;out.restW=TEF_DAILY.resting("g5",0);
+        c.qlog["g5:1"]={ok:1,t:1,d:"2026-11-20"};out.legacy=TEF_DAILY.resting("g5",1); // old entry, no n: counts as one right answer (4 days)
+        c.qlog["g5:2"]={ok:1,t:1,d:"2026-11-20",n:2};out.second=TEF_DAILY.restLeft("g5",2);
+        for(let k=0;k<6;k++)TEF_DAILY.logAnswer("g5",3,true);out.max=TEF_DAILY.restLeft("g5",3);
+        return out;
+      });
+      assert.deepEqual(r,{n1:1,rest1:4,n2:2,rest2:10,n0:0,restW:false,legacy:false,second:3,max:120},"rest intervals: "+JSON.stringify(r));
+      /* Mélange: half of each subject rests (answered right today), the rest is due; no resting question is picked while due ones remain. */
+      const m=await sp.evaluate(()=>{
+        const c=TEF_APP.S.course;c.qlog={};c.seq=["g5","g29"];
+        for(const id of ["g5","g29"])TEF_TOPIC.practiceItems(id).forEach((_,i)=>{c.qlog[id+":"+i]=i%2?{ok:1,t:Date.now(),d:"2026-11-27",n:1}:{ok:1,t:1,d:"2026-10-01",n:1}});
+        const items=TEF_TOPIC.mixItems(25).filter(o=>typeof o.i==="number");
+        return {n:items.length,resting:items.filter(o=>TEF_DAILY.resting(o.tid,o.i)).length};
+      });
+      assert.ok(m.n>=20,"the mélange is full: "+m.n);assert.equal(m.resting,0,"no resting question while others are due");
+      /* Everything rests: the mélange still gives 25, the soonest back first; a topic series still gives questions. */
+      const a=await sp.evaluate(()=>{
+        const c=TEF_APP.S.course;c.qlog={};
+        for(const id of ["g5","g29"])TEF_TOPIC.practiceItems(id).forEach((_,i)=>{c.qlog[id+":"+i]={ok:1,t:1,d:i<3?"2026-11-20":"2026-11-27",n:i<3?2:5}});
+        const items=TEF_TOPIC.mixItems(25),bank=items.filter(o=>typeof o.i==="number");
+        return {n:items.length,early:bank.filter(o=>o.i<3).length,fresh:TEF_DAILY.pickFrom("g29",15,{fresh:true}).length};
+      });
+      assert.equal(a.n,25,"never runs dry");assert.equal(a.early,6,"the questions closest to coming back are taken first: "+a.early);
+      assert.equal(a.fresh,0,"a fresh series skips resting questions");
+      assert.match(await sp.evaluate(()=>{TEF_APP.show("grammar");location.hash="#g/g29";return new Promise(r=>setTimeout(()=>r(document.querySelector("#view-gtopic .bank-line")?.textContent||""),300))}),/se repose 4 jours/);
+      await sp.evaluate(()=>{TEF_APP.S.course.qlog={};delete window.__TEF_TODAY__;TEF_APP.save()});
+      assert.deepEqual(serr,[],"spaced repetition page errors: "+serr.join(" | "));
+      await sp.close();
+    }
     /* AI question bank (build 37), account side, against a stand-in for Supabase: the questions kept in the progress move to
        the bank in the same order (the history is keyed by position), questions from another device come in, and a question made
        offline is kept on the device and sent later. */

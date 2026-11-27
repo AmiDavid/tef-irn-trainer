@@ -91,7 +91,7 @@ function renderLesson(id){
       <div class="button-row"><button class="btn" data-practice>S’entraîner : ${Math.min(SERIES,count)} questions</button><button class="btn secondary" data-copy>📓 Version cahier</button><button class="btn secondary" data-ctrl title="Contrôle de fin de sujet : 80 % pour valider">🎯 Contrôle</button></div>
       ${(k=>k?.last?`<p class="ctrl-line ${k.passed?'ok':''}">${k.passed?`✓ Sujet validé au contrôle (${k.best.ok}/${k.best.total})`:`Contrôle : ${k.last.ok}/${k.last.total}, il faut 80 % pour valider`}</p>`:'')(S().course?.ctrl?.[id])}
       ${(n=>n?`<button class="nb-update-mini" data-copy>📌 ${n} ${n>1?'ajouts':'ajout'} à recopier dans ton cahier</button>`:'')(updatesOf(id).length)}
-      <p class="bank-line">${count} exercices sur ce sujet${seen?` · ${seen} déjà faits`:''}. Chaque série prend d’abord ceux que tu n’as pas encore faits ou que tu as ratés.</p>
+      <p class="bank-line">${count} exercices sur ce sujet${seen?` · ${seen} déjà faits`:''}. Chaque série prend d’abord ceux que tu n’as pas encore faits ou que tu as ratés. Une question réussie se repose 4 jours, puis 10, 25, 60 et 120 jours si tu la réussis encore.</p>
       <div class="button-row more-row">${window.TEF_GEN?.has(id)?'<button class="btn ghost small" id="genBtn">♾️ Exercices illimités</button>':''}<button class="btn ghost small" id="aiBtn">✨ 10 nouvelles questions (IA)</button><button class="btn ghost small" id="aiBulk" title="Fabrique 50 questions en arrière-plan, gardées pour plus tard">✨ Préparer 50 questions</button></div><p class="muted ai-stock" data-tid="${id}"${aiReady()||practiceItems(id).some(x=>x.ai)?'':' hidden'}>${stockText(id)}</p>
     </div>
     ${p.intro?`<section class="card topic-sec"><h2>Pourquoi c’est utile au TEF</h2><p>${esc(p.intro)}</p></section>`:''}
@@ -456,16 +456,22 @@ function studied(){
   return D().grammar.map(g=>g.id).filter(id=>ids.has(id));
 }
 function mixItems(n){
-  const ids=studied(),dl=daily(),pools={},cross=[];
+  /* Build 41: questions resting after a right answer (daily.js, spaced repetition) stay out. When too few are left, new AI
+     questions are asked for and automatic drills fill in; resting ones come back only as a last resort, the soonest first. */
+  const ids=studied(),dl=daily(),pools={},cross=[],later=[],rest=(id,i)=>!!dl?.resting?.(id,i);
   for(const id of ids){
     const all=practiceItems(id),order=dl?.order?dl.order(id):all.map((_,i)=>i);
-    pools[id]=[];for(const i of order){if(!all[i])continue;(all[i].also?.length?cross:pools[id]).push({tid:id,i,x:all[i]})}
+    pools[id]=[];for(const i of order){if(!all[i])continue;const o={tid:id,i,x:all[i]};if(rest(id,i))later.push(o);else(all[i].also?.length?cross:pools[id]).push(o)}
+    if(!pools[id].length)topUp(id);
   }
-  const take=cross.slice(0,ids.length>1?Math.round(n*.3):0);
+  const nx=ids.length>1?Math.round(n*.3):0,take=cross.slice(0,nx);
   const gen=ids.filter(id=>window.TEF_GEN?.has(id)),nGen=gen.length?Math.min(3,Math.round(n/8)):0;
   const ring=shuffle(ids);let k=0;
   while(take.length<n-nGen&&ring.some(id=>pools[id].length)){const p=pools[ring[k++%ring.length]];if(p.length)take.push(p.shift())}
-  for(let j=0;j<nGen&&take.length<n;j++)take.push(...(window.TEF_GEN.make(gen[j%gen.length],1)||[]));
+  if(take.length<n-nGen)take.push(...cross.slice(nx,nx+n-nGen-take.length));
+  const drills=gen.length?Math.max(nGen,take.length<n-nGen?Math.min(n-take.length,gen.length*4):0):0;
+  for(let j=0;j<drills&&take.length<n;j++)take.push(...(window.TEF_GEN.make(gen[j%gen.length],1)||[]));
+  if(take.length<n){later.sort((a,b)=>dl.restLeft(a.tid,a.i)-dl.restLeft(b.tid,b.i));take.push(...later.slice(0,n-take.length))}
   return shuffle(take).slice(0,n);
 }
 function mix(){
@@ -508,10 +514,11 @@ function renderPractice(id,only){
   let list=idx.map(i=>({tid:id,i,x:all[i]})).filter(o=>o.x);
   if(!only)topUp(id); // keep AI questions ready for this subject
   if(!only&&list.length<SERIES)list=[...list,...(window.TEF_GEN?.make(id,SERIES-list.length)||[])];
-  /* No more new questions today: never stop. Go round again (today's mistakes first, then the oldest) and get new AI ones ready. */
+  /* No more new or due questions: never stop. Go round again (today's mistakes first, then the questions closest to the end of
+     their rest) and get new AI ones ready. */
   if(!only&&list.length<SERIES){
     const have=new Set(list.map(o=>o.i)),again=(daily()?.pickAgain(id,SERIES-list.length,have)||[]).map(i=>({tid:id,i,x:all[i]})).filter(o=>o.x);
-    if(again.length){list=[...list,...again];app().toast(aiReady()?'Toutes les questions du sujet sont faites aujourd’hui : on refait tes erreurs, puis les plus anciennes. ✨ De nouvelles questions IA se préparent.':'Toutes les questions du sujet sont faites aujourd’hui : on refait tes erreurs, puis les plus anciennes.')}
+    if(again.length){list=[...list,...again];app().toast(aiReady()?'Plus de questions nouvelles ou à revoir sur ce sujet : on refait tes erreurs, puis celles qui reviennent bientôt. ✨ De nouvelles questions IA se préparent.':'Plus de questions nouvelles ou à revoir sur ce sujet : on refait tes erreurs, puis celles qui reviennent bientôt.')}
   }
   if(!list.length){app().toast('Pas encore de questions sur ce sujet.');return}
   session({key:'topic-'+id,title:card(id).title,topicId:id,items:list,back:{label:card(id).title,fn:()=>go('#g/'+id)},extraMore:moreFor(id),
