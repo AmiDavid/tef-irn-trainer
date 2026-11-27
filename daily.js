@@ -69,22 +69,31 @@ const stepDone=step=>{const d=C().day;return !!(d&&d.date===localDay()&&d[step])
 const isTodayTopic=id=>{const d=ensureDay();return !!d.topicId&&d.topicId===id&&!d.complete};
 
 /* ---------- picking questions ---------- */
-function logAnswer(tid,i,ok){if(typeof i!=='number')return;C().qlog[tid+':'+i]={t:Date.now(),d:localDay(),ok:ok?1:0}}
+/* Spaced repetition (build 41): each right answer in a row puts the question to rest for longer (4, 10, 25, 60, then 120 days);
+   a wrong answer resets it, and it comes back first. L.n = right answers in a row (older entries without n count as 1). */
+const REST=[4,10,25,60,120];
+const streakOf=L=>!L||!L.ok?0:(L.n||1);
+const restDays=L=>{const n=streakOf(L);return n?REST[Math.min(n,REST.length)-1]:0};
+/* Days until a question is back: > 0 while it rests. */
+const restLeft=L=>L&&L.ok&&L.d?restDays(L)-dayDiff(L.d,localDay()):0;
+function logAnswer(tid,i,ok){if(typeof i!=='number')return;const k=tid+':'+i,L=C().qlog[k];C().qlog[k]={t:Date.now(),d:localDay(),ok:ok?1:0,n:ok?streakOf(L)+1:0}}
+const resting=(tid,i)=>restLeft(C().qlog[tid+':'+i])>0;
 const seenCount=id=>Object.keys(C().qlog).filter(k=>k.startsWith(id+':')).length;
 /* How far the learner is through a topic's bank: questions seen, and those whose last answer was wrong (they come back first). */
-function coverage(id){const log=C().qlog,n=items(id).length;let seen=0,wrong=0;for(let i=0;i<n;i++){const L=log[id+':'+i];if(L){seen++;if(!L.ok)wrong++}}return {n,seen,wrong}}
-const coverageText=id=>{const v=coverage(id);return `${v.seen}/${v.n} vues${v.wrong?` · ${v.wrong} à revoir`:''}`};
-/* Candidates of one topic, best first: answered wrong, then never seen, then seen longest ago.
-   Questions answered today come last (only used when nothing else is left). */
+function coverage(id){const log=C().qlog,n=items(id).length;let seen=0,wrong=0,rest=0;for(let i=0;i<n;i++){const L=log[id+':'+i];if(L){seen++;if(!L.ok)wrong++;else if(restLeft(L)>0)rest++}}return {n,seen,wrong,rest}}
+const coverageText=id=>{const v=coverage(id);return `${v.seen}/${v.n} vues${v.wrong?` · ${v.wrong} à revoir`:''}${v.rest?` · ${v.rest} au repos`:''}`};
+/* Candidates of one topic, best first: answered wrong, then never seen, then right answers whose rest is over (longest ago
+   first). Questions answered today come after those, and resting questions last, the one closest to coming back first
+   (only used when nothing else is left). */
 function ranked(id,avoid){
   const log=C().qlog,today=localDay();
-  return items(id).map((x,i)=>{const L=log[id+':'+i];return {i,key:id+':'+i,lv:lvl(id,i),bad:!!x.flagged||!!window.TEF_TOPIC?.isFlagged?.(x),today:!!(L&&L.d===today),pr:!L?1:L.ok?2:0,t:L?L.t:0,r:Math.random()}})
+  return items(id).map((x,i)=>{const L=log[id+':'+i],left=restLeft(L);return {i,key:id+':'+i,lv:lvl(id,i),bad:!!x.flagged||!!window.TEF_TOPIC?.isFlagged?.(x),today:!!(L&&L.d===today),rest:left>0?1:0,left:Math.max(0,left),pr:!L?1:L.ok?2:0,t:L?L.t:0,r:Math.random()}})
     .filter(o=>!o.bad&&(!avoid||!avoid.has(o.key)))
-    .sort((a,b)=>(a.today-b.today)||(a.pr-b.pr)||(a.t-b.t)||(a.r-b.r));
+    .sort((a,b)=>(a.rest-b.rest)||(a.left-b.left)||(a.today-b.today)||(a.pr-b.pr)||(a.t-b.t)||(a.r-b.r));
 }
 /* n questions on one topic, presented from easy to hard (used by topic series and « Encore »). */
 function pickFrom(id,n,opt){
-  const r=ranked(id),fresh=r.filter(o=>!o.today);
+  const r=ranked(id),fresh=r.filter(o=>!o.today&&!o.rest);
   return ((opt&&opt.fresh)?fresh:r).slice(0,n).sort((a,b)=>a.lv-b.lv||a.r-b.r).map(o=>o.i);
 }
 /* Everything already done today: go round again, today's mistakes first, then the questions answered longest ago. Easy → hard. */
@@ -136,7 +145,9 @@ function control(id,fromToday){
   return true;
 }
 function pickItems(id,q,avoid){
-  return ranked(id,avoid).filter(o=>!o.today).slice(0,q).map(o=>o.key);
+  const r=ranked(id,avoid).filter(o=>!o.today),take=r.filter(o=>!o.rest).slice(0,q);
+  if(take.length<q){window.TEF_TOPIC?.topUp?.(id);take.push(...r.filter(o=>o.rest).slice(0,q-take.length))} // short: new AI questions on the way; meanwhile the soonest back
+  return take.map(o=>o.key);
 }
 function pickReview(d,total){
   total=total||size().r;
@@ -274,6 +285,6 @@ function bindCommon(root){
 }
 
 function init(){render()}
-window.TEF_DAILY={init,render,mark,start,resume,control,pickControl,pickAgain,order:id=>ranked(id).map(o=>o.i),isTodayTopic,stepDone,logAnswer,ensureDay,pickFrom,seenCount,coverage,setSize,
+window.TEF_DAILY={init,render,mark,start,resume,control,pickControl,pickAgain,order:id=>ranked(id).map(o=>o.i),resting,restLeft:(tid,i)=>Math.max(0,restLeft(C().qlog[tid+':'+i])),isTodayTopic,stepDone,logAnswer,ensureDay,pickFrom,seenCount,coverage,setSize,
   pickReview:()=>pickReview(ensureDay()),_localDay:localDay};
 })();
